@@ -1,3 +1,5 @@
+# Author: STS-Mining
+
 import tkinter as tk
 from pytube import YouTube
 
