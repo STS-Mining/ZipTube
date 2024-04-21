@@ -1,4 +1,5 @@
 # Author: STS-Mining
+# Version 1.01
 
 from customtkinter import *
 import tkinter as tk

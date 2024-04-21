@@ -1,4 +1,5 @@
 # Author: STS-Mining
+# Version 1.0
 
 import tkinter as tk
 from pytube import YouTube
