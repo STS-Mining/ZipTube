@@ -10,34 +10,55 @@ import pyperclip
 from PIL import Image
 
 def download_video():
-    global download_button
+    global download_button, cancel_download
     url = entry_url.get()
     resolution = resolutions_var.get()
     progress_bar.pack(pady="10p")
     progress_label.pack(pady="10p")
     download_speed_label.pack(pady="5")
     status_label.pack(pady="10p")
-
+    
+    # Change button to Cancel
+    cancel_download = False  # Reset the flag
+    download_button.configure(text="CANCEL", command=cancel_download, border_color="#fa0303")
+    
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
         stream = yt.streams.filter(res=resolution).first()
         # Download the video to specific directory
         os.path.join("downloads", f"{yt.title}")
         stream.download(output_path="downloads")
-        status_label.configure(
-            text=f"{yt.title}",
-            text_color="white",
-            fg_color="transparent",
-            font=("Helvetica", 17, "underline")
+        
+        if not cancel_download:
+            status_label.configure(
+                text=f"{yt.title}",
+                text_color="white",
+                fg_color="transparent",
+                font=("Helvetica", 17, "underline")
             )
+        else:
+            status_label.configure(text="Download Canceled")
     except Exception as e:
-        status_label.configure(text=f"Error {str(e)}", text_color="white", fg_color="red")
+        if not cancel_download:
+            status_label.configure(text=f"Error {str(e)}", text_color="white", fg_color="red")
+        else:
+            status_label.configure(text="Download Canceled")
+
+def cancel_download():
+    global cancel_download
+    cancel_download = True
 
 def on_progress(stream, chunk, bytes_remaining):
-    global start_time, bytes_downloaded_prev, download_button
+    global start_time, bytes_downloaded_prev, download_button, cancel_download
     total_size = stream.filesize
     bytes_downloaded = total_size - bytes_remaining
     progress_percentage = (bytes_downloaded / total_size) * 100
+    
+    # Check if download should be canceled
+    if cancel_download:
+        status_label.configure(text="Download Canceled")
+        return
+    
     download_finished = (bytes_downloaded == total_size)
     if download_finished:
         download_button.configure(text="Download Complete!", border_color="#00d11c")
@@ -64,11 +85,6 @@ def on_progress(stream, chunk, bytes_remaining):
         progress_label.update()
         progress_bar.set(progress_percentage / 100)
 
-def cancel_download():
-    # You can implement cancelling the download process here
-    pass
-
-
 # Function to ask for confirmation before closing the window
 def on_close():
     if messagebox.askokcancel("Confirmation", "Are you sure you want to close the application?"):
@@ -80,8 +96,8 @@ def on_close():
 def open_donation_window():
     donation_window = ctk.CTk()
     donation_window.title("Please Donate")
-    donation_window.geometry("600x400")
-    donation_window.minsize(600, 400)
+    donation_window.geometry("600x360")
+    donation_window.minsize(600, 360)
     donation_window.maxsize(720, 480)
     # Create a label with the donation message
     donation_label = ctk.CTkLabel(donation_window, text="Did you enjoy using our app?? \nWould you like us to keep it well maintained & updated? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.", font=("Helvetica", 20))
@@ -104,7 +120,7 @@ def open_donation_window():
 
     # Create buttons to copy wallet addresses
     for wallet in wallets:
-        copy_button = ctk.CTkButton(donation_window, text=f"Copy {wallet['name']} Address", command=lambda name=wallet['name'], addr=wallet['address']: copy_address(name, addr), fg_color="transparent", hover_color="#423e3e", border_color="#00d11c", border_width=2)
+        copy_button = ctk.CTkButton(donation_window, text=f"{wallet['name']} Address", command=lambda name=wallet['name'], addr=wallet['address']: copy_address(name, addr), fg_color="transparent", hover_color="#423e3e", border_color="#00d11c", border_width=2)
         copy_button.pack(pady=5)
 
     # Label to display "Copied to Clipboard" message
@@ -153,13 +169,11 @@ start_time = time.time()
 bytes_downloaded_prev = 0
 
 # Create a label and the entry widget for the video url
-pil_image = Image.open("img/Logoname.png")
+pil_image = Image.open("img/Logoname2.png")
 logo_image = ctk.CTkImage(pil_image, size=(600, 75))
 heading = ctk.CTkLabel(content_frame, image=logo_image)
-url_label = ctk.CTkLabel(content_frame, font=("Helvetica", 12), text="Compatible with youtube and youtube music")
 entry_url = ctk.CTkEntry(content_frame, width=400, height=40, placeholder_text=("Paste URL here..."))
 heading.pack(pady="5p")
-url_label.pack(pady="10p")
 entry_url.pack(pady="10p")
 
 # Create a resolutions combo box
