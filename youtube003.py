@@ -55,7 +55,7 @@ ctk.set_default_color_theme("blue")
 
 # Title of the window
 root.title("STS Mining")
-root.iconbitmap("pmp.ico")
+root.iconbitmap("img/pmp.ico")
 
 # Set min and max width and the height
 root.geometry("720x480")

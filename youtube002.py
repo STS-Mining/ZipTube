@@ -30,7 +30,7 @@ def download_video(download_dir):
 app = CTk()
 app.geometry("700x550")
 app.title("STS-Mining")
-app.iconbitmap("pmp.ico")
+app.iconbitmap("img/pmp.ico")
 
 set_appearance_mode("dark")
 
