@@ -8,6 +8,7 @@ import tkinter.messagebox as messagebox
 import pyperclip
 from PIL import Image
 from tkinter import filedialog
+import os
 
 def download_video(save_path=None):
     global download_button
@@ -35,11 +36,14 @@ def download_video(save_path=None):
             fg_color="transparent",
             font=("Helvetica", 17, "underline")
         )
-    except Exception as e:
-        status_label.configure(text=f"Error {str(e)}", text_color="white", fg_color="red")
+    except Exception:
+        status_label.configure(text=f"Error, resolution selected doesn't exist for video ...", text_color="red")
+        # Schedule hiding labels after 10 seconds
+        app.after(5000, hide_labels)
 
 def open_file_dialog():
-    folder = filedialog.askdirectory()
+    downloads_folder = os.path.expanduser("~/Downloads")
+    folder = filedialog.askdirectory(initialdir=downloads_folder)
     if folder:
         return folder
     return None
