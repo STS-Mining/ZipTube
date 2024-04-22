@@ -1,5 +1,5 @@
 # Author: STS-Mining
-# Version 1.07
+# Version 1.08
 
 import customtkinter as ctk
 from pytube import YouTube
@@ -13,11 +13,9 @@ def download_video(save_path=None):
     global download_button
     url = entry_url.get()
     resolution = resolutions_var.get()
-    progress_bar.pack(pady="10p")
     progress_label.pack(pady="10p")
     download_speed_label.pack(pady="5")
     status_label.pack(pady="10p")
-    download_button.configure(text="DOWNLOADING ...", border_color="#00d11c")
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
         stream = yt.streams.filter(res=resolution).first()
@@ -53,12 +51,11 @@ def on_progress(stream, chunk, bytes_remaining):
     progress_percentage = (bytes_downloaded / total_size) * 100
     download_finished = (bytes_downloaded == total_size)
     if download_finished:
-        download_button.configure(text="Download Complete!", border_color="#00d11c")
-        progress_bar.pack_forget()  # Hide the progress bar
+        download_button.configure(text="Download Complete!")
         # Schedule hiding labels after 10 seconds
         app.after(10000, hide_labels)
     else:
-        download_button.configure(text="DOWNLOADING ...", border_color="#00d11c")
+        download_button.configure(text="Downloading ...")
         current_time = time.time()
         time_elapsed = current_time - start_time
         bytes_downloaded_since_last = bytes_downloaded - bytes_downloaded_prev
@@ -73,7 +70,6 @@ def on_progress(stream, chunk, bytes_remaining):
             bytes_to_nearest_measurement(int(bytes_downloaded))
         ))
         progress_label.update()
-        progress_bar.set(progress_percentage / 100)
 
 # Function to ask for confirmation before closing the window
 def on_close():
@@ -85,12 +81,13 @@ def on_close():
 
 def open_donation_window():
     donation_window = ctk.CTk()
-    donation_window.title("Please Donate")
+    donation_window.title("Notification")
     donation_window.geometry("600x360")
     donation_window.minsize(600, 360)
     donation_window.maxsize(720, 480)
+    donation_window.iconbitmap("C:/Python/Stuff/youtube/img/pmp.ico")
     # Create a label with the donation message
-    donation_label = ctk.CTkLabel(donation_window, text="Did you enjoy using our app?? \nWould you like us to keep it well maintained & updated? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.", font=("Helvetica", 20))
+    donation_label = ctk.CTkLabel(donation_window, text="Did you enjoy using our app?? \nWould you like us to keep it well maintained & updated? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.", font=("Helvetica", 18))
     donation_label.pack(padx=10, pady=10)
     
     # Define wallet addresses and labels
@@ -110,7 +107,7 @@ def open_donation_window():
 
     # Create buttons to copy wallet addresses
     for wallet in wallets:
-        copy_button = ctk.CTkButton(donation_window, text=f"{wallet['name']} Address", command=lambda name=wallet['name'], addr=wallet['address']: copy_address(name, addr), fg_color="transparent", hover_color="#423e3e", border_color="#00d11c", border_width=2)
+        copy_button = ctk.CTkButton(donation_window, text=f"{wallet['name']} Address", command=lambda name=wallet['name'], addr=wallet['address']: copy_address(name, addr))
         copy_button.pack(pady=5)
 
     # Label to display "Copied to Clipboard" message
@@ -125,7 +122,7 @@ def hide_labels():
     download_speed_label.pack_forget()  # Hide the download speed label
     progress_label.pack_forget()  # Hide the progress label
     # Change button back to Download
-    download_button.configure(text="DOWNLOAD", command=download_video, border_color="#00d11c")
+    download_button.configure(text="Download", command=download_video)
 
 def bytes_to_nearest_measurement(bytes):
     megabytes = bytes / (1024 * 1024)
@@ -138,7 +135,7 @@ def bytes_to_nearest_measurement(bytes):
 # Create a app window
 app = ctk.CTk()
 ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("green")
+ctk.set_default_color_theme("custom")
 
 # Title of the window
 app.title("STS Mining")
@@ -160,8 +157,8 @@ bytes_downloaded_prev = 0
 # Create a label and the entry widget for the video url
 pil_image = Image.open("C:/Python/Stuff/youtube/img/Logoname2.png")
 logo_image = ctk.CTkImage(pil_image, size=(600, 75))
-heading = ctk.CTkLabel(content_frame, image=logo_image)
-entry_url = ctk.CTkEntry(content_frame, width=400, height=40, placeholder_text=("Paste URL here..."))
+heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
+entry_url = ctk.CTkEntry(content_frame, placeholder_text=("Paste URL here..."))
 heading.pack(pady="5p")
 entry_url.pack(pady="10p")
 
@@ -181,19 +178,18 @@ resolutions_frame.pack(pady="5p")
 
 # Create buttons for each resolution
 for i, resolution in enumerate(resolutions):
-    button = ctk.CTkButton(resolutions_frame, text=resolution, corner_radius=15, command=lambda r=resolution: select_resolution(r), width=15, height=5, fg_color="transparent", hover_color="#423e3e", border_color="#FFCC70", border_width=2)
+    button = ctk.CTkButton(resolutions_frame, text=resolution, command=lambda r=resolution: select_resolution(r), width=15, height=5, border_color="#FFCC70")
     button.grid(row=i//8, column=i%8, padx=5, pady=5)
 
 # Create a download button
-download_button = ctk.CTkButton(content_frame, width=200, height=40, text="DOWNLOAD", font=("Helvetica", 16), command=download_video, fg_color="transparent", hover_color="#423e3e", border_color="#00d11c", border_width=2)
+download_button = ctk.CTkButton(content_frame, text="Download", command=download_video)
 download_button.pack(pady="10p")
 
 # Create a label for the download speed
 download_speed_label = ctk.CTkLabel(content_frame, text="")
 
 # Create a label and the progress bar to display the download progress
-progress_label = ctk.CTkLabel(content_frame, text="0%")
-progress_bar = ctk.CTkProgressBar(content_frame, width=200, height=20, border_color="#00d11c", progress_color="#00d11c", border_width=2)
+progress_label = ctk.CTkLabel(content_frame, text="")
 
 # Create the status label
 status_label = ctk.CTkLabel(content_frame, text="")
