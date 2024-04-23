@@ -11,7 +11,7 @@ from tkinter import filedialog
 import os
 
 def download_video(save_path=None):
-    global download_button
+    global download_button, donation_button, cancel_button
     url = entry_url.get()
     resolution = resolutions_var.get()
     progress_label.pack(pady="10p")
@@ -30,7 +30,7 @@ def download_video(save_path=None):
                 # If no save location is selected, cancel download
                 raise ValueError("Invalid save location")
         status_label.configure(
-            text=f"{yt.title}",
+            text=f"{yt.title}-{resolution}",
             text_color="white",
             fg_color="transparent",
             font=("Helvetica", 17, "underline")
@@ -47,8 +47,20 @@ def open_file_dialog():
         return folder
     return None
 
+# Function to print all available resolutions for a YouTube video
+def print_available_resolutions(url):
+    try:
+        yt = YouTube(url)
+        streams = yt.streams.filter()
+        resolutions = sorted(set([stream.resolution for stream in streams if stream.resolution]), key=lambda x: int(x[:-1]))
+        print("Available Resolutions:")
+        for resolution in resolutions:
+            print(resolution)
+    except Exception as e:
+        print(f"Error fetching resolutions for URL {url}: {e}")
+
 def on_progress(stream, chunk, bytes_remaining):
-    global start_time, bytes_downloaded_prev, download_button, cancel_download
+    global start_time, bytes_downloaded_prev, download_button
     total_size = stream.filesize
     bytes_downloaded = total_size - bytes_remaining
     progress_percentage = (bytes_downloaded / total_size) * 100
@@ -78,8 +90,6 @@ def on_close():
     if messagebox.askokcancel("Confirmation", "Are you sure you want to close the application?"):
         # Close the app
         app.destroy()
-        # Open donation window after the app is closed
-        open_donation_window()
 
 def open_donation_window():
     donation_window = ctk.CTk()
@@ -133,6 +143,21 @@ def bytes_to_nearest_measurement(bytes):
     else:
         return "{} MB".format(round(megabytes))
 
+def cancel_download():
+    if messagebox.askokcancel("Confirmation", "Are you sure you want to stop the download?"):
+        # Clear the screen to start again or cancel the download
+        if download_button.cget("text") == "Download":
+            # Clear the screen to start again
+            entry_url.delete(0, "end")  # Clear the URL entry
+            resolutions_var.set("")  # Reset the resolution selection
+            status_label.configure(text="")  # Clear the status label
+            progress_label.configure(text="")  # Clear the progress label
+        else:
+            # Cancel the download
+            # You may need to add logic here to cancel the ongoing download process
+            # For now, let's just close the application
+            app.destroy()
+
 # Create a app window
 app = ctk.CTk()
 ctk.set_appearance_mode("dark")
@@ -164,7 +189,7 @@ heading.pack(pady="5p")
 entry_url.pack(pady="10p")
 
 # Create a resolutions combo box
-resolutions_label = ctk.CTkLabel(content_frame, font=("Helvetica", 20), text="Pick Resolution (optional)")
+resolutions_label = ctk.CTkLabel(content_frame, font=("Helvetica", 16), text="Pick Resolution (optional)")
 resolutions_label.pack(pady="1p")
 resolutions = ["2160p", "1440p", "1080p", "720p", "480p", "360p", "240p", "144p"]
 resolutions_var = ctk.StringVar()
@@ -175,16 +200,30 @@ def select_resolution(resolution):
 
 # Create a resolutions frame
 resolutions_frame = ctk.CTkFrame(content_frame)
-resolutions_frame.pack(pady="5p")
+resolutions_frame.pack(pady="1p")
 
 # Create buttons for each resolution
+selected_resolution = ctk.StringVar()
+
 for i, resolution in enumerate(resolutions):
-    button = ctk.CTkButton(resolutions_frame, text=resolution, command=lambda r=resolution: select_resolution(r), width=15, height=5, border_color="#FFCC70")
-    button.grid(row=i//8, column=i%8, padx=5, pady=5)
+    button = ctk.CTkRadioButton(resolutions_frame, text=resolution, variable=selected_resolution, value=resolution, command=lambda: select_resolution(selected_resolution.get()), width=2, height=2)
+    button.grid(row=0, column=i, padx=5, pady=5)
+
+# Button framing
+button_framing = ctk.CTkFrame(content_frame)
+button_framing.pack(pady="10p")
+
+# Create a donate button
+donation_button = ctk.CTkButton(button_framing, text="Donate", command=open_donation_window)
+donation_button.grid(row=0, column=0, padx=(0, 5))
 
 # Create a download button
-download_button = ctk.CTkButton(content_frame, text="Download", command=download_video)
-download_button.pack(pady="10p")
+download_button = ctk.CTkButton(button_framing, text="Download", command=download_video)
+download_button.grid(row=0, column=1, padx=(0, 5))
+
+# Create a cancel button
+cancel_button = ctk.CTkButton(button_framing, text="Cancel", command=cancel_download)
+cancel_button.grid(row=0, column=2)
 
 # Create a label and the progress bar to display the download progress
 progress_label = ctk.CTkLabel(content_frame, text="")
