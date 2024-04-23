@@ -162,7 +162,7 @@ bytes_downloaded_prev = 0
 pil_image = Image.open("C:/Python/Stuff/youtube/img/Logoname2.png")
 logo_image = ctk.CTkImage(pil_image, size=(600, 75))
 heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
-entry_url = ctk.CTkEntry(content_frame, placeholder_text=("Paste URL here..."))
+entry_url = ctk.STsEntry(content_frame, placeholder_text=("Paste URL here..."))
 heading.pack(pady="5p")
 entry_url.pack(pady="10p")
 
