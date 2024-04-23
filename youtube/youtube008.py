@@ -15,7 +15,6 @@ def download_video(save_path=None):
     url = entry_url.get()
     resolution = resolutions_var.get()
     progress_label.pack(pady="10p")
-    download_speed_label.pack(pady="5")
     status_label.pack(pady="10p")
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
@@ -59,20 +58,19 @@ def on_progress(stream, chunk, bytes_remaining):
         # Schedule hiding labels after 10 seconds
         app.after(10000, hide_labels)
     else:
-        download_button.configure(text="Downloading ...")
+        download_button.configure(text=f"Downloading ... {int(progress_percentage)}%")
         current_time = time.time()
         time_elapsed = current_time - start_time
         bytes_downloaded_since_last = bytes_downloaded - bytes_downloaded_prev
         download_speed = bytes_downloaded_since_last / time_elapsed / 1_000_000  # Convert to Mbps
-        download_speed_label.configure(text=f"Download Speed: {download_speed:.2f} Mbps")
         # Update global variables for next iteration
         start_time = current_time
         bytes_downloaded_prev = bytes_downloaded
-        progress_label.configure(text="{} % of {} \n{} complete".format(
-            int(progress_percentage),
-            bytes_to_nearest_measurement(int(total_size)),
-            bytes_to_nearest_measurement(int(bytes_downloaded))
-        ))
+        progress_label.configure(text="{} of {}\nDownload Speed: {:.2f} Mbps".format(
+                    bytes_to_nearest_measurement(int(bytes_downloaded)),
+                    bytes_to_nearest_measurement(int(total_size)),
+                    download_speed
+                ))
         progress_label.update()
 
 # Function to ask for confirmation before closing the window
@@ -91,7 +89,7 @@ def open_donation_window():
     donation_window.maxsize(720, 480)
     donation_window.iconbitmap("C:/Python/Stuff/youtube/img/pmp.ico")
     # Create a label with the donation message
-    donation_label = ctk.CTkLabel(donation_window, text="Did you enjoy using our app?? \nWould you like us to keep it well maintained & updated? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.", font=("Helvetica", 18))
+    donation_label = ctk.CTkLabel(donation_window, text="Enjoy using our app?? \nWould you like us to keep it well maintained? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.", font=("Helvetica", 18))
     donation_label.pack(padx=10, pady=10)
     
     # Define wallet addresses and labels
@@ -123,7 +121,6 @@ def open_donation_window():
 
 def hide_labels():
     status_label.pack_forget()  # Hide the status label
-    download_speed_label.pack_forget()  # Hide the download speed label
     progress_label.pack_forget()  # Hide the progress label
     # Change button back to Download
     download_button.configure(text="Download", command=download_video)
@@ -188,9 +185,6 @@ for i, resolution in enumerate(resolutions):
 # Create a download button
 download_button = ctk.CTkButton(content_frame, text="Download", command=download_video)
 download_button.pack(pady="10p")
-
-# Create a label for the download speed
-download_speed_label = ctk.CTkLabel(content_frame, text="")
 
 # Create a label and the progress bar to display the download progress
 progress_label = ctk.CTkLabel(content_frame, text="")
