@@ -74,6 +74,7 @@ def open_donation_window():
     donation_window.minsize(600, 360)
     donation_window.maxsize(720, 480)
     donation_window.iconbitmap("C:/Python/Stuff/youtube/img/pmp.ico")
+    
     # Create a label with the donation message
     donation_label = ctk.CTkLabel(donation_window, text="Enjoy using our app?? \nWould you like us to keep it well maintained? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.", font=("Helvetica", 18))
     donation_label.pack(padx=10, pady=10)
