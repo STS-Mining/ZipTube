@@ -9,18 +9,23 @@ import pyperclip
 from PIL import Image
 import os
 
-def download_video():
+def download_video(resolutions_var):
     global download_button, donation_button, cancel_button
     url = entry_url.get()
-    resolutions_var = print_available_resolutions(url)
     resolution = resolutions_var.get()
     progress_label.pack(pady="10p")
     status_label.pack(pady="10p")
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
         stream = yt.streams.filter(res=resolution).first()
+        # This is the directory where the file will be saved
         save_dir = os.path.expanduser("~/Downloads")
-        stream.download(output_path=save_dir)
+        # Get the filename with extension
+        filename = stream.default_filename
+        # Append resolution to the filename
+        filename_with_resolution = f"{os.path.splitext(filename)[0]}-{resolution}{os.path.splitext(filename)[1]}"
+        # Download the file with the modified filename
+        stream.download(output_path=save_dir, filename=filename_with_resolution)
         status_label.configure(
             text=f"{yt.title}-{resolution}",
             text_color="white",
@@ -31,6 +36,8 @@ def download_video():
         status_label.configure(text=f"Error, resolution selected doesn't exist for video ...", text_color="red")
         # Schedule hiding labels after 10 seconds
         app.after(5000, hide_labels)
+
+
 
 def on_progress(stream, chunk, bytes_remaining):
     global start_time, bytes_downloaded_prev, download_button
@@ -116,20 +123,6 @@ def bytes_to_nearest_measurement(bytes):
     else:
         return "{} MB".format(round(megabytes))
 
-def cancel_download(url):
-    if messagebox.askokcancel("Confirmation", "Are you sure you want to stop the download?"):
-        # Clear the screen to start again or cancel the download
-        if download_button.cget("text") == "Download":
-            # Clear the screen to start again
-            entry_url.delete(0, "end")  # Clear the URL entry
-            resolutions_var = print_available_resolutions(url)
-            resolutions_var.set("")  # Reset the resolution selection
-            status_label.configure(text="")  # Clear the status label
-            progress_label.configure(text="")  # Clear the progress label
-        else:
-            # Cancel the download
-            app.destroy()
-
 def print_available_resolutions(url):
     try:
         yt = YouTube(url)
@@ -158,6 +151,7 @@ def print_available_resolutions(url):
 
 # Function to print all available resolutions for a YouTube video
 def load_resolutions():
+    global resolutions_var
     # Call print_available_resolutions to print available resolutions
     resolutions_var = print_available_resolutions(entry_url.get())
 
@@ -195,7 +189,10 @@ entry_url.pack(pady="10p")
 resolutions_button = ctk.CTkButton(content_frame, text="Load Resolutions", command=load_resolutions)
 resolutions_button.pack(pady="10p")
 
-# Button framing
+# Define resolutions_var globally
+resolutions_var = None
+
+# Button framing for Download, Donate and Cancel buttons
 button_framing = ctk.CTkFrame(content_frame)
 button_framing.pack(pady="10p")
 
@@ -204,12 +201,8 @@ donation_button = ctk.CTkButton(button_framing, text="Donate", command=open_dona
 donation_button.grid(row=0, column=0, padx=(0, 5))
 
 # Create a download button
-download_button = ctk.CTkButton(button_framing, text="Download", command=download_video)
+download_button = ctk.CTkButton(button_framing, text="Download", command=lambda: download_video(resolutions_var))
 download_button.grid(row=0, column=1, padx=(0, 5))
-
-# Create a cancel button
-cancel_button = ctk.CTkButton(button_framing, text="Cancel", command=cancel_download)
-cancel_button.grid(row=0, column=2)
 
 # Create a label and the progress bar to display the download progress
 progress_label = ctk.CTkLabel(content_frame, text="")
