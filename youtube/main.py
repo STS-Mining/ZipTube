@@ -175,7 +175,7 @@ bytes_downloaded_prev = 0
 
 # Create a label and the entry widget for the video url
 pil_image = Image.open("C:/Python/Stuff/youtube/img/logo.png")
-logo_image = ctk.CTkImage(pil_image, size=(400, 85))
+logo_image = ctk.CTkImage(pil_image, size=(300, 75))
 heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
 heading.pack(pady="10p")
 
