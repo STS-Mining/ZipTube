@@ -49,7 +49,6 @@ def on_progress(stream, chunk, bytes_remaining):
         time_elapsed = current_time - start_time
         bytes_downloaded_since_last = bytes_downloaded - bytes_downloaded_prev
         download_speed = bytes_downloaded_since_last / time_elapsed / 1_000_000  # Convert to Mbps
-        # Update global variables for next iteration
         start_time = current_time
         bytes_downloaded_prev = bytes_downloaded
         progress_label.configure(text="{} of {}\nDownload Speed: {:.2f} MB/sec".format(
@@ -60,13 +59,13 @@ def on_progress(stream, chunk, bytes_remaining):
         progress_label.update()
         status_label.configure(text=f"Saving to local Downloads folder ...")
 
-
 # Function to ask for confirmation before closing the window
 def on_close():
     if messagebox.askokcancel("Confirmation", "Are you sure you want to close the application?"):
         # Close the app
         app.destroy()
 
+# Function for donation window
 def open_donation_window():
     donation_window = ctk.CTk()
     donation_window.title("Notification")
