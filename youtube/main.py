@@ -108,9 +108,8 @@ def open_donation_window():
 def hide_labels():
     status_label.pack_forget()  # Hide the status label
     progress_label.pack_forget()  # Hide the progress label
+    download_button.pack_forget()  # Hide the download button
     donation_button.pack_forget()  # Hide the donation button
-    # Change button back to Download
-    download_button.configure(text="Download", command=download_video)
 
 def bytes_to_nearest_measurement(bytes):
     megabytes = bytes / (1024 * 1024)
@@ -134,9 +133,8 @@ def print_available_resolutions(url):
             print(f"Selected resolution: {resolution}")
 
         selected_resolution = ctk.StringVar()
-
         resolutions_frame = ctk.CTkFrame(content_frame)
-        resolutions_frame.pack(pady=5)
+        resolutions_frame.pack(pady=10)
 
         for i, resolution in enumerate(resolutions):
             button = ctk.CTkRadioButton(resolutions_frame, text=resolution, variable=selected_resolution, value=resolution, command=lambda: select_resolution(selected_resolution.get()), width=2, height=2)
@@ -177,9 +175,9 @@ bytes_downloaded_prev = 0
 
 # Create a label and the entry widget for the video url
 pil_image = Image.open("C:/Python/Stuff/youtube/img/Logoname.png")
-logo_image = ctk.CTkImage(pil_image, size=(400, 100))
+logo_image = ctk.CTkImage(pil_image, size=(400, 85))
 heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
-heading.pack(pady="5p")
+heading.pack(pady="10p")
 
 entry_url = ctk.STsEntry(content_frame, placeholder_text=("Paste URL here..."))
 entry_url.pack(pady="10p")
@@ -201,7 +199,7 @@ progress_label = ctk.CTkLabel(content_frame, text="")
 status_label = ctk.CTkLabel(content_frame, text="")
 
 # Create a donate button
-donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window)
+donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window, border_color="#00d11c")
 
 # Add the on_close function to the close button
 app.protocol("WM_DELETE_WINDOW", on_close)
