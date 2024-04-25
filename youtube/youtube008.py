@@ -164,7 +164,7 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("custom")
 
 # Title of the window
-app.title("STS Mining")
+app.title("ZipTube")
 app.iconbitmap("C:/Python/Stuff/youtube/img/pmp.ico")
 
 # Set min and max width and the height
