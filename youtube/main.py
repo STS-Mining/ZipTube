@@ -125,12 +125,10 @@ def print_available_resolutions(url):
         streams = yt.streams.filter()
         resolutions = sorted(set([stream.resolution for stream in streams if stream.resolution]), key=lambda x: int(x[:-1]))
         resolutions_var = ctk.StringVar()
-        print(f"Available Resolutions: {resolutions}")
 
         # Function to handle resolution selection
         def select_resolution(resolution):
             resolutions_var.set(resolution)
-            print(f"Selected resolution: {resolution}")
 
         selected_resolution = ctk.StringVar()
         resolutions_frame = ctk.CTkFrame(content_frame)
