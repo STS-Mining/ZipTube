@@ -7,10 +7,9 @@ import time
 import tkinter.messagebox as messagebox
 import pyperclip
 from PIL import Image
-from tkinter import filedialog
 import os
 
-def download_video(save_path=None):
+def download_video():
     global download_button, donation_button, cancel_button
     url = entry_url.get()
     resolutions_var = print_available_resolutions(url)
@@ -20,16 +19,8 @@ def download_video(save_path=None):
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
         stream = yt.streams.filter(res=resolution).first()
-        if save_path:
-            stream.download(output_path=save_path)
-        else:
-            # If save_path is not provided, use filedialog to get save location
-            save_dir = open_file_dialog()
-            if save_dir:
-                stream.download(output_path=save_dir)
-            else:
-                # If no save location is selected, cancel download
-                raise ValueError("Invalid save location")
+        save_dir = os.path.expanduser("~/Downloads")
+        stream.download(output_path=save_dir)
         status_label.configure(
             text=f"{yt.title}-{resolution}",
             text_color="white",
@@ -40,13 +31,6 @@ def download_video(save_path=None):
         status_label.configure(text=f"Error, resolution selected doesn't exist for video ...", text_color="red")
         # Schedule hiding labels after 10 seconds
         app.after(5000, hide_labels)
-
-def open_file_dialog():
-    downloads_folder = os.path.expanduser("~/Downloads")
-    folder = filedialog.askdirectory(initialdir=downloads_folder)
-    if folder:
-        return folder
-    return None
 
 def on_progress(stream, chunk, bytes_remaining):
     global start_time, bytes_downloaded_prev, download_button
@@ -146,17 +130,18 @@ def cancel_download(url):
             # Cancel the download
             app.destroy()
 
-# Function to print all available resolutions for a YouTube video
 def print_available_resolutions(url):
     try:
         yt = YouTube(url)
         streams = yt.streams.filter()
         resolutions = sorted(set([stream.resolution for stream in streams if stream.resolution]), key=lambda x: int(x[:-1]))
         resolutions_var = ctk.StringVar()
+        print(f"Available Resolutions: {resolutions}")
 
         # Function to handle resolution selection
         def select_resolution(resolution):
             resolutions_var.set(resolution)
+            print(f"Selected resolution: {resolution}")
 
         selected_resolution = ctk.StringVar()
 
@@ -171,10 +156,10 @@ def print_available_resolutions(url):
     except Exception as e:
         print(f"Error fetching resolutions for URL {url}: {e}")
 
+# Function to print all available resolutions for a YouTube video
 def load_resolutions():
     # Call print_available_resolutions to print available resolutions
-    print_available_resolutions(entry_url.get())
-
+    resolutions_var = print_available_resolutions(entry_url.get())
 
 # Create a app window
 app = ctk.CTk()
