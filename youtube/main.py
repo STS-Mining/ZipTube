@@ -10,11 +10,12 @@ from PIL import Image
 import os
 
 def download_video(resolutions_var):
-    global download_button, donation_button, cancel_button
+    global download_button, donation_button
     url = entry_url.get()
     resolution = resolutions_var.get()
     progress_label.pack(pady="10p")
     status_label.pack(pady="10p")
+    donation_button.pack(pady="10p")
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
         stream = yt.streams.filter(res=resolution).first()
@@ -36,8 +37,6 @@ def download_video(resolutions_var):
         status_label.configure(text=f"Error, resolution selected doesn't exist for video ...", text_color="red")
         # Schedule hiding labels after 10 seconds
         app.after(5000, hide_labels)
-
-
 
 def on_progress(stream, chunk, bytes_remaining):
     global start_time, bytes_downloaded_prev, download_button
@@ -112,6 +111,7 @@ def open_donation_window():
 def hide_labels():
     status_label.pack_forget()  # Hide the status label
     progress_label.pack_forget()  # Hide the progress label
+    donation_button.pack_forget()  # Hide the donation button
     # Change button back to Download
     download_button.configure(text="Download", command=download_video)
 
@@ -154,6 +154,7 @@ def load_resolutions():
     global resolutions_var
     # Call print_available_resolutions to print available resolutions
     resolutions_var = print_available_resolutions(entry_url.get())
+    download_button.pack(pady=10)
 
 # Create a app window
 app = ctk.CTk()
@@ -181,9 +182,13 @@ bytes_downloaded_prev = 0
 pil_image = Image.open("C:/Python/Stuff/youtube/img/Logoname2.png")
 logo_image = ctk.CTkImage(pil_image, size=(600, 75))
 heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
-entry_url = ctk.STsEntry(content_frame, placeholder_text=("Paste URL here..."))
 heading.pack(pady="5p")
+
+entry_url = ctk.STsEntry(content_frame, placeholder_text=("Paste URL here..."))
 entry_url.pack(pady="10p")
+
+# Create a download button
+download_button = ctk.CTkButton(content_frame, text="Download", command=lambda: download_video(resolutions_var))
 
 # Create a resolutions button
 resolutions_button = ctk.CTkButton(content_frame, text="Load Resolutions", command=load_resolutions)
@@ -192,17 +197,8 @@ resolutions_button.pack(pady="10p")
 # Define resolutions_var globally
 resolutions_var = None
 
-# Button framing for Download, Donate and Cancel buttons
-button_framing = ctk.CTkFrame(content_frame)
-button_framing.pack(pady="10p")
-
 # Create a donate button
-donation_button = ctk.CTkButton(button_framing, text="Donate", command=open_donation_window)
-donation_button.grid(row=0, column=0, padx=(0, 5))
-
-# Create a download button
-download_button = ctk.CTkButton(button_framing, text="Download", command=lambda: download_video(resolutions_var))
-download_button.grid(row=0, column=1, padx=(0, 5))
+donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window)
 
 # Create a label and the progress bar to display the download progress
 progress_label = ctk.CTkLabel(content_frame, text="")
