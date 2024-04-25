@@ -1,5 +1,5 @@
 # Author: STS-Mining
-# Version 1.08
+# Version 1.11
 
 import customtkinter as ctk
 from pytube import YouTube
@@ -27,12 +27,7 @@ def download_video(resolutions_var):
         filename_with_resolution = f"{os.path.splitext(filename)[0]}-{resolution}{os.path.splitext(filename)[1]}"
         # Download the file with the modified filename
         stream.download(output_path=save_dir, filename=filename_with_resolution)
-        status_label.configure(
-            text=f"{yt.title}-{resolution}",
-            text_color="white",
-            fg_color="transparent",
-            font=("Helvetica", 17, "underline")
-        )
+        status_label.configure(text=f"File saved as: {yt.title}-{resolution}")
     except Exception:
         status_label.configure(text=f"Error, resolution selected doesn't exist for video ...", text_color="red")
         # Schedule hiding labels after 10 seconds
@@ -63,6 +58,8 @@ def on_progress(stream, chunk, bytes_remaining):
                     download_speed
                 ))
         progress_label.update()
+        status_label.configure(text=f"Saving to local Downloads folder ...")
+
 
 # Function to ask for confirmation before closing the window
 def on_close():
@@ -179,8 +176,8 @@ start_time = time.time()
 bytes_downloaded_prev = 0
 
 # Create a label and the entry widget for the video url
-pil_image = Image.open("C:/Python/Stuff/youtube/img/Logoname2.png")
-logo_image = ctk.CTkImage(pil_image, size=(600, 75))
+pil_image = Image.open("C:/Python/Stuff/youtube/img/Logoname.png")
+logo_image = ctk.CTkImage(pil_image, size=(400, 100))
 heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
 heading.pack(pady="5p")
 
@@ -197,14 +194,14 @@ resolutions_button.pack(pady="10p")
 # Define resolutions_var globally
 resolutions_var = None
 
-# Create a donate button
-donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window)
-
 # Create a label and the progress bar to display the download progress
 progress_label = ctk.CTkLabel(content_frame, text="")
 
 # Create the status label
 status_label = ctk.CTkLabel(content_frame, text="")
+
+# Create a donate button
+donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window)
 
 # Add the on_close function to the close button
 app.protocol("WM_DELETE_WINDOW", on_close)
