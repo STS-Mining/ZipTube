@@ -163,9 +163,9 @@ app.title("ZipTube")
 app.iconbitmap("C:/Python/Stuff/youtube/img/pmp.ico")
 
 # Set min and max width and the height
-app.geometry("720x480")
-app.minsize(720, 480)
-app.maxsize(1080, 720)
+app.geometry("620x500")
+app.minsize(620, 500)
+app.maxsize(620, 500)
 
 # Create a frame to hold the content
 content_frame = ctk.CTkFrame(app)
