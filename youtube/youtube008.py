@@ -13,6 +13,7 @@ import os
 def download_video(save_path=None):
     global download_button, donation_button, cancel_button
     url = entry_url.get()
+    resolutions_var = print_available_resolutions(url)
     resolution = resolutions_var.get()
     progress_label.pack(pady="10p")
     status_label.pack(pady="10p")
@@ -46,18 +47,6 @@ def open_file_dialog():
     if folder:
         return folder
     return None
-
-# Function to print all available resolutions for a YouTube video
-def print_available_resolutions(url):
-    try:
-        yt = YouTube(url)
-        streams = yt.streams.filter()
-        resolutions = sorted(set([stream.resolution for stream in streams if stream.resolution]), key=lambda x: int(x[:-1]))
-        print("Available Resolutions:")
-        for resolution in resolutions:
-            print(resolution)
-    except Exception as e:
-        print(f"Error fetching resolutions for URL {url}: {e}")
 
 def on_progress(stream, chunk, bytes_remaining):
     global start_time, bytes_downloaded_prev, download_button
@@ -143,20 +132,49 @@ def bytes_to_nearest_measurement(bytes):
     else:
         return "{} MB".format(round(megabytes))
 
-def cancel_download():
+def cancel_download(url):
     if messagebox.askokcancel("Confirmation", "Are you sure you want to stop the download?"):
         # Clear the screen to start again or cancel the download
         if download_button.cget("text") == "Download":
             # Clear the screen to start again
             entry_url.delete(0, "end")  # Clear the URL entry
+            resolutions_var = print_available_resolutions(url)
             resolutions_var.set("")  # Reset the resolution selection
             status_label.configure(text="")  # Clear the status label
             progress_label.configure(text="")  # Clear the progress label
         else:
             # Cancel the download
-            # You may need to add logic here to cancel the ongoing download process
-            # For now, let's just close the application
             app.destroy()
+
+# Function to print all available resolutions for a YouTube video
+def print_available_resolutions(url):
+    try:
+        yt = YouTube(url)
+        streams = yt.streams.filter()
+        resolutions = sorted(set([stream.resolution for stream in streams if stream.resolution]), key=lambda x: int(x[:-1]))
+        resolutions_var = ctk.StringVar()
+
+        # Function to handle resolution selection
+        def select_resolution(resolution):
+            resolutions_var.set(resolution)
+
+        selected_resolution = ctk.StringVar()
+
+        resolutions_frame = ctk.CTkFrame(content_frame)
+        resolutions_frame.pack(pady=5)
+
+        for i, resolution in enumerate(resolutions):
+            button = ctk.CTkRadioButton(resolutions_frame, text=resolution, variable=selected_resolution, value=resolution, command=lambda: select_resolution(selected_resolution.get()), width=2, height=2)
+            button.grid(row=0, column=i, padx=5, pady=5)
+
+        return resolutions_var
+    except Exception as e:
+        print(f"Error fetching resolutions for URL {url}: {e}")
+
+def load_resolutions():
+    # Call print_available_resolutions to print available resolutions
+    print_available_resolutions(entry_url.get())
+
 
 # Create a app window
 app = ctk.CTk()
@@ -188,26 +206,9 @@ entry_url = ctk.STsEntry(content_frame, placeholder_text=("Paste URL here..."))
 heading.pack(pady="5p")
 entry_url.pack(pady="10p")
 
-# Create a resolutions combo box
-resolutions_label = ctk.CTkLabel(content_frame, font=("Helvetica", 16), text="Pick Resolution (optional)")
-resolutions_label.pack(pady="1p")
-resolutions = ["2160p", "1440p", "1080p", "720p", "480p", "360p", "240p", "144p"]
-resolutions_var = ctk.StringVar()
-
-# Function to handle resolution selection
-def select_resolution(resolution):
-    resolutions_var.set(resolution)
-
-# Create a resolutions frame
-resolutions_frame = ctk.CTkFrame(content_frame)
-resolutions_frame.pack(pady="1p")
-
-# Create buttons for each resolution
-selected_resolution = ctk.StringVar()
-
-for i, resolution in enumerate(resolutions):
-    button = ctk.CTkRadioButton(resolutions_frame, text=resolution, variable=selected_resolution, value=resolution, command=lambda: select_resolution(selected_resolution.get()), width=2, height=2)
-    button.grid(row=0, column=i, padx=5, pady=5)
+# Create a resolutions button
+resolutions_button = ctk.CTkButton(content_frame, text="Load Resolutions", command=load_resolutions)
+resolutions_button.pack(pady="10p")
 
 # Button framing
 button_framing = ctk.CTkFrame(content_frame)
