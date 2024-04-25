@@ -78,7 +78,7 @@ def on_progress(stream, chunk, bytes_remaining):
         # Update global variables for next iteration
         start_time = current_time
         bytes_downloaded_prev = bytes_downloaded
-        progress_label.configure(text="{} of {}\nDownload Speed: {:.2f} Mbps".format(
+        progress_label.configure(text="{} of {}\nDownload Speed: {:.2f} MB/sec".format(
                     bytes_to_nearest_measurement(int(bytes_downloaded)),
                     bytes_to_nearest_measurement(int(total_size)),
                     download_speed
