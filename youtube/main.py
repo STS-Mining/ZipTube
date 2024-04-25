@@ -158,7 +158,7 @@ ctk.set_default_color_theme("custom")
 
 # Title of the window
 app.title("ZipTube")
-app.iconbitmap("C:/Python/Stuff/youtube/img/pmp.ico")
+app.iconbitmap("C:/Python/Stuff/youtube/img/icon.ico")
 
 # Set min and max width and the height
 app.geometry("620x500")
@@ -174,7 +174,7 @@ start_time = time.time()
 bytes_downloaded_prev = 0
 
 # Create a label and the entry widget for the video url
-pil_image = Image.open("C:/Python/Stuff/youtube/img/Logoname.png")
+pil_image = Image.open("C:/Python/Stuff/youtube/img/logo.png")
 logo_image = ctk.CTkImage(pil_image, size=(400, 85))
 heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
 heading.pack(pady="10p")
