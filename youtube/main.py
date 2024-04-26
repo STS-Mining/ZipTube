@@ -9,6 +9,9 @@ import pyperclip
 from PIL import Image
 import os
 
+icon = "C:/Python/Stuff/youtube/img/icon.ico"
+logo = "C:/Python/Stuff/youtube/img/logo.png"
+
 def download_video(resolutions_var):
     global download_button, donation_button
     url = entry_url.get()
@@ -72,7 +75,7 @@ def open_donation_window():
     donation_window.geometry("600x360")
     donation_window.minsize(600, 360)
     donation_window.maxsize(720, 480)
-    donation_window.iconbitmap("C:/Python/Stuff/youtube/img/pmp.ico")
+    donation_window.iconbitmap(icon)
     
     # Create a label with the donation message
     donation_label = ctk.CTkLabel(donation_window, text="Enjoy using our app?? \nWould you like us to keep it well maintained? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.", font=("Helvetica", 18))
@@ -155,7 +158,7 @@ ctk.set_default_color_theme("custom")
 
 # Title of the window
 app.title("ZipTube")
-app.iconbitmap("C:/Python/Stuff/youtube/img/icon.ico")
+app.iconbitmap(icon)
 
 # Set min and max width and the height
 app.geometry("620x500")
@@ -171,7 +174,7 @@ start_time = time.time()
 bytes_downloaded_prev = 0
 
 # Create a label and the entry widget for the video url
-pil_image = Image.open("C:/Python/Stuff/youtube/img/logo.png")
+pil_image = Image.open(logo)
 logo_image = ctk.CTkImage(pil_image, size=(300, 75))
 heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
 heading.pack(pady="10p")
