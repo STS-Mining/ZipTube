@@ -40,11 +40,11 @@ def on_progress(stream, chunk, bytes_remaining):
     progress_percentage = (bytes_downloaded / total_size) * 100
     download_finished = (bytes_downloaded == total_size)
     if download_finished:
-        download_button.configure(text="Download Complete!")
+        download_button.configure(text="Download Complete!", border_color="#00d11c")
         # Schedule hiding labels after 10 seconds
         app.after(10000, hide_labels)
     else:
-        download_button.configure(text=f"Downloading ... {int(progress_percentage)}%")
+        download_button.configure(text=f"Downloading ... {int(progress_percentage)}%", border_color="yellow")
         current_time = time.time()
         time_elapsed = current_time - start_time
         bytes_downloaded_since_last = bytes_downloaded - bytes_downloaded_prev
@@ -80,10 +80,9 @@ def open_donation_window():
     
     # Define wallet addresses and labels
     wallets = [
-        {"name": "BTC", "address": "34789bnsjdfhksnfsFSFSfjh4uhrnsjnfjens993"},
-        {"name": "ETH", "address": "0x0000000000000000000000000000000000000000"},
-        {"name": "DOGE", "address": "9x999999999999999999999999"},
-        {"name": "SHIB", "address": "8888888888888888888888888888"}
+        {"name": "BTC", "address": "12pGQNkdk8C3H32GBtUzXjxgZvxVZLRxsB"},
+        {"name": "ETH", "address": "0x7801af1b2acd60e56f9bf0d5039beb3d99ba8bc4"},
+        {"name": "DOGE", "address": "D6TE4ZgBfjJ1neYztZFQWiihPZNBS418P5"}
     ]
 
     # Function to copy wallet address to clipboard
@@ -197,7 +196,7 @@ progress_label = ctk.CTkLabel(content_frame, text="")
 status_label = ctk.CTkLabel(content_frame, text="")
 
 # Create a donate button
-donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window, border_color="#00d11c")
+donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window, border_color="red")
 
 # Add the on_close function to the close button
 app.protocol("WM_DELETE_WINDOW", on_close)
