@@ -65,7 +65,7 @@ def on_progress(stream, chunk, bytes_remaining):
         download_speed = bytes_downloaded_since_last / time_elapsed / 1_000_000  # Convert to Mbps
         start_time = current_time
         bytes_downloaded_prev = bytes_downloaded
-        progress_label.configure(text="{} of {}\nDownload Speed: {:.2f} MB/sec".format(
+        progress_label.configure(text="{} / {} Download Speed: {:.2f} MB/sec".format(
                     bytes_to_nearest_measurement(int(bytes_downloaded)),
                     bytes_to_nearest_measurement(int(total_size)),
                     download_speed
@@ -126,7 +126,7 @@ def hide_labels():
     progress_label.pack_forget()  # Hide the progress label
     resolutions_button.pack_forget()  # Hide the resolutions button
     download_button.configure(state='normal')  # Enable the download button
-    download_button.configure(text="Download Another Video?", border_color="#00d11c", command=start_app_again)
+    download_button.configure(text="Download Another Video ?", border_color="#00d11c", command=start_app_again)
     donation_button.pack_forget()  # Hide the donation button
     resolutions_frame.pack_forget()  # Hide the resolutions frame
     entry_url.delete(0, ctk.END)  # Clear the entry URL
@@ -174,7 +174,6 @@ def load_resolutions():
 
 # Function to start a new download
 def start_app_again():
-    print("Starting app again...")
     donation_button.pack_forget()  # Hide the donation button
     download_button.pack_forget()  # Hide the download button
     resolutions_button.configure(state='normal')  # Enable the resolutions button
@@ -215,7 +214,7 @@ bytes_downloaded_prev = 0
 
 # Create a label and the entry widget for the video url
 pil_image = Image.open(logo)
-logo_image = ctk.CTkImage(pil_image, size=(300, 75))
+logo_image = ctk.CTkImage(pil_image, size=(250, 60))
 heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
 heading.pack(pady="10p")
 
