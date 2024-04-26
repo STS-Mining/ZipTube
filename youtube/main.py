@@ -9,6 +9,7 @@ import tkinter.messagebox as messagebox
 import pyperclip
 from PIL import Image
 import os
+import re
 
 # Icon and logo location on system
 icon = "C:/Python/Stuff/youtube/img/icon.ico"
@@ -132,15 +133,6 @@ def hide_labels():
     resolutions_var.set("")  # Clear the resolutions variable
     donation_button.pack(pady="10p")  # Show the donation button
 
-# Calculate the nearest measurement for bytes
-def bytes_to_nearest_measurement(bytes):
-    megabytes = bytes / (1024 * 1024)
-    gigabytes = bytes / (1024 * 1024 * 1024)
-    if gigabytes >= 1:
-        return "{} GB".format(round(gigabytes))
-    else:
-        return "{} MB".format(round(megabytes))
-
 # Function to print all available resolutions for a YouTube video
 def print_available_resolutions(url):
     try:
@@ -164,12 +156,17 @@ def print_available_resolutions(url):
     except Exception as e:
         print(f"Error fetching resolutions for URL {url}: {e}")
 
-# Function to print all available resolutions for a YouTube video
 def load_resolutions():
     global resolutions_var
     url = entry_url.get().strip()  # Get the URL and remove leading/trailing whitespace
+
+    # Regular expression pattern to match YouTube video URLs
+    youtube_url_pattern = r"^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$"
+
     if not url:
         messagebox.showerror("Error", "Please enter a YouTube video URL.")
+    elif not re.match(youtube_url_pattern, url):
+        messagebox.showerror("Error", "Please enter a valid YouTube video URL.")
     else:
         # Call print_available_resolutions to print available resolutions
         resolutions_var = print_available_resolutions(url)
@@ -184,6 +181,15 @@ def start_app_again():
     resolutions_button.configure(text="Load Resolutions", command=load_resolutions, border_color="#FFCC70")
     resolutions_button.pack(pady=10)  # Show the resolutions button
     download_button.configure(text="Download", command=lambda: download_video(resolutions_var))
+
+# Calculate the nearest measurement for bytes
+def bytes_to_nearest_measurement(bytes):
+    megabytes = bytes / (1024 * 1024)
+    gigabytes = bytes / (1024 * 1024 * 1024)
+    if gigabytes >= 1:
+        return "{} GB".format(round(gigabytes))
+    else:
+        return "{} MB".format(round(megabytes))
 
 # Create a app window
 app = ctk.CTk()
