@@ -5,6 +5,7 @@
 import customtkinter as ctk
 from pytube import YouTube
 import time
+import tkinter.stssimpledialog as stssimpledialog
 import tkinter.messagebox as messagebox
 import pyperclip
 from PIL import Image
@@ -12,12 +13,12 @@ import os
 import re
 
 # Icon and logo location on system
-icon = "C:/Python/Stuff/youtube/img/icon.ico"
-logo = "C:/Python/Stuff/youtube/img/logo.png"
+icon = "img/icon.ico"
+logo = "img/logo.png"
 
 # Function that downloads the video once the download button is pressed
 def download_video(resolutions_var):
-    global download_button, donation_button
+    global download_button
     url = entry_url.get()
     resolution = resolutions_var.get()
     if not resolution:  # Check if resolution is not selected
@@ -26,7 +27,6 @@ def download_video(resolutions_var):
 
     progress_label.pack(pady="10p")
     status_label.pack(pady="10p")
-    donation_button.pack(pady="10p")
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
         stream = yt.streams.filter(res=resolution).first()
@@ -36,23 +36,34 @@ def download_video(resolutions_var):
         filename = stream.default_filename
         # Append resolution to the filename
         filename_with_resolution = f"{os.path.splitext(filename)[0]}-{resolution}{os.path.splitext(filename)[1]}"
+        # Check if the file already exists
+        file_path = os.path.join(save_dir, filename_with_resolution)
+        if os.path.exists(file_path):
+            # Ask the user to enter a new filename
+            new_filename = stssimpledialog.askstring("Rename File", "A file with this name already exists. Please enter a new filename:", initialvalue=filename_with_resolution)
+            if new_filename is None:
+                # User canceled renaming, so stop the download process
+                return
+            filename_with_resolution = new_filename
         # Download the file with the modified filename
         stream.download(output_path=save_dir, filename=filename_with_resolution)
-        status_label.configure(text=f"File saved as: {yt.title}-{resolution}")
+        status_label.configure(text=f"File saved as: {filename_with_resolution}")
     except Exception:
         status_label.configure(text=f"Error, resolution selected doesn't exist for video ...", text_color="red")
         # Schedule hiding labels after 2 seconds
         app.after(2000, hide_labels)
 
+
 # Function while the download is in progress
 def on_progress(stream, chunk, bytes_remaining):
-    global start_time, bytes_downloaded_prev, download_button
+    global start_time, bytes_downloaded_prev, download_button, donation_button
     download_button.configure(state='disabled')  # Disable the download button
     resolutions_button.configure(state='disabled')  # Disable the resolutions button
     total_size = stream.filesize
     bytes_downloaded = total_size - bytes_remaining
     progress_percentage = (bytes_downloaded / total_size) * 100
     download_finished = (bytes_downloaded == total_size)
+    donation_button.pack(pady="10p")
     if download_finished:
         download_button.configure(text="Download Complete!", border_color="#00d11c")
         # Schedule hiding labels after 3 seconds
@@ -73,12 +84,23 @@ def on_progress(stream, chunk, bytes_remaining):
         progress_label.update()
         status_label.configure(text=f"Saving to local Downloads folder ...")
 
-
 # Function to ask for confirmation before closing the window
 def on_close():
     if messagebox.askokcancel("Confirmation", "Are you sure you want to close the application?"):
         # Close the app
         app.destroy()
+
+# Function for the window for renaming the file
+def rename_file(filename_with_resolution):
+    rename_file_window = ctk.CTk()
+    rename_file_window.title("Rename File")
+    rename_file_window.geometry("600x150")
+    rename_file_window.minsize(600, 150)
+    rename_file_window.maxsize(600, 150)
+    rename_file_window.iconbitmap(icon)
+    rename_file_label = ctk.CTkLabel(rename_file_window, text="A file with this name already exists. Please enter a new filename:", initialvalue=filename_with_resolution)
+    rename_file_label.pack(padx="10p", pady="10p")
+    rename_file_window.mainloop()
 
 # Function for donation window
 def open_donation_window():
@@ -145,9 +167,11 @@ def print_available_resolutions(url):
         def select_resolution(resolution):
             resolutions_var.set(resolution)
 
+        # Create a frame to hold the resolution buttons
         selected_resolution = ctk.StringVar()
         resolutions_frame.pack(pady=10)
 
+        # Create a radio button for each available resolution
         for i, resolution in enumerate(resolutions):
             button = ctk.CTkRadioButton(resolutions_frame, text=resolution, variable=selected_resolution, value=resolution, command=lambda: select_resolution(selected_resolution.get()), width=2, height=2)
             button.grid(row=0, column=i, padx=5, pady=5)
@@ -156,6 +180,7 @@ def print_available_resolutions(url):
     except Exception as e:
         print(f"Error fetching resolutions for URL {url}: {e}")
 
+# Function to load the resolutions for a YouTube video
 def load_resolutions():
     global resolutions_var
     url = entry_url.get().strip()  # Get the URL and remove leading/trailing whitespace
