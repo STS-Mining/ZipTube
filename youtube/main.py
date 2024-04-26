@@ -53,7 +53,6 @@ def download_video(resolutions_var):
         # Schedule hiding labels after 2 seconds
         app.after(2000, hide_labels)
 
-
 # Function while the download is in progress
 def on_progress(stream, chunk, bytes_remaining):
     global start_time, bytes_downloaded_prev, download_button, donation_button
