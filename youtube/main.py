@@ -244,9 +244,6 @@ status_label = ctk.CTkLabel(content_frame, text="")
 # Create a donate button
 donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window, border_color="red")
 
-# Create a hello button
-hello_button = ctk.CTkButton(content_frame, text="Download Another Video?", command=start_app_again, border_color="#00d11c")
-
 # Add the on_close function to the close button
 app.protocol("WM_DELETE_WINDOW", on_close)
 
