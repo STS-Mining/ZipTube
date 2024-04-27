@@ -1,5 +1,4 @@
 # Author: STS-Mining
-# Date: 2024-04-27
 # ZipTube Version 1.18
 
 import customtkinter as ctk
