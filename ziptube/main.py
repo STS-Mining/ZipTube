@@ -242,7 +242,7 @@ heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
 heading.pack(pady="10p")
 
 # Create a label and the entry widget for the video url
-entry_url = ctk.STsEntry(content_frame, placeholder_text=("Paste URL here..."))
+entry_url = ctk.CTkEntry(content_frame, width=390, height=28, placeholder_text=("Paste URL here..."))
 entry_url.pack(pady="10p")
 
 # Create a resolutions frame to hold the resolutions
