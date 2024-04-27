@@ -1,10 +1,10 @@
 # Author: STS-Mining
-# ZipTube Version 1.18
+# ZipTube Version 1.19
 
 import customtkinter as ctk
 from pytube import YouTube
 import time
-import tkinter.stssimpledialog as stssimpledialog
+import tkinter.simpledialog as simpledialog
 import tkinter.messagebox as messagebox
 import pyperclip
 from PIL import Image
@@ -39,7 +39,7 @@ def download_video(resolutions_var):
         file_path = os.path.join(save_dir, filename_with_resolution)
         if os.path.exists(file_path):
             # Ask the user to enter a new filename
-            new_filename = stssimpledialog.askstring("Rename File", "A file with this name already exists. Please enter a new filename:", initialvalue=filename_with_resolution)
+            new_filename = simpledialog.askstring("Rename File", "A file with this name already exists. Please enter a new filename:", initialvalue=filename_with_resolution)
             if new_filename is None:
                 # User canceled renaming, so stop the download process
                 return
