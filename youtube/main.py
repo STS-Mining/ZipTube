@@ -12,8 +12,8 @@ import os
 import re
 
 # Icon and logo location on system
-icon = "assets/images/icon.ico"
-logo = "assets/images/logo.png"
+icon = "youtube/assets/images/icon.ico"
+logo = "youtube/assets/images/logo.png"
 
 # Function that downloads the video once the download button is pressed
 def download_video(resolutions_var):
