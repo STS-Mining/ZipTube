@@ -1,6 +1,6 @@
 # Author: STS-Mining
-# Copyright 2024 STS-Mining. All rights reserved.
 # ZipTube Version 1.21
+# Download YouTube videos, audio and convert videos to audio
 
 import customtkinter as ctk
 from pytube import YouTube
@@ -212,9 +212,9 @@ def hide_labels():
     resolutions_button.pack_forget()  # Hide the resolutions button
     cancel_button.pack_forget()  # Hide the cancel button
     download_button.configure(state='normal')  # Enable the download button
-    download_button.configure(text="Download Another Video ?", border_color="#00d11c", command=start_app_again)
+    download_button.configure(text="Download Another Video", command=start_app_again)
     download_audio_button.configure(state='normal')  # Enable the download button
-    download_audio_button.configure(text="Download Another Song ?", border_color="#00d11c", command=download_audio_only)
+    download_audio_button.configure(text="Download Another Song", command=download_audio_only)
     donation_button.pack_forget()  # Hide the donation button
     resolutions_frame.pack_forget()  # Hide the resolutions frame
     entry_url.delete(0, ctk.END)  # Clear the entry URL
@@ -272,7 +272,7 @@ def start_app_again():
     download_button.pack_forget()  # Hide the download button
     convert_to_audio_button.pack_forget()  # Hide the convert to audio button
     resolutions_button.configure(state='normal')  # Enable the resolutions button
-    resolutions_button.configure(text="Load Resolutions", command=load_resolutions, border_color="#FFCC70")
+    resolutions_button.configure(text="Load Resolutions", command=load_resolutions)
     resolutions_button.pack(pady=10)  # Show the resolutions button
     download_button.configure(text="Download", command=lambda: download_video(resolutions_var))
 
@@ -312,7 +312,7 @@ def download_audio_only():
     convert_to_audio_button.pack_forget()  # Hide the convert to audio button
     cancel_button.pack_forget()  # Hide the cancel button
     entry_url.pack(pady=10)  # Show the entry URL
-    download_audio_button.configure(border_color="#00d11c", text="Download", command=download_audio)
+    download_audio_button.configure(text="Download", command=download_audio)
     download_audio_button.pack(pady=10)
     start_menu_frame.pack_forget()  # Hide the start menu frame
     want_to_download_button.pack_forget() # Hide the want to download button
@@ -351,9 +351,9 @@ heading.pack(pady="10p")
 # Create new buttons as a start menu
 start_menu_frame = ctk.CTkFrame(content_frame)
 start_menu_frame.pack(padx=10, pady=150)
-want_to_download_button = ctk.CTkButton(start_menu_frame, text="Download Video", command=load_entry_and_resolutions_button, border_color="#00d11c")
-download_audio_button = ctk.CTkButton(start_menu_frame, text="Download Audio", command=download_audio_only, border_color="red")
-want_to_convert_to_audio_button = ctk.CTkButton(start_menu_frame, text="Convert Video 2 Audio", command=open_file_dialog, border_color="#FFCC70")
+want_to_download_button = ctk.CTkButton(start_menu_frame, text="Download Video", command=load_entry_and_resolutions_button)
+download_audio_button = ctk.CTkButton(start_menu_frame, text="Download Audio", command=download_audio_only)
+want_to_convert_to_audio_button = ctk.CTkButton(start_menu_frame, text="Convert Video 2 Audio", command=open_file_dialog)
 want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
 download_audio_button.grid(row=0, column=1, padx=5, pady=5)
 want_to_convert_to_audio_button.grid(row=0, column=2, padx=5, pady=5)
@@ -365,22 +365,22 @@ entry_url = ctk.CTkEntry(content_frame, width=390, placeholder_text=("Paste URL 
 resolutions_frame = ctk.CTkFrame(content_frame)
 
 # Create a download button
-download_button = ctk.CTkButton(content_frame, border_color="#00d11c", text="Download", command=lambda: download_video(resolutions_var))
+download_button = ctk.CTkButton(content_frame, text="Download", command=lambda: download_video(resolutions_var))
 
 # Create a download audio button
-download_audio_button = ctk.CTkButton(content_frame, border_color="#00d11c", text="Download", command=download_audio)
+download_audio_button = ctk.CTkButton(content_frame, text="Download", command=download_audio)
 
 # Create a resolutions button
-resolutions_button = ctk.CTkButton(content_frame, text="Load Resolutions", command=load_resolutions, border_color="#FFCC70")
+resolutions_button = ctk.CTkButton(content_frame, text="Load Resolutions", command=load_resolutions)
 
 # Define resolutions_var globally
 resolutions_var = None
 
 # Create a cancel button
-cancel_button = ctk.CTkButton(content_frame, border_color="red", text="Cancel / Clear", command=hide_labels)
+cancel_button = ctk.CTkButton(content_frame, text="Cancel / Clear", command=hide_labels)
 
 # Create and position GUI elements
-convert_to_audio_button = ctk.CTkButton(content_frame, text="Convert Video 2 Audio", command=open_file_dialog, border_color="#FFCC70")
+convert_to_audio_button = ctk.CTkButton(content_frame, text="Convert Video 2 Audio", command=open_file_dialog)
 
 # Create a label and the progress bar to display the download progress
 progress_label = ctk.CTkLabel(content_frame, text="")
@@ -389,7 +389,7 @@ progress_label = ctk.CTkLabel(content_frame, text="")
 status_label = ctk.CTkLabel(content_frame, text="")
 
 # Create a donate button
-donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window, border_color="red")
+donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window)
 
 # Add the on_close function to the close button
 app.protocol("WM_DELETE_WINDOW", on_close)
