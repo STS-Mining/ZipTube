@@ -17,6 +17,9 @@ import moviepy.editor as mp
 icon = "ziptube/assets/images/icon.ico"
 logo = "ziptube/assets/images/logo.png"
 
+# Save location for all files downloaded
+save_location = os.path.expanduser("~/Downloads")
+
 # Function to download only audio files
 def download_audio():
     global download_audio_button
@@ -25,9 +28,10 @@ def download_audio():
     status_label.pack(pady="10p")
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
-        audio_stream = yt.streams.filter(only_audio=True).first()
+        audio_stream = yt.streams.filter(only_audio=True, abr="128kbps").first()
+        print(audio_stream)
         # This is the directory where the file will be saved
-        save_dir = os.path.expanduser("~/Downloads")
+        save_dir = save_location
         # Get the filename with extension
         filename = audio_stream.default_filename
         # Check if the file already exists
@@ -59,7 +63,7 @@ def download_video(resolutions_var):
         yt = YouTube(url, on_progress_callback=on_progress)
         stream = yt.streams.filter(res=resolution).first()
         # This is the directory where the file will be saved
-        save_dir = os.path.expanduser("~/Downloads")
+        save_dir = save_location
         # Get the filename with extension
         filename = stream.default_filename
         # Append resolution to the filename
