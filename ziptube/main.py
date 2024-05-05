@@ -24,7 +24,7 @@ def choose_save_location():
 
 # Function to download only audio files
 def download_audio():
-    global download_audio_button
+    global download_audio_button, output_path
     url = entry_url.get()
     progress_label.pack(pady="10p")
     status_label.pack(pady="10p")
@@ -34,6 +34,7 @@ def download_audio():
         print(audio_stream.default_filename)
         # This is the directory where the file will be saved
         save_dir = choose_save_location()
+        output_path = save_dir
         # Get the filename with extension
         filename = audio_stream.default_filename
         # Rename file to mp3 from mp4
@@ -56,7 +57,7 @@ def download_audio():
 
 # Function that downloads the video once the download button is pressed
 def download_video(resolutions_var):
-    global download_button
+    global download_button, output_path
     url = entry_url.get()
     resolution = resolutions_var.get()
     if not resolution:  # Check if resolution is not selected
@@ -70,6 +71,7 @@ def download_video(resolutions_var):
         stream = yt.streams.filter(res=resolution).first()
         # This is the directory where the file will be saved
         save_dir = choose_save_location()
+        output_path = save_dir
         # Get the filename with extension
         filename = stream.default_filename
         # Append resolution to the filename
@@ -93,8 +95,9 @@ def download_video(resolutions_var):
 
 # Function while the download is in progress
 def on_progress(stream, chunk, bytes_remaining):
-    global start_time, bytes_downloaded_prev, download_button, donation_button
+    global start_time, bytes_downloaded_prev, download_button, donation_button, output_path, download_audio_button
     download_button.configure(state='disabled')  # Disable the download button
+    download_audio_button.configure(state='disabled')  # Disable the download button
     resolutions_button.configure(state='disabled')  # Disable the resolutions button
     total_size = stream.filesize
     bytes_downloaded = total_size - bytes_remaining
@@ -103,10 +106,12 @@ def on_progress(stream, chunk, bytes_remaining):
     donation_button.pack(pady="10p")
     if download_finished:
         download_button.configure(text="Download Complete!", border_color="#00d11c")
+        download_audio_button.configure(text="Download Complete!", border_color="#00d11c")
         # Schedule hiding labels after 3 seconds
         app.after(3000, hide_labels)
     else:
         download_button.configure(text=f"Downloading ... {int(progress_percentage)}%", border_color="yellow")
+        download_audio_button.configure(text=f"Downloading ... {int(progress_percentage)}%", border_color="yellow")
         current_time = time.time()
         time_elapsed = current_time - start_time
         bytes_downloaded_since_last = bytes_downloaded - bytes_downloaded_prev
@@ -119,7 +124,7 @@ def on_progress(stream, chunk, bytes_remaining):
                     download_speed
                 ))
         progress_label.update()
-        status_label.configure(text=f"Saving to local Downloads folder ...")
+        status_label.configure(text=f"Saving to local location ... {output_path}")
 
 # Function to ask for confirmation before closing the window
 def on_close():
@@ -207,6 +212,8 @@ def hide_labels():
     cancel_button.pack_forget()  # Hide the cancel button
     download_button.configure(state='normal')  # Enable the download button
     download_button.configure(text="Download Another Video ?", border_color="#00d11c", command=start_app_again)
+    download_audio_button.configure(state='normal')  # Enable the download button
+    download_audio_button.configure(text="Download Another Song ?", border_color="#00d11c", command=download_audio_only)
     donation_button.pack_forget()  # Hide the donation button
     resolutions_frame.pack_forget()  # Hide the resolutions frame
     entry_url.delete(0, ctk.END)  # Clear the entry URL
@@ -304,6 +311,7 @@ def download_audio_only():
     convert_to_audio_button.pack_forget()  # Hide the convert to audio button
     cancel_button.pack_forget()  # Hide the cancel button
     entry_url.pack(pady=10)  # Show the entry URL
+    download_audio_button.configure(border_color="#00d11c", text="Download", command=download_audio)
     download_audio_button.pack(pady=10)
     start_menu_frame.pack_forget()  # Hide the start menu frame
     want_to_download_button.pack_forget() # Hide the want to download button
