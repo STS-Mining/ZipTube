@@ -63,8 +63,11 @@ def download_audio():
             # Download the file with the modified filename
             audio_stream.download(output_path=save_dir, filename=filename)
             status_label.configure(text=f"File saved as: {filename}")
-        except Exception as e:
-            status_label.configure(text=f"Error ... {e}", text_color="red")
+        except Exception:
+            status_label.configure(
+                text=f"Error, Audio selected doesn't can't be downloaded ...",
+                text_color="red",
+            )
             # Schedule hiding labels after 2 seconds
             app.after(2000, hide_labels)
 
