@@ -1,10 +1,10 @@
 # Author: STS-Mining
-# ZipTube Version 1.18
+# ZipTube Version 1.19
 
 import customtkinter as ctk
 from pytube import YouTube
 import time
-import tkinter.stssimpledialog as stssimpledialog
+import tkinter.simpledialog as simpledialog
 import tkinter.messagebox as messagebox
 import pyperclip
 from PIL import Image
@@ -68,7 +68,7 @@ def download_video(resolutions_var):
         file_path = os.path.join(save_dir, filename_with_resolution)
         if os.path.exists(file_path):
             # Ask the user to enter a new filename
-            new_filename = stssimpledialog.askstring("Rename File", "A file with this name already exists. Please enter a new filename:", initialvalue=filename_with_resolution)
+            new_filename = simpledialog.askstring("Rename File", "A file with this name already exists. Please enter a new filename:", initialvalue=filename_with_resolution)
             if new_filename is None:
                 # User canceled renaming, so stop the download process
                 return
@@ -337,6 +337,7 @@ want_to_convert_to_audio_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Create a label and the entry widget for the video url
 entry_url = ctk.STsEntry(content_frame, placeholder_text=("Paste URL here..."))
+entry_url.pack(pady="10p")
 
 # Create a resolutions frame to hold the resolutions
 resolutions_frame = ctk.CTkFrame(content_frame)
