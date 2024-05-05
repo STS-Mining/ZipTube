@@ -10,10 +10,39 @@ import pyperclip
 from PIL import Image
 import os
 import re
+from tkinter import filedialog
+import moviepy.editor as mp
 
 # Icon and logo location on system
 icon = "ziptube/assets/images/icon.ico"
 logo = "ziptube/assets/images/logo.png"
+
+# Function to download only audio files
+def download_audio():
+    global download_audio_button
+    url = entry_url.get()
+    progress_label.pack(pady="10p")
+    status_label.pack(pady="10p")
+    try:
+        yt = YouTube(url, on_progress_callback=on_progress)
+        audio_stream = yt.streams.filter(only_audio=True).first()
+        # This is the directory where the file will be saved
+        save_dir = os.path.expanduser("~/Downloads")
+        # Get the filename with extension
+        filename = audio_stream.default_filename
+        # Check if the file already exists
+        file_path = os.path.join(save_dir, filename)
+        if os.path.exists(file_path):
+            # Ask the user to enter a new filename
+            new_filename = stssimpledialog.askstring("Rename File", "A file with this name already exists. Please enter a new filename:", initialvalue=filename)
+            if new_filename is None:
+                # User canceled renaming, so stop the download process
+                return
+        # Download the file with the modified filename
+        audio_stream.download(output_path=save_dir, filename=filename)
+        status_label.configure(text=f"File saved as: {filename}")
+    except Exception as e:
+        status_label.configure(text=f"Error ... {e}", text_color="red")
 
 # Function that downloads the video once the download button is pressed
 def download_video(resolutions_var):
@@ -100,6 +129,21 @@ def rename_file(filename_with_resolution):
     rename_file_label.pack(padx="10p", pady="10p")
     rename_file_window.mainloop()
 
+# Function to open window on users pc
+def open_file_dialog():
+    filename = filedialog.askopenfilename(initialdir="/", title="Select Video File",
+                                          filetypes=(("Video files", "*.mp4 *.avi *.mkv"), ("all files", "*.*")))
+    if filename:
+        convert_to_audio(filename)
+
+# Function to convert video to audio
+def convert_to_audio(video_file):
+    audio_file = video_file.replace(".mp4", ".mp3")  # Change extension to mp3
+    video = mp.VideoFileClip(video_file)
+    video.audio.write_audiofile(audio_file)
+    video.close()
+    print("Conversion completed successfully!")
+
 # Function for donation window
 def open_donation_window():
     donation_window = ctk.CTk()
@@ -142,16 +186,18 @@ def open_donation_window():
 # Hide the labels after 3 seconds
 def hide_labels():
     global resolutions_var
+    # resolutions_var.set("")  # Clear the resolutions variable
     status_label.pack_forget()  # Hide the status label
     progress_label.pack_forget()  # Hide the progress label
     resolutions_button.pack_forget()  # Hide the resolutions button
+    cancel_button.pack_forget()  # Hide the cancel button
     download_button.configure(state='normal')  # Enable the download button
     download_button.configure(text="Download Another Video ?", border_color="#00d11c", command=start_app_again)
     donation_button.pack_forget()  # Hide the donation button
     resolutions_frame.pack_forget()  # Hide the resolutions frame
     entry_url.delete(0, ctk.END)  # Clear the entry URL
-    resolutions_var.set("")  # Clear the resolutions variable
     donation_button.pack(pady="10p")  # Show the donation button
+    convert_to_audio_button.pack(pady=10) # Show the convert to audio button
 
 # Function to print all available resolutions for a YouTube video
 def print_available_resolutions(url):
@@ -194,11 +240,15 @@ def load_resolutions():
         # Call print_available_resolutions to print available resolutions
         resolutions_var = print_available_resolutions(url)
         download_button.pack(pady=10)
+        cancel_button.pack(pady=10)
 
 # Function to start a new download
 def start_app_again():
+    global resolutions_var
+    resolutions_var.set("")  # Clear the resolutions variable
     donation_button.pack_forget()  # Hide the donation button
     download_button.pack_forget()  # Hide the download button
+    convert_to_audio_button.pack_forget()  # Hide the convert to audio button
     resolutions_button.configure(state='normal')  # Enable the resolutions button
     resolutions_button.configure(text="Load Resolutions", command=load_resolutions, border_color="#FFCC70")
     resolutions_button.pack(pady=10)  # Show the resolutions button
@@ -213,6 +263,38 @@ def bytes_to_nearest_measurement(bytes):
     else:
         return "{} MB".format(round(megabytes))
 
+# Function to load entry widget for the video url and resolutions button
+def load_entry_and_resolutions_button():
+    global entry_url, resolutions_button, resolutions_frame, download_button, cancel_button, convert_to_audio_button
+    resolutions_button.pack_forget()  # Hide the resolutions button
+    resolutions_frame.pack_forget()  # Hide the resolutions frame
+    entry_url.delete(0, ctk.END)  # Clear the entry URL
+    donation_button.pack_forget()  # Hide the donation button
+    download_button.pack_forget()  # Hide the download button
+    convert_to_audio_button.pack_forget()  # Hide the convert to audio button
+    cancel_button.pack_forget()  # Hide the cancel button
+    entry_url.pack(pady=10)  # Show the entry URL
+    resolutions_button.pack(pady="10p")  # Show the resolutions button
+    start_menu_frame.pack_forget()  # Hide the start menu frame
+    want_to_download_button.pack_forget() # Hide the want to download button
+    want_to_convert_to_audio_button.pack_forget() # Hide the want to convert to audio button
+
+# function to download audio file only
+def download_audio_only():
+    global entry_url, resolutions_button, resolutions_frame, download_button, cancel_button, convert_to_audio_button
+    resolutions_button.pack_forget()  # Hide the resolutions button
+    resolutions_frame.pack_forget()  # Hide the resolutions frame
+    entry_url.delete(0, ctk.END)  # Clear the entry URL
+    donation_button.pack_forget()  # Hide the donation button
+    download_button.pack_forget()  # Hide the download button
+    convert_to_audio_button.pack_forget()  # Hide the convert to audio button
+    cancel_button.pack_forget()  # Hide the cancel button
+    entry_url.pack(pady=10)  # Show the entry URL
+    download_audio_button.pack(pady=10)
+    start_menu_frame.pack_forget()  # Hide the start menu frame
+    want_to_download_button.pack_forget() # Hide the want to download button
+    want_to_convert_to_audio_button.pack_forget() # Hide the want to convert to audio button
+
 # Create a app window
 app = ctk.CTk()
 ctk.set_appearance_mode("dark")
@@ -222,10 +304,12 @@ ctk.set_default_color_theme("custom")
 app.title("ZipTube")
 app.iconbitmap(icon)
 
-# Set min and max width and the height
-app.geometry("620x500")
-app.minsize(620, 500)
-app.maxsize(620, 500)
+# Set min and max width and height
+min_max_height = 550
+min_max_width = 550
+app.geometry(f"{min_max_width}x{min_max_height}")
+app.minsize(min_max_width, min_max_height)
+app.maxsize(min_max_width, min_max_height)
 
 # Create a frame to hold the content
 content_frame = ctk.CTkFrame(app)
@@ -241,9 +325,18 @@ logo_image = ctk.CTkImage(pil_image, size=(250, 60))
 heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
 heading.pack(pady="10p")
 
+# Create new buttons as a start menu
+start_menu_frame = ctk.CTkFrame(content_frame)
+start_menu_frame.pack(padx=10, pady=150)
+want_to_download_button = ctk.CTkButton(start_menu_frame, text="Download Video", command=load_entry_and_resolutions_button, border_color="#00d11c")
+download_audio_button = ctk.CTkButton(start_menu_frame, text="Download Audio", command=download_audio_only, border_color="red")
+want_to_convert_to_audio_button = ctk.CTkButton(start_menu_frame, text="Convert Video 2 Audio", command=open_file_dialog, border_color="#FFCC70")
+want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
+download_audio_button.grid(row=0, column=1, padx=5, pady=5)
+want_to_convert_to_audio_button.grid(row=0, column=2, padx=5, pady=5)
+
 # Create a label and the entry widget for the video url
 entry_url = ctk.STsEntry(content_frame, placeholder_text=("Paste URL here..."))
-entry_url.pack(pady="10p")
 
 # Create a resolutions frame to hold the resolutions
 resolutions_frame = ctk.CTkFrame(content_frame)
@@ -251,12 +344,20 @@ resolutions_frame = ctk.CTkFrame(content_frame)
 # Create a download button
 download_button = ctk.CTkButton(content_frame, border_color="#00d11c", text="Download", command=lambda: download_video(resolutions_var))
 
+# Create a download audio button
+download_audio_button = ctk.CTkButton(content_frame, border_color="#00d11c", text="Download", command=download_audio)
+
 # Create a resolutions button
 resolutions_button = ctk.CTkButton(content_frame, text="Load Resolutions", command=load_resolutions, border_color="#FFCC70")
-resolutions_button.pack(pady="10p")
 
 # Define resolutions_var globally
 resolutions_var = None
+
+# Create a cancel button
+cancel_button = ctk.CTkButton(content_frame, border_color="red", text="Cancel / Clear", command=hide_labels)
+
+# Create and position GUI elements
+convert_to_audio_button = ctk.CTkButton(content_frame, text="Convert Video 2 Audio", command=open_file_dialog, border_color="#FFCC70")
 
 # Create a label and the progress bar to display the download progress
 progress_label = ctk.CTkLabel(content_frame, text="")
