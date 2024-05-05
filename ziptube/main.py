@@ -336,8 +336,7 @@ download_audio_button.grid(row=0, column=1, padx=5, pady=5)
 want_to_convert_to_audio_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Create a label and the entry widget for the video url
-entry_url = ctk.STsEntry(content_frame, placeholder_text=("Paste URL here..."))
-entry_url.pack(pady="10p")
+entry_url = ctk.CTkEntry(content_frame, width=390, placeholder_text=("Paste URL here..."))
 
 # Create a resolutions frame to hold the resolutions
 resolutions_frame = ctk.CTkFrame(content_frame)
