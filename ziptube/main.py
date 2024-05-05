@@ -1,5 +1,6 @@
 # Author: STS-Mining
-# ZipTube Version 1.19
+# Copyright 2024 STS-Mining. All rights reserved.
+# ZipTube Version 1.21
 
 import customtkinter as ctk
 from pytube import YouTube
