@@ -29,11 +29,13 @@ def download_audio():
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
         audio_stream = yt.streams.filter(only_audio=True, abr="128kbps").first()
-        print(audio_stream)
+        print(audio_stream.default_filename)
         # This is the directory where the file will be saved
         save_dir = save_location
         # Get the filename with extension
         filename = audio_stream.default_filename
+        # Rename file to mp3 from mp4
+        filename = filename.replace(".mp4", ".mp3")
         # Check if the file already exists
         file_path = os.path.join(save_dir, filename)
         if os.path.exists(file_path):
@@ -47,6 +49,8 @@ def download_audio():
         status_label.configure(text=f"File saved as: {filename}")
     except Exception as e:
         status_label.configure(text=f"Error ... {e}", text_color="red")
+        # Schedule hiding labels after 2 seconds
+        app.after(2000, hide_labels)
 
 # Function that downloads the video once the download button is pressed
 def download_video(resolutions_var):
@@ -142,11 +146,15 @@ def open_file_dialog():
 
 # Function to convert video to audio
 def convert_to_audio(video_file):
+    global progress_label, status_label
+    progress_label.pack(pady="10p")
+    status_label.pack(pady="10p")
     audio_file = video_file.replace(".mp4", ".mp3")  # Change extension to mp3
     video = mp.VideoFileClip(video_file)
     video.audio.write_audiofile(audio_file)
     video.close()
-    print("Conversion completed successfully!")
+    progress_label.configure(text=f"File saved as: {audio_file}")
+    status_label.configure(text=f"File saved as: {audio_file}")
 
 # Function for donation window
 def open_donation_window():
@@ -310,7 +318,7 @@ app.iconbitmap(icon)
 
 # Set min and max width and height
 min_max_height = 550
-min_max_width = 550
+min_max_width = 650
 app.geometry(f"{min_max_width}x{min_max_height}")
 app.minsize(min_max_width, min_max_height)
 app.maxsize(min_max_width, min_max_height)
