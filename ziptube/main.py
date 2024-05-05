@@ -34,7 +34,7 @@ def download_audio():
         file_path = os.path.join(save_dir, filename)
         if os.path.exists(file_path):
             # Ask the user to enter a new filename
-            new_filename = stssimpledialog.askstring("Rename File", "A file with this name already exists. Please enter a new filename:", initialvalue=filename)
+            new_filename = simpledialog.askstring("Rename File", "A file with this name already exists. Please enter a new filename:", initialvalue=filename)
             if new_filename is None:
                 # User canceled renaming, so stop the download process
                 return
