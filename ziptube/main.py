@@ -13,7 +13,7 @@ import os
 import re
 from tkinter import filedialog
 import moviepy.editor as mp
-from pydub import AudioSegment
+# from convertors.mp3_to_flac import converttoflac
 
 # Icon and logo location on system
 icon = "ziptube/assets/images/icon.ico"
@@ -451,11 +451,19 @@ download_audio_button = ctk.CTkButton(
     start_menu_frame, text="Download Audio", command=download_audio_only
 )
 want_to_convert_to_audio_button = ctk.CTkButton(
-    start_menu_frame, text="Convert Video 2 Audio", command=open_file_dialog
+    start_menu_frame, text="Convert Video to Audio", command=open_file_dialog
+)
+convert_mp3_to_flac_button = ctk.CTkButton(
+    start_menu_frame, text="Convert MP3 to Flac", command=open_file_dialog
+)
+convert_flac_to_mp3_button = ctk.CTkButton(
+    start_menu_frame, text="Convert Flac to MP3", command=open_file_dialog
 )
 want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
 download_audio_button.grid(row=0, column=1, padx=5, pady=5)
-want_to_convert_to_audio_button.grid(row=0, column=2, padx=5, pady=5)
+want_to_convert_to_audio_button.grid(row=2, column=0, padx=5, pady=5)
+convert_mp3_to_flac_button.grid(row=1, column=0, padx=5, pady=5)
+convert_flac_to_mp3_button.grid(row=1, column=1, padx=5, pady=5)
 
 # Create a label and the entry widget for the video url
 entry_url = ctk.CTkEntry(
