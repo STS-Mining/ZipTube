@@ -13,6 +13,7 @@ import os
 import re
 from tkinter import filedialog
 import moviepy.editor as mp
+from pydub import AudioSegment
 
 # Icon and logo location on system
 icon = "ziptube/assets/images/icon.ico"
@@ -211,6 +212,15 @@ def convert_to_audio(video_file):
     progress_label.configure(text=f"File saved as: {audio_file}")
     status_label.configure(text=f"File saved as: {audio_file}")
 
+# def convert_to_audio(mp3_file):
+#     global progress_label, status_label
+#     progress_label.pack(pady="10p")
+#     status_label.pack(pady="10p")
+#     flac_file = mp3_file.replace(".mp3", ".flac")  # Change extension to flac
+#     audio = AudioSegment.from_mp3(mp3_file)
+#     audio.export(flac_file, format="flac")
+#     progress_label.configure(text=f"File saved as: {flac_file}")
+#     status_label.configure(text=f"File saved as: {flac_file}")
 
 # Function for donation window
 def open_donation_window():
