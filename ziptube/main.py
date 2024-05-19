@@ -13,7 +13,10 @@ import os
 import re
 from tkinter import filedialog
 import moviepy.editor as mp
-from convertors import mp3_to_flac
+from convertors import (
+    flac_to_mp3, flac_to_wav, flac_to_wma, mp3_to_flac,
+    mp3_to_wav, mp3_to_wma, wav_to_flac, wav_to_mp3, wav_to_wma
+)
 
 # Icon and logo location on system
 icon = "ziptube/assets/images/icon.ico"
@@ -188,9 +191,8 @@ def rename_file(filename_with_resolution):
     rename_file_label.pack(padx="10p", pady="10p")
     rename_file_window.mainloop()
 
-
-# Function to open window on users pc
-def open_file_dialog():
+# Function convert video to audio
+def convert_video_to_audio():
     filename = filedialog.askopenfilename(
         initialdir="/",
         title="Select Video File",
@@ -199,6 +201,95 @@ def open_file_dialog():
     if filename:
         convert_to_audio(filename)
 
+# Function convert flac to mp3
+def convert_flac_to_mp3():
+    filename = filedialog.askopenfilename(
+        initialdir="/",
+        title="Select Audio File",
+        filetypes=(("Audio files", "*.flac"), ("all files", "*.*")),
+    )
+    if filename:
+        flac_to_mp3(filename)
+
+# Function convert flac to wav
+def convert_flac_to_wav():
+    filename = filedialog.askopenfilename(
+        initialdir="/",
+        title="Select Audio File",
+        filetypes=(("Audio files", "*.flac"), ("all files", "*.*")),
+    )
+    if filename:
+        flac_to_wav(filename)
+
+# Function convert flac to wma
+def convert_flac_to_wma():
+    filename = filedialog.askopenfilename(
+        initialdir="/",
+        title="Select Audio File",
+        filetypes=(("Audio files", "*.flac"), ("all files", "*.*")),
+    )
+    if filename:
+        flac_to_wma(filename)
+
+# Function convert mp3 to flac
+def convert_mp3_to_flac():
+    filename = filedialog.askopenfilename(
+        initialdir="/",
+        title="Select Audio File",
+        filetypes=(("Audio files", "*.mp3"), ("all files", "*.*")),
+    )
+    if filename:
+        mp3_to_flac(filename)
+
+# Function convert mp3 to wav
+def convert_mp3_to_wav():
+    filename = filedialog.askopenfilename(
+        initialdir="/",
+        title="Select Audio File",
+        filetypes=(("Audio files", "*.mp3"), ("all files", "*.*")),
+    )
+    if filename:
+        mp3_to_wav(filename)
+
+# Function convert mp3 to wma
+def convert_mp3_to_wma():
+    filename = filedialog.askopenfilename(
+        initialdir="/",
+        title="Select Audio File",
+        filetypes=(("Audio files", "*.mp3"), ("all files", "*.*")),
+    )
+    if filename:
+        mp3_to_wma(filename)
+
+# Function convert wav to flac
+def convert_wav_to_flac():
+    filename = filedialog.askopenfilename(
+        initialdir="/",
+        title="Select Audio File",
+        filetypes=(("Audio files", "*.wav"), ("all files", "*.*")),
+    )
+    if filename:
+        wav_to_flac(filename)
+
+# Function convert wav to mp3
+def convert_wav_to_mp3():
+    filename = filedialog.askopenfilename(
+        initialdir="/",
+        title="Select Audio File",
+        filetypes=(("Audio files", "*.wav"), ("all files", "*.*")),
+    )
+    if filename:
+        wav_to_mp3(filename)
+
+# Function convert wav to wma
+def convert_wav_to_wma():
+    filename = filedialog.askopenfilename(
+        initialdir="/",
+        title="Select Audio File",
+        filetypes=(("Audio files", "*.wav"), ("all files", "*.*")),
+    )
+    if filename:
+        wav_to_wma(filename)
 
 # Function to convert video to audio
 def convert_to_audio(video_file):
@@ -491,16 +582,16 @@ convertor_frame = ctk.CTkFrame(content_frame)
 # Define all the other buttons
 want_to_download_button = ctk.CTkButton(youtube_menu_frame, text="Download Video", command=load_entry_and_resolutions_button)
 want_to_download_audio_button = ctk.CTkButton(youtube_menu_frame, text="Download Audio", command=download_audio_only)
-want_to_convert_to_audio_button = ctk.CTkButton(convertor_frame, text="Video to Audio", command=open_file_dialog)
-convert_mp3_to_flac_button = ctk.CTkButton(convertor_frame, text="MP3 to FLAC", command=open_file_dialog)
-convert_mp3_to_wav_button = ctk.CTkButton(convertor_frame, text="MP3 to WAV", command=open_file_dialog)
-convert_mp3_to_wma_button = ctk.CTkButton(convertor_frame, text="MP3 to WMA", command=open_file_dialog)
-convert_flac_to_mp3_button = ctk.CTkButton(convertor_frame, text="FLAC to MP3", command=open_file_dialog)
-convert_flac_to_wav_button = ctk.CTkButton(convertor_frame, text="FLAC to WAV", command=open_file_dialog)
-convert_flac_to_wma_button = ctk.CTkButton(convertor_frame, text="FLAC to WMA", command=open_file_dialog)
-convert_wav_to_mp3_button = ctk.CTkButton(convertor_frame, text="WAV to MP3", command=open_file_dialog)
-convert_wav_to_flac_button = ctk.CTkButton(convertor_frame, text="WAV to FLAC", command=open_file_dialog)
-convert_wav_to_wma_button = ctk.CTkButton(convertor_frame, text="WAV to WMA", command=open_file_dialog)
+want_to_convert_to_audio_button = ctk.CTkButton(convertor_frame, text="Video to Audio", command=convert_video_to_audio)
+convert_mp3_to_flac_button = ctk.CTkButton(convertor_frame, text="MP3 to FLAC", command=convert_mp3_to_flac)
+convert_mp3_to_wav_button = ctk.CTkButton(convertor_frame, text="MP3 to WAV", command=convert_mp3_to_wav)
+convert_mp3_to_wma_button = ctk.CTkButton(convertor_frame, text="MP3 to WMA", command=convert_mp3_to_wma)
+convert_flac_to_mp3_button = ctk.CTkButton(convertor_frame, text="FLAC to MP3", command=convert_flac_to_mp3)
+convert_flac_to_wav_button = ctk.CTkButton(convertor_frame, text="FLAC to WAV", command=convert_flac_to_wav)
+convert_flac_to_wma_button = ctk.CTkButton(convertor_frame, text="FLAC to WMA", command=convert_flac_to_wma)
+convert_wav_to_mp3_button = ctk.CTkButton(convertor_frame, text="WAV to MP3", command=convert_wav_to_mp3)
+convert_wav_to_flac_button = ctk.CTkButton(convertor_frame, text="WAV to FLAC", command=convert_wav_to_flac)
+convert_wav_to_wma_button = ctk.CTkButton(convertor_frame, text="WAV to WMA", command=convert_wav_to_wma)
 
 # Create a label and the entry widget for the video url
 entry_url = ctk.CTkEntry(content_frame, width=390, placeholder_text=("Paste URL here..."))
@@ -524,7 +615,7 @@ resolutions_var = None
 cancel_button = ctk.CTkButton(content_frame, text="Cancel / Clear", command=hide_labels)
 
 # Create and position GUI elements
-convert_to_audio_button = ctk.CTkButton(content_frame, text="Convert Video 2 Audio", command=open_file_dialog)
+convert_to_audio_button = ctk.CTkButton(content_frame, text="Convert Video 2 Audio", command=convert_video_to_audio)
 
 # Create a label and the progress bar to display the download progress
 progress_label = ctk.CTkLabel(content_frame, text="")

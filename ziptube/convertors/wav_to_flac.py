@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''This module will
-convert flac files to wav
+convert wav files to flac
 using multiple parallel processes'''
 
 import os
@@ -13,10 +13,10 @@ import time
 import datetime
 
 FFMPEG_PATH = "Path/To/Location/ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
-CONVERT_FROM = "Flac"
-CONVERT_TO = "WAV"
+CONVERT_FROM = "WAV"
+CONVERT_TO = "Flac"
 
-def convert_flac_to_wav(task):
+def convert_wav_to_flac(task):
     '''Start up a new ffmpeg subprocess transcode the given audio file
     and save the newly transcoded file to a directory within the same
     directory of the original audio '''
@@ -40,7 +40,7 @@ def convert_flac_to_wav(task):
                                 "-id3v2_version",
                                 "3",
                                 "-codec:a",
-                                "wav",
+                                "flac",
                                 new_path],
                                stderr=subprocess.DEVNULL,
                                stdout=subprocess.DEVNULL,
@@ -93,7 +93,7 @@ if __name__ == "__main__":
                 pass
             PROCESSES += Folder[1]
         print(f"Converting {len(PROCESSES)} {CONVERT_FROM} files to {CONVERT_TO}")
-        JOBS = p.map(convert_flac_to_wav, PROCESSES)
+        JOBS = p.map(convert_wav_to_flac, PROCESSES)
         FAILED_JOBS = []
         for job in JOBS:
             if job.returncode != 0:

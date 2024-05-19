@@ -13,15 +13,17 @@ import time
 import datetime
 
 FFMPEG_PATH = "Path/To/Location/ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
+CONVERT_FROM = "MP3"
+CONVERT_TO = "WMA"
 
-def converttowma(task):
+def convert_mp3_to_wma(task):
     '''Start up a new ffmpeg subprocess transcode the given audio file
     and save the newly transcoded file to a directory within the same
     directory of the original audio '''
     root_path = task[0]
     filename = task[1]
     full_path = os.path.join(root_path, filename)
-    new_filename = os.path.splitext(filename)[0] + ".wma"
+    new_filename = os.path.splitext(filename)[0] + "." + CONVERT_TO
     new_path = os.path.join(root_path,
                             os.path.basename(root_path) + "-" + FOLDER_NAME,
                             new_filename)
@@ -57,8 +59,8 @@ def converttowma(task):
 
 if __name__ == "__main__":
     FOLDERS = []
-    FOLDER_NAME = "WMAs"
-    AUDIO_FILE_TYPES = ("wav",
+    FOLDER_NAME = f"{CONVERT_TO}s"
+    AUDIO_FILE_TYPES = ("flac",
                         "aac",
                         "aiff",
                         "m4a",
@@ -74,7 +76,7 @@ if __name__ == "__main__":
     for root, dirs, files in os.walk(os.getcwd()):
         source_audio_filenames = []
         for file in files:
-            if file.endswith(".mp3"):
+            if file.endswith(f".{CONVERT_FROM.lower()}"):
                 source_audio_filenames.append((root, file))
         FOLDERS.append((root, source_audio_filenames))
 
@@ -90,14 +92,14 @@ if __name__ == "__main__":
             except FileExistsError:
                 pass
             PROCESSES += Folder[1]
-        print(f"Converting {len(PROCESSES)} MP3 files to WMA")
-        JOBS = p.map(converttowma, PROCESSES)
+        print(f"Converting {len(PROCESSES)} {CONVERT_FROM} files to {CONVERT_TO}")
+        JOBS = p.map(convert_mp3_to_wma, PROCESSES)
         FAILED_JOBS = []
         for job in JOBS:
             if job.returncode != 0:
                 FAILED_JOBS.append(job)
         MESSAGE = (f"Converting Finished! \r {len(PROCESSES)-len(FAILED_JOBS)}/{len(PROCESSES)} "
-                   f"MP3 files converted to WAV in \r{time.time() - STARTTIME:.4f} seconds")
+                   f"{CONVERT_FROM} files converted to {CONVERT_TO} in \r{time.time() - STARTTIME:.4f} seconds")
         try:
             subprocess.run(["notify-send", "--urgency=low", MESSAGE])
         except FileNotFoundError:
