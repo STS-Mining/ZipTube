@@ -192,7 +192,6 @@ def on_progress(stream, chunk, bytes_remaining):
         progress_label.update()
         status_label.configure(text=f"Saving to local location ... {output_path}")
 
-
 ''' Function to ask for confirmation before closing the window '''
 def on_close():
     if messagebox.askokcancel(
@@ -200,7 +199,6 @@ def on_close():
     ):
         ''' Close the app '''
         app.destroy()
-
 
 ''' Function for the window for renaming the file '''
 def rename_file(filename_with_resolution):
@@ -339,7 +337,6 @@ def open_donation_window():
     ''' Start the donation window's main loop '''
     donation_window.mainloop()
 
-
 ''' Hide the labels after 3 seconds '''
 def hide_labels():
     global resolutions_var
@@ -359,7 +356,6 @@ def hide_labels():
     entry_url.delete(0, ctk.END)  # Clear the entry URL
     donation_button.pack(pady="10p")  # Show the donation button
     convert_to_audio_button.pack(pady=10)  # Show the convert to audio button
-
 
 ''' Function to print all available resolutions for a YouTube video '''
 def print_available_resolutions(url):
@@ -397,7 +393,6 @@ def print_available_resolutions(url):
     except Exception as e:
         print(f"Error fetching resolutions for URL {url}: {e}")
 
-
 ''' Function to load the resolutions for a YouTube video '''
 def load_resolutions():
     global resolutions_var
@@ -416,7 +411,6 @@ def load_resolutions():
         download_button.pack(pady=10)
         cancel_button.pack(pady=10)
 
-
 ''' Function to start a new download '''
 def start_app_again():
     global resolutions_var
@@ -431,16 +425,12 @@ def start_app_again():
         text="Download", command=lambda: download_video(resolutions_var)
     )
 
-
 ''' Calculate the nearest measurement for bytes '''
 def bytes_to_nearest_measurement(bytes):
-    megabytes = bytes / (1024 * 1024)
-    gigabytes = bytes / (1024 * 1024 * 1024)
-    if gigabytes >= 1:
-        return "{} GB".format(round(gigabytes))
-    else:
-        return "{} MB".format(round(megabytes))
-
+    for unit in ["Bytes", "KB", "MB", "GB", "TB", "PB"]:
+        if bytes < 1024:
+            return f"{bytes:.2f} {unit}"
+        bytes /= 1024
 
 ''' Function to load entry widget for the video url and resolutions button '''
 def load_entry_and_resolutions_button():
@@ -459,7 +449,6 @@ def load_entry_and_resolutions_button():
     start_menu_frame.pack_forget()  # Hide the start menu frame
     want_to_download_button.pack_forget()  # Hide the want to download button
     want_to_convert_to_audio_button.pack_forget()  # Hide the want to convert to audio button
-
 
 ''' function to download audio file only '''
 def download_audio_only():
