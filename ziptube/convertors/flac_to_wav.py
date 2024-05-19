@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-'''convert a range of different audio files to mp3 files
+'''convert flac files to wav
 using multiple parallel processes'''
 
 import os
