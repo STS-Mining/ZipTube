@@ -1,11 +1,19 @@
 ''' 
 Author: STS-Mining
-ZipTube Version 1.22
+ZipTube Version 1.23
 Download YouTube videos, audio and convert videos to audio
 
 +------------------+-------------------------------------------------+
 | Version          | Description                                     |
 +==================+=================================================+
+| Version 1.23     | Download Youtube Videos, download only audio    |
+|                  | from videos on youtube also.                    |
+|                  | Convert audio files from mp4 (video) to mp3     |
+|                  | Convert audio files from mp3 to wav, flac & wma |
+|                  | Convert audio files from wav to flac, mp3 & wma |
+|                  | Convert audio files from flac to mp3, wav & wma |
+|                  | Convert audio files from wma to mp3, wav & flac |
++------------------+-------------------------------------------------+
 | Version 1.22     | Download Youtube Videos, download only audio    |
 |                  | from videos on youtube also.                    |
 |                  | Convert audio files from mp4 (video) to mp3     |
@@ -32,7 +40,8 @@ from tkinter import filedialog
 import moviepy.editor as mp
 from convertors import (
     flac_to_mp3, flac_to_wav, flac_to_wma, mp3_to_flac,
-    mp3_to_wav, mp3_to_wma, wav_to_flac, wav_to_mp3, wav_to_wma
+    mp3_to_wav, mp3_to_wma, wav_to_flac, wav_to_mp3,
+    wav_to_wma, wma_to_flac, wma_to_mp3, wma_to_wav
 )
 
 ''' Icon and logo location on system '''
@@ -219,95 +228,53 @@ def convert_video_to_audio():
     if filename:
         convert_to_audio(filename)
 
-''' Function convert flac to mp3 '''
+''' Generic Function that runs all the 
+audio convertors with same information '''
+def convert_audio_file(filetypes, conversion_function):
+    filename = filedialog.askopenfilename(
+        initialdir="/",
+        title="Select Audio File",
+        filetypes=filetypes
+    )
+    if filename:
+        conversion_function(filename)
+
+''' Conversion functions using the generic function '''
 def convert_flac_to_mp3():
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Audio File",
-        filetypes=(("Audio files", "*.flac"), ("all files", "*.*")),
-    )
-    if filename:
-        flac_to_mp3(filename)
+    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_mp3)
 
-''' Function convert flac to wav '''
 def convert_flac_to_wav():
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Audio File",
-        filetypes=(("Audio files", "*.flac"), ("all files", "*.*")),
-    )
-    if filename:
-        flac_to_wav(filename)
+    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_wav)
 
-''' Function convert flac to wma '''
 def convert_flac_to_wma():
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Audio File",
-        filetypes=(("Audio files", "*.flac"), ("all files", "*.*")),
-    )
-    if filename:
-        flac_to_wma(filename)
+    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_wma)
 
-''' Function convert mp3 to flac '''
 def convert_mp3_to_flac():
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Audio File",
-        filetypes=(("Audio files", "*.mp3"), ("all files", "*.*")),
-    )
-    if filename:
-        mp3_to_flac(filename)
+    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_flac)
 
-''' Function convert mp3 to wav '''
 def convert_mp3_to_wav():
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Audio File",
-        filetypes=(("Audio files", "*.mp3"), ("all files", "*.*")),
-    )
-    if filename:
-        mp3_to_wav(filename)
+    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_wav)
 
-''' Function convert mp3 to wma '''
 def convert_mp3_to_wma():
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Audio File",
-        filetypes=(("Audio files", "*.mp3"), ("all files", "*.*")),
-    )
-    if filename:
-        mp3_to_wma(filename)
+    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_wma)
 
-''' Function convert wav to flac '''
 def convert_wav_to_flac():
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Audio File",
-        filetypes=(("Audio files", "*.wav"), ("all files", "*.*")),
-    )
-    if filename:
-        wav_to_flac(filename)
+    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_flac)
 
-''' Function convert wav to mp3 '''
 def convert_wav_to_mp3():
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Audio File",
-        filetypes=(("Audio files", "*.wav"), ("all files", "*.*")),
-    )
-    if filename:
-        wav_to_mp3(filename)
+    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_mp3)
 
-''' Function convert wav to wma '''
 def convert_wav_to_wma():
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Audio File",
-        filetypes=(("Audio files", "*.wav"), ("all files", "*.*")),
-    )
-    if filename:
-        wav_to_wma(filename)
+    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_wma)
+
+def convert_wma_to_flac():
+    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_flac)
+
+def convert_wma_to_mp3():
+    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_mp3)
+
+def convert_wma_to_wav():
+    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_wav)
 
 ''' Function to convert video to audio '''
 def convert_to_audio(video_file):
@@ -514,7 +481,7 @@ def download_audio_only():
 
 def show_converters():
     hide_all_buttons()
-    convertor_frame.pack(padx=10, pady=100)
+    convertor_frame.pack(padx=10, pady=90)
     want_to_convert_to_audio_button.grid(row=0, column=1, padx=5, pady=5)
     convert_mp3_to_flac_button.grid(row=1, column=0, padx=5, pady=5)
     convert_mp3_to_wav_button.grid(row=1, column=1, padx=5, pady=5)
@@ -525,6 +492,9 @@ def show_converters():
     convert_wav_to_mp3_button.grid(row=3, column=0, padx=5, pady=5)
     convert_wav_to_flac_button.grid(row=3, column=1, padx=5, pady=5)
     convert_wav_to_wma_button.grid(row=3, column=2, padx=5, pady=5)
+    convert_wma_to_mp3_button.grid(row=4, column=0, padx=5, pady=5)
+    convert_wma_to_flac_button.grid(row=4, column=1, padx=5, pady=5)
+    convert_wma_to_wav_button.grid(row=4, column=2, padx=5, pady=5)
 
 def show_youtube_downloader():
     hide_all_buttons()
@@ -624,6 +594,9 @@ convert_flac_to_wma_button = ctk.CTkButton(convertor_frame, text="FLAC to WMA", 
 convert_wav_to_mp3_button = ctk.CTkButton(convertor_frame, text="WAV to MP3", command=convert_wav_to_mp3, **convertor_button_config)
 convert_wav_to_flac_button = ctk.CTkButton(convertor_frame, text="WAV to FLAC", command=convert_wav_to_flac, **convertor_button_config)
 convert_wav_to_wma_button = ctk.CTkButton(convertor_frame, text="WAV to WMA", command=convert_wav_to_wma, **convertor_button_config)
+convert_wma_to_mp3_button = ctk.CTkButton(convertor_frame, text="WMA to MP3", command=convert_wma_to_mp3, **convertor_button_config)
+convert_wma_to_flac_button = ctk.CTkButton(convertor_frame, text="WMA to FLAC", command=convert_wma_to_flac, **convertor_button_config)
+convert_wma_to_wav_button = ctk.CTkButton(convertor_frame, text="WMA to WAV", command=convert_wma_to_wav, **convertor_button_config)
 
 ''' Create a label and the entry widget for the video url '''
 entry_url = ctk.CTkEntry(content_frame, width=390, placeholder_text=("Paste URL here..."))
