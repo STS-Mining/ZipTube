@@ -1,6 +1,23 @@
 # Author: STS-Mining
-# ZipTube Version 1.21
+# ZipTube Version 1.22
 # Download YouTube videos, audio and convert videos to audio
+
+'''
++------------------+-------------------------------------------------+
+| Version          | Description                                     |
++==================+=================================================+
+| Version 1.22     | Download Youtube Videos, download only audio    |
+|                  | from videos on youtube also.                    |
+|                  | Convert audio files from mp4 (video) to mp3     |
+|                  | Convert audio files from mp3 to wav, flac & wma |
+|                  | Convert audio files from wav to flac, mp3 & wma |
+|                  | Convert audio files from flac to mp3, wav & wma |
++------------------+-------------------------------------------------+
+| Version 1.21     | Download Youtube Videos, download only audio    |
+|                  | from videos on youtube also.                    |
+|                  | Convert audio files from mp4 (video) to mp3     |
++------------------+-------------------------------------------------+
+'''
 
 import customtkinter as ctk
 from pytube import YouTube
@@ -496,7 +513,7 @@ def download_audio_only():
 
 def show_converters():
     hide_all_buttons()
-    convertor_frame.pack(padx=10, pady=110)
+    convertor_frame.pack(padx=10, pady=100)
     want_to_convert_to_audio_button.grid(row=0, column=1, padx=5, pady=5)
     convert_mp3_to_flac_button.grid(row=1, column=0, padx=5, pady=5)
     convert_mp3_to_wav_button.grid(row=1, column=1, padx=5, pady=5)
@@ -556,11 +573,13 @@ start_font = ctk.CTkFont(family="calibri", size=19, weight="normal")
 start_menu_color = "green"
 start_menu_height = 60
 start_menu_width = 180
+start_corner_radius = 33
 start_button_config = {
     'font': start_font,
     'height': start_menu_height,
     'width': start_menu_width,
-    'border_color': start_menu_color
+    'border_color': start_menu_color,
+    'corner_radius': start_corner_radius
 }
 
 # Buttons for opening the sub-menus
@@ -576,15 +595,17 @@ youtube_menu_frame = ctk.CTkFrame(content_frame)
 convertor_frame = ctk.CTkFrame(content_frame)
 
 # Custom definitions for convertor menu
-convertor_font = ctk.CTkFont(family="Calibri", size=12, weight="normal")
+convertor_font = ctk.CTkFont(family="Calibri", size=14, weight="normal")
 convertor_menu_color = "green"
-convertor_menu_height = 33
-convertor_menu_width = 100
+convertor_menu_height = 40
+convertor_menu_width = 120
+convertor_corner_radius = 33
 convertor_button_config = {
     'font': convertor_font,
     'height': convertor_menu_height,
     'width': convertor_menu_width,
-    'border_color': convertor_menu_color
+    'border_color': convertor_menu_color,
+    'corner_radius': convertor_corner_radius
 }
 
 # Define all the other buttons for YouTube menu
