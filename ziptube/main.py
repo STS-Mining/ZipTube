@@ -379,6 +379,7 @@ def bytes_to_nearest_measurement(bytes):
 # Function to load entry widget for the video url and resolutions button
 def load_entry_and_resolutions_button():
     global entry_url, resolutions_button, resolutions_frame, download_button, cancel_button, convert_to_audio_button
+    youtube_menu_frame.pack_forget()
     resolutions_button.pack_forget()  # Hide the resolutions button
     resolutions_frame.pack_forget()  # Hide the resolutions frame
     entry_url.delete(0, ctk.END)  # Clear the entry URL
@@ -386,6 +387,7 @@ def load_entry_and_resolutions_button():
     download_button.pack_forget()  # Hide the download button
     convert_to_audio_button.pack_forget()  # Hide the convert to audio button
     cancel_button.pack_forget()  # Hide the cancel button
+    want_to_download_audio_button.pack_forget()
     entry_url.pack(pady=10)  # Show the entry URL
     resolutions_button.pack(pady="10p")  # Show the resolutions button
     start_menu_frame.pack_forget()  # Hide the start menu frame
@@ -396,6 +398,7 @@ def load_entry_and_resolutions_button():
 # function to download audio file only
 def download_audio_only():
     global entry_url, resolutions_button, resolutions_frame, download_button, cancel_button, convert_to_audio_button
+    youtube_menu_frame.pack_forget()
     resolutions_button.pack_forget()  # Hide the resolutions button
     resolutions_frame.pack_forget()  # Hide the resolutions frame
     entry_url.delete(0, ctk.END)  # Clear the entry URL
@@ -408,8 +411,24 @@ def download_audio_only():
     download_audio_button.pack(pady=10)
     start_menu_frame.pack_forget()  # Hide the start menu frame
     want_to_download_button.pack_forget()  # Hide the want to download button
+
     want_to_convert_to_audio_button.pack_forget()  # Hide the want to convert to audio button
 
+def show_converters():
+    hide_all_buttons()
+    convertor_frame.pack(padx=10, pady=130)
+    want_to_convert_to_audio_button.grid(row=0, column=0, padx=5, pady=5)
+    convert_mp3_to_flac_button.grid(row=0, column=1, padx=5, pady=5)
+    convert_flac_to_mp3_button.grid(row=0, column=2, padx=5, pady=5)
+
+def show_youtube_downloader():
+    hide_all_buttons()
+    youtube_menu_frame.pack(padx=10, pady=130)
+    want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
+    want_to_download_audio_button.grid(row=0, column=1, padx=5, pady=5)
+
+def hide_all_buttons():
+    start_menu_frame.pack_forget()
 
 # Create a app window
 app = ctk.CTk()
@@ -441,52 +460,43 @@ logo_image = ctk.CTkImage(pil_image, size=(250, 60))
 heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
 heading.pack(pady="10p")
 
-# Create new buttons as a start menu
+# Initialize the main frame
 start_menu_frame = ctk.CTkFrame(content_frame)
-start_menu_frame.pack(padx=10, pady=150)
-want_to_download_button = ctk.CTkButton(
-    start_menu_frame, text="Download Video", command=load_entry_and_resolutions_button
-)
-download_audio_button = ctk.CTkButton(
-    start_menu_frame, text="Download Audio", command=download_audio_only
-)
-want_to_convert_to_audio_button = ctk.CTkButton(
-    start_menu_frame, text="Convert Video to Audio", command=open_file_dialog
-)
-convert_mp3_to_flac_button = ctk.CTkButton(
-    start_menu_frame, text="Convert MP3 to Flac", command=open_file_dialog
-)
-convert_flac_to_mp3_button = ctk.CTkButton(
-    start_menu_frame, text="Convert Flac to MP3", command=open_file_dialog
-)
-want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
-download_audio_button.grid(row=0, column=1, padx=5, pady=5)
-want_to_convert_to_audio_button.grid(row=2, column=0, padx=5, pady=5)
-convert_mp3_to_flac_button.grid(row=1, column=0, padx=5, pady=5)
-convert_flac_to_mp3_button.grid(row=1, column=1, padx=5, pady=5)
+start_menu_frame.pack(padx=10, pady=130)
+
+# Buttons for opening the sub-menus
+converters_button = ctk.CTkButton(start_menu_frame, text="Converters", command=show_converters)
+youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="YouTube Downloader", command=show_youtube_downloader)
+youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
+converters_button.grid(row=0, column=1, padx=5, pady=5)
+
+# Youtube menu frame
+youtube_menu_frame = ctk.CTkFrame(content_frame)
+
+# Convertor Frame
+convertor_frame = ctk.CTkFrame(content_frame)
+
+# Define all the other buttons
+want_to_download_button = ctk.CTkButton(youtube_menu_frame, text="Download Video", command=load_entry_and_resolutions_button)
+want_to_download_audio_button = ctk.CTkButton(youtube_menu_frame, text="Download Audio", command=download_audio_only)
+want_to_convert_to_audio_button = ctk.CTkButton(convertor_frame, text="Convert Video to Audio", command=open_file_dialog)
+convert_mp3_to_flac_button = ctk.CTkButton(convertor_frame, text="Convert MP3 to Flac", command=open_file_dialog)
+convert_flac_to_mp3_button = ctk.CTkButton(convertor_frame, text="Convert Flac to MP3", command=open_file_dialog)
 
 # Create a label and the entry widget for the video url
-entry_url = ctk.CTkEntry(
-    content_frame, width=390, placeholder_text=("Paste URL here...")
-)
+entry_url = ctk.CTkEntry(content_frame, width=390, placeholder_text=("Paste URL here..."))
 
 # Create a resolutions frame to hold the resolutions
 resolutions_frame = ctk.CTkFrame(content_frame)
 
 # Create a download button
-download_button = ctk.CTkButton(
-    content_frame, text="Download", command=lambda: download_video(resolutions_var)
-)
+download_button = ctk.CTkButton(content_frame, text="Download", command=lambda: download_video(resolutions_var))
 
 # Create a download audio button
-download_audio_button = ctk.CTkButton(
-    content_frame, text="Download", command=download_audio
-)
+download_audio_button = ctk.CTkButton(content_frame, text="Download", command=download_audio)
 
 # Create a resolutions button
-resolutions_button = ctk.CTkButton(
-    content_frame, text="Load Resolutions", command=load_resolutions
-)
+resolutions_button = ctk.CTkButton(content_frame, text="Load Resolutions", command=load_resolutions)
 
 # Define resolutions_var globally
 resolutions_var = None
@@ -495,9 +505,7 @@ resolutions_var = None
 cancel_button = ctk.CTkButton(content_frame, text="Cancel / Clear", command=hide_labels)
 
 # Create and position GUI elements
-convert_to_audio_button = ctk.CTkButton(
-    content_frame, text="Convert Video 2 Audio", command=open_file_dialog
-)
+convert_to_audio_button = ctk.CTkButton(content_frame, text="Convert Video 2 Audio", command=open_file_dialog)
 
 # Create a label and the progress bar to display the download progress
 progress_label = ctk.CTkLabel(content_frame, text="")
