@@ -411,15 +411,21 @@ def download_audio_only():
     download_audio_button.pack(pady=10)
     start_menu_frame.pack_forget()  # Hide the start menu frame
     want_to_download_button.pack_forget()  # Hide the want to download button
-
     want_to_convert_to_audio_button.pack_forget()  # Hide the want to convert to audio button
 
 def show_converters():
     hide_all_buttons()
-    convertor_frame.pack(padx=10, pady=130)
-    want_to_convert_to_audio_button.grid(row=0, column=0, padx=5, pady=5)
-    convert_mp3_to_flac_button.grid(row=0, column=1, padx=5, pady=5)
-    convert_flac_to_mp3_button.grid(row=0, column=2, padx=5, pady=5)
+    convertor_frame.pack(padx=10, pady=110)
+    want_to_convert_to_audio_button.grid(row=0, column=1, padx=5, pady=5)
+    convert_mp3_to_flac_button.grid(row=1, column=0, padx=5, pady=5)
+    convert_mp3_to_wav_button.grid(row=1, column=1, padx=5, pady=5)
+    convert_mp3_to_wma_button.grid(row=1, column=2, padx=5, pady=5)
+    convert_flac_to_mp3_button.grid(row=2, column=0, padx=5, pady=5)
+    convert_flac_to_wav_button.grid(row=2, column=1, padx=5, pady=5)
+    convert_flac_to_wma_button.grid(row=2, column=2, padx=5, pady=5)
+    convert_wav_to_mp3_button.grid(row=3, column=0, padx=5, pady=5)
+    convert_wav_to_flac_button.grid(row=3, column=1, padx=5, pady=5)
+    convert_wav_to_wma_button.grid(row=3, column=2, padx=5, pady=5)
 
 def show_youtube_downloader():
     hide_all_buttons()
@@ -464,9 +470,15 @@ heading.pack(pady="10p")
 start_menu_frame = ctk.CTkFrame(content_frame)
 start_menu_frame.pack(padx=10, pady=130)
 
+# Custom definitions for start menu only
+custom_font = ctk.CTkFont(family="calibri", size=19, weight="normal")
+start_menu_color = "orange"
+start_menu_height = 75
+start_menu_width = 200
+
 # Buttons for opening the sub-menus
-converters_button = ctk.CTkButton(start_menu_frame, text="Converters", command=show_converters)
-youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="YouTube Downloader", command=show_youtube_downloader)
+converters_button = ctk.CTkButton(start_menu_frame, font=custom_font, height=start_menu_height, width=start_menu_width, border_color=start_menu_color, text="Converters", command=show_converters)
+youtube_downloader_button = ctk.CTkButton(start_menu_frame, font=custom_font, height=start_menu_height, width=start_menu_width, border_color=start_menu_color, text="YouTube\nDownloader", command=show_youtube_downloader)
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
 
@@ -479,9 +491,16 @@ convertor_frame = ctk.CTkFrame(content_frame)
 # Define all the other buttons
 want_to_download_button = ctk.CTkButton(youtube_menu_frame, text="Download Video", command=load_entry_and_resolutions_button)
 want_to_download_audio_button = ctk.CTkButton(youtube_menu_frame, text="Download Audio", command=download_audio_only)
-want_to_convert_to_audio_button = ctk.CTkButton(convertor_frame, text="Convert Video to Audio", command=open_file_dialog)
-convert_mp3_to_flac_button = ctk.CTkButton(convertor_frame, text="Convert MP3 to Flac", command=open_file_dialog)
-convert_flac_to_mp3_button = ctk.CTkButton(convertor_frame, text="Convert Flac to MP3", command=open_file_dialog)
+want_to_convert_to_audio_button = ctk.CTkButton(convertor_frame, text="Video to Audio", command=open_file_dialog)
+convert_mp3_to_flac_button = ctk.CTkButton(convertor_frame, text="MP3 to FLAC", command=open_file_dialog)
+convert_mp3_to_wav_button = ctk.CTkButton(convertor_frame, text="MP3 to WAV", command=open_file_dialog)
+convert_mp3_to_wma_button = ctk.CTkButton(convertor_frame, text="MP3 to WMA", command=open_file_dialog)
+convert_flac_to_mp3_button = ctk.CTkButton(convertor_frame, text="FLAC to MP3", command=open_file_dialog)
+convert_flac_to_wav_button = ctk.CTkButton(convertor_frame, text="FLAC to WAV", command=open_file_dialog)
+convert_flac_to_wma_button = ctk.CTkButton(convertor_frame, text="FLAC to WMA", command=open_file_dialog)
+convert_wav_to_mp3_button = ctk.CTkButton(convertor_frame, text="WAV to MP3", command=open_file_dialog)
+convert_wav_to_flac_button = ctk.CTkButton(convertor_frame, text="WAV to FLAC", command=open_file_dialog)
+convert_wav_to_wma_button = ctk.CTkButton(convertor_frame, text="WAV to WMA", command=open_file_dialog)
 
 # Create a label and the entry widget for the video url
 entry_url = ctk.CTkEntry(content_frame, width=390, placeholder_text=("Paste URL here..."))
