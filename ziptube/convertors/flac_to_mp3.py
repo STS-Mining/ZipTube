@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-'''convert flac files to mp3
+'''This module will
+convert flac files to mp3
 using multiple parallel processes'''
 
 import os

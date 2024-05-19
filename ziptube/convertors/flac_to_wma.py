@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-'''convert flac files to wma
+'''This module will
+convert flac files to wma
 using multiple parallel processes'''
 
 import os

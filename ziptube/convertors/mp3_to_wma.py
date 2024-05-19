@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-'''convert mp3 files to wma
+'''This module will
+convert mp3 files to wma
 using multiple parallel processes'''
 
 import os

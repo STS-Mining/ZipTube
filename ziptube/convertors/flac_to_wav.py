@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-'''convert flac files to wav
+'''This module will
+convert flac files to wav
 using multiple parallel processes'''
 
 import os
