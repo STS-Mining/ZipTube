@@ -139,6 +139,8 @@ def download_video(resolutions_var):
         ''' Download the file with the modified filename '''
         stream.download(output_path=save_dir, filename=filename_with_resolution)
         status_label.configure(text=f"File saved as: {filename_with_resolution}")
+        back_to_menu_frame.pack(side='bottom')
+        back_to_menu_button.pack(pady=5)
     except Exception:
         status_label.configure(
             text=f"Error, resolution selected doesn't exist for video ...",
@@ -146,7 +148,6 @@ def download_video(resolutions_var):
         )
         ''' Schedule hiding labels after 2 seconds '''
         app.after(2000, hide_labels)
-
 
 ''' Function while the download is in progress '''
 def on_progress(stream, chunk, bytes_remaining):
@@ -159,6 +160,8 @@ def on_progress(stream, chunk, bytes_remaining):
     progress_percentage = (bytes_downloaded / total_size) * 100
     download_finished = bytes_downloaded == total_size
     donation_button.pack(pady="10p")
+    back_to_menu_frame.pack(side='bottom')
+    back_to_menu_button.pack(pady=5)
     if download_finished:
         download_button.configure(text="Download Complete!", border_color="#00d11c")
         download_audio_button.configure(
@@ -191,6 +194,8 @@ def on_progress(stream, chunk, bytes_remaining):
         )
         progress_label.update()
         status_label.configure(text=f"Saving to local location ... {output_path}")
+        back_to_menu_frame.pack(side='bottom')
+        back_to_menu_button.pack(pady=5)
 
 ''' Function to ask for confirmation before closing the window '''
 def on_close():
@@ -285,6 +290,8 @@ def convert_to_audio(video_file):
     video.close()
     progress_label.configure(text=f"File saved as: {audio_file}")
     status_label.configure(text=f"File saved as: {audio_file}")
+    back_to_menu_frame.pack(side='bottom')
+    back_to_menu_button.pack(pady=5)
 
 ''' Function for donation window '''
 def open_donation_window():
@@ -344,7 +351,6 @@ def hide_labels():
     status_label.pack_forget()  # Hide the status label
     progress_label.pack_forget()  # Hide the progress label
     resolutions_button.pack_forget()  # Hide the resolutions button
-    cancel_button.pack_forget()  # Hide the cancel button
     download_button.configure(state="normal")  # Enable the download button
     download_button.configure(text="Download Another Video", command=start_app_again)
     download_audio_button.configure(state="normal")  # Enable the download button
@@ -356,6 +362,8 @@ def hide_labels():
     entry_url.delete(0, ctk.END)  # Clear the entry URL
     donation_button.pack(pady="10p")  # Show the donation button
     convert_to_audio_button.pack(pady=10)  # Show the convert to audio button
+    back_to_menu_frame.pack(side='bottom')
+    back_to_menu_button.pack(pady=5)
 
 ''' Function to print all available resolutions for a YouTube video '''
 def print_available_resolutions(url):
@@ -388,6 +396,8 @@ def print_available_resolutions(url):
                 height=2,
             )
             button.grid(row=0, column=i, padx=5, pady=5)
+            back_to_menu_frame.pack(side='bottom')
+            back_to_menu_button.pack(pady=5)
 
         return resolutions_var
     except Exception as e:
@@ -409,7 +419,8 @@ def load_resolutions():
         ''' Call print_available_resolutions to print available resolutions '''
         resolutions_var = print_available_resolutions(url)
         download_button.pack(pady=10)
-        cancel_button.pack(pady=10)
+        back_to_menu_frame.pack(side='bottom')
+        back_to_menu_button.pack(pady=5)
 
 ''' Function to start a new download '''
 def start_app_again():
@@ -424,6 +435,8 @@ def start_app_again():
     download_button.configure(
         text="Download", command=lambda: download_video(resolutions_var)
     )
+    back_to_menu_frame.pack(side='bottom')
+    back_to_menu_button.pack(pady=5)
 
 ''' Calculate the nearest measurement for bytes '''
 def bytes_to_nearest_measurement(bytes):
@@ -434,7 +447,7 @@ def bytes_to_nearest_measurement(bytes):
 
 ''' Function to load entry widget for the video url and resolutions button '''
 def load_entry_and_resolutions_button():
-    global entry_url, resolutions_button, resolutions_frame, download_button, cancel_button, convert_to_audio_button
+    global entry_url, resolutions_button, resolutions_frame, download_button, convert_to_audio_button
     youtube_menu_frame.pack_forget()
     resolutions_button.pack_forget()  # Hide the resolutions button
     resolutions_frame.pack_forget()  # Hide the resolutions frame
@@ -442,17 +455,18 @@ def load_entry_and_resolutions_button():
     donation_button.pack_forget()  # Hide the donation button
     download_button.pack_forget()  # Hide the download button
     convert_to_audio_button.pack_forget()  # Hide the convert to audio button
-    cancel_button.pack_forget()  # Hide the cancel button
     want_to_download_audio_button.pack_forget()
     entry_url.pack(pady=10)  # Show the entry URL
     resolutions_button.pack(pady="10p")  # Show the resolutions button
     start_menu_frame.pack_forget()  # Hide the start menu frame
     want_to_download_button.pack_forget()  # Hide the want to download button
     want_to_convert_to_audio_button.pack_forget()  # Hide the want to convert to audio button
+    back_to_menu_frame.pack(side='bottom')
+    back_to_menu_button.pack(pady=5)
 
 ''' function to download audio file only '''
 def download_audio_only():
-    global entry_url, resolutions_button, resolutions_frame, download_button, cancel_button, convert_to_audio_button
+    global entry_url, resolutions_button, resolutions_frame, download_button, convert_to_audio_button
     youtube_menu_frame.pack_forget()
     resolutions_button.pack_forget()  # Hide the resolutions button
     resolutions_frame.pack_forget()  # Hide the resolutions frame
@@ -460,13 +474,14 @@ def download_audio_only():
     donation_button.pack_forget()  # Hide the donation button
     download_button.pack_forget()  # Hide the download button
     convert_to_audio_button.pack_forget()  # Hide the convert to audio button
-    cancel_button.pack_forget()  # Hide the cancel button
     entry_url.pack(pady=10)  # Show the entry URL
     download_audio_button.configure(text="Download", command=download_audio)
     download_audio_button.pack(pady=10)
     start_menu_frame.pack_forget()  # Hide the start menu frame
     want_to_download_button.pack_forget()  # Hide the want to download button
     want_to_convert_to_audio_button.pack_forget()  # Hide the want to convert to audio button
+    back_to_menu_frame.pack(side='bottom')
+    back_to_menu_button.pack(pady=5)
 
 def show_converters():
     hide_all_buttons()
@@ -484,15 +499,37 @@ def show_converters():
     convert_wma_to_mp3_button.grid(row=4, column=0, padx=5, pady=5)
     convert_wma_to_flac_button.grid(row=4, column=1, padx=5, pady=5)
     convert_wma_to_wav_button.grid(row=4, column=2, padx=5, pady=5)
+    back_to_menu_frame.pack(side='bottom')
+    back_to_menu_button.pack(pady=5)
 
 def show_youtube_downloader():
     hide_all_buttons()
     youtube_menu_frame.pack(padx=10, pady=130)
     want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
     want_to_download_audio_button.grid(row=0, column=1, padx=5, pady=5)
+    back_to_menu_frame.pack(side='bottom')
+    back_to_menu_button.pack(pady=5)
 
 def hide_all_buttons():
     start_menu_frame.pack_forget()
+
+def back_to_main_menu():
+    hide_all_buttons()
+    back_to_menu_frame.pack_forget()
+    convertor_frame.pack_forget()
+    youtube_menu_frame.pack_forget()
+    resolutions_button.pack_forget()
+    resolutions_frame.pack_forget()
+    entry_url.delete(0, ctk.END)
+    entry_url.pack_forget()
+    donation_button.pack_forget()
+    download_button.pack_forget()
+    convert_to_audio_button.pack_forget()
+    want_to_download_audio_button.pack_forget()
+    want_to_download_button.pack_forget()
+    want_to_convert_to_audio_button.pack_forget()
+    download_audio_button.pack_forget()
+    start_menu_frame.pack(padx=10, pady=130)
 
 ''' Create a app window '''
 app = ctk.CTk()
@@ -557,8 +594,8 @@ convertor_frame = ctk.CTkFrame(content_frame)
 ''' Custom definitions for convertor menu '''
 convertor_font = ctk.CTkFont(family="Calibri", size=14, weight="normal")
 convertor_menu_color = "green"
-convertor_menu_height = 40
-convertor_menu_width = 120
+convertor_menu_height = 30
+convertor_menu_width = 90
 convertor_corner_radius = 33
 convertor_button_config = {
     'font': convertor_font,
@@ -587,6 +624,24 @@ convert_wma_to_mp3_button = ctk.CTkButton(convertor_frame, text="WMA to MP3", co
 convert_wma_to_flac_button = ctk.CTkButton(convertor_frame, text="WMA to FLAC", command=convert_wma_to_flac, **convertor_button_config)
 convert_wma_to_wav_button = ctk.CTkButton(convertor_frame, text="WMA to WAV", command=convert_wma_to_wav, **convertor_button_config)
 
+''' Custom definitions for main menu button only '''
+main_menu_font = ctk.CTkFont(family="calibri", size=15, weight="normal")
+main_menu_color = "blue"
+main_menu_height = 40
+main_menu_width = 120
+main_corner_radius = 33
+main_button_config = {
+    'font': main_menu_font,
+    'height': main_menu_height,
+    'width': main_menu_width,
+    'border_color': main_menu_color,
+    'corner_radius': main_corner_radius
+}
+
+''' Create a button to always to user back to the main menu '''
+back_to_menu_frame = ctk.CTkFrame(content_frame)
+back_to_menu_button = ctk.CTkButton(back_to_menu_frame, text="Main Menu", command=back_to_main_menu, **main_button_config)
+
 ''' Create a label and the entry widget for the video url '''
 entry_url = ctk.CTkEntry(content_frame, width=390, placeholder_text=("Paste URL here..."))
 
@@ -604,9 +659,6 @@ resolutions_button = ctk.CTkButton(content_frame, text="Load Resolutions", comma
 
 ''' Define resolutions_var globally '''
 resolutions_var = None
-
-''' Create a cancel button '''
-cancel_button = ctk.CTkButton(content_frame, text="Cancel / Clear", command=hide_labels)
 
 ''' Create and position GUI elements '''
 convert_to_audio_button = ctk.CTkButton(content_frame, text="Convert Video 2 Audio", command=convert_video_to_audio)
