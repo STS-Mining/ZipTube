@@ -1,11 +1,21 @@
 ''' 
 Author: STS-Mining
-ZipTube Version 1.23
+ZipTube Version 1.24
 Download YouTube videos, audio and convert videos to audio
 
 +------------------+-------------------------------------------------+
 | Version          | Description                                     |
 +==================+=================================================+
+| Version 1.24     | Download Youtube Videos, download only audio    |
+|                  | from videos on youtube also.                    |
+|                  | Convert audio files from mp4 (video) to mp3     |
+|                  | Convert audio files from mp3 to wav, flac & wma |
+|                  | Convert audio files from wav to flac, mp3 & wma |
+|                  | Convert audio files from flac to mp3, wav & wma |
+|                  | Convert audio files from wma to mp3, wav & flac |
+|                  | Create function for the main menu button,       |
+|                  | add custom theme from local assets directory    |
++------------------+-------------------------------------------------+
 | Version 1.23     | Download Youtube Videos, download only audio    |
 |                  | from videos on youtube also.                    |
 |                  | Convert audio files from mp4 (video) to mp3     |
@@ -20,10 +30,6 @@ Download YouTube videos, audio and convert videos to audio
 |                  | Convert audio files from mp3 to wav, flac & wma |
 |                  | Convert audio files from wav to flac, mp3 & wma |
 |                  | Convert audio files from flac to mp3, wav & wma |
-+------------------+-------------------------------------------------+
-| Version 1.21     | Download Youtube Videos, download only audio    |
-|                  | from videos on youtube also.                    |
-|                  | Convert audio files from mp4 (video) to mp3     |
 +------------------+-------------------------------------------------+
 '''
 
@@ -47,6 +53,7 @@ from convertors import (
 ''' Icon and logo location on system '''
 icon = "ziptube/assets/images/icon.ico"
 logo = "ziptube/assets/images/logo.png"
+custom_theme = "ziptube/assets/themes/custom.json"
 
 ''' Save location for all files downloaded '''
 def choose_save_location():
@@ -140,8 +147,7 @@ def download_video(resolutions_var):
         ''' Download the file with the modified filename '''
         stream.download(output_path=save_dir, filename=filename_with_resolution)
         status_label.configure(text=f"File saved as: {filename_with_resolution}")
-        back_to_menu_frame.pack(side='bottom')
-        back_to_menu_button.pack(pady=5)
+        to_main_menu()
     except Exception:
         status_label.configure(
             text=f"Error, resolution selected doesn't exist for video ...",
@@ -161,28 +167,19 @@ def on_progress(stream, chunk, bytes_remaining):
     progress_percentage = (bytes_downloaded / total_size) * 100
     download_finished = bytes_downloaded == total_size
     donation_button.pack(pady="10p")
-    back_to_menu_frame.pack(side='bottom')
-    back_to_menu_button.pack(pady=5)
+    to_main_menu()
     if download_finished:
         download_button.configure(text="Download Complete!", border_color="#00d11c")
-        download_audio_button.configure(
-            text="Download Complete!", border_color="#00d11c"
-        )
+        download_audio_button.configure(text="Download Complete!", border_color="#00d11c")
         ''' Schedule hiding labels after 3 seconds '''
         app.after(3000, hide_labels)
     else:
-        download_button.configure(
-            text=f"Downloading ... {int(progress_percentage)}%", border_color="yellow"
-        )
-        download_audio_button.configure(
-            text=f"Downloading ... {int(progress_percentage)}%", border_color="yellow"
-        )
+        download_button.configure(text=f"Downloading ... {int(progress_percentage)}%", border_color="yellow")
+        download_audio_button.configure(text=f"Downloading ... {int(progress_percentage)}%", border_color="yellow")
         current_time = time.time()
         time_elapsed = current_time - start_time
         bytes_downloaded_since_last = bytes_downloaded - bytes_downloaded_prev
-        download_speed = (
-            bytes_downloaded_since_last / time_elapsed / 1_000_000
-        )  
+        download_speed = (bytes_downloaded_since_last / time_elapsed / 1_000_000)  
         ''' Convert to Mbps '''
         start_time = current_time
         bytes_downloaded_prev = bytes_downloaded
@@ -195,14 +192,11 @@ def on_progress(stream, chunk, bytes_remaining):
         )
         progress_label.update()
         status_label.configure(text=f"Saving to local location ... {output_path}")
-        back_to_menu_frame.pack(side='bottom')
-        back_to_menu_button.pack(pady=5)
+        to_main_menu()
 
 ''' Function to ask for confirmation before closing the window '''
 def on_close():
-    if messagebox.askokcancel(
-        "Confirmation", "Are you sure you want to close the application?"
-    ):
+    if messagebox.askokcancel("Confirmation", "Are you sure you want to close the application?"):
         ''' Close the app '''
         app.destroy()
 
@@ -291,8 +285,8 @@ def convert_to_audio(video_file):
     video.close()
     progress_label.configure(text=f"File saved as: {audio_file}")
     status_label.configure(text=f"File saved as: {audio_file}")
-    back_to_menu_frame.pack(side='bottom')
-    back_to_menu_button.pack(pady=5)
+    to_main_menu()
+    
 
 ''' Function for donation window '''
 def open_donation_window():
@@ -355,16 +349,13 @@ def hide_labels():
     download_button.configure(state="normal")
     download_button.configure(text="Download Another Video", command=start_app_again)
     download_audio_button.configure(state="normal")
-    download_audio_button.configure(
-        text="Download Another Song", command=download_audio_only
-    )
+    download_audio_button.configure(text="Download Another Song", command=download_audio_only)
     donation_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
     donation_button.pack(pady="10p")
     convert_to_audio_button.pack(pady=10)
-    back_to_menu_frame.pack(side='bottom')
-    back_to_menu_button.pack(pady=5)
+    to_main_menu()
 
 ''' Function to print all available resolutions for a YouTube video '''
 def print_available_resolutions(url):
@@ -397,8 +388,7 @@ def print_available_resolutions(url):
                 height=2,
             )
             button.grid(row=0, column=i, padx=5, pady=5)
-            back_to_menu_frame.pack(side='bottom')
-            back_to_menu_button.pack(pady=5)
+            to_main_menu()
 
         return resolutions_var
     except Exception as e:
@@ -408,7 +398,6 @@ def print_available_resolutions(url):
 def load_resolutions():
     global resolutions_var
     url = entry_url.get().strip()
-
     ''' Regular expression pattern to match YouTube video URLs '''
     youtube_url_pattern = r"^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$"
 
@@ -420,8 +409,7 @@ def load_resolutions():
         ''' Call print_available_resolutions to print available resolutions '''
         resolutions_var = print_available_resolutions(url)
         download_button.pack(pady=10)
-        back_to_menu_frame.pack(side='bottom')
-        back_to_menu_button.pack(pady=5)
+        to_main_menu()
 
 ''' Function to start a new download '''
 def start_app_again():
@@ -433,11 +421,8 @@ def start_app_again():
     resolutions_button.configure(state="normal")
     resolutions_button.configure(text="Load Resolutions", command=load_resolutions)
     resolutions_button.pack(pady=10)
-    download_button.configure(
-        text="Download", command=lambda: download_video(resolutions_var)
-    )
-    back_to_menu_frame.pack(side='bottom')
-    back_to_menu_button.pack(pady=5)
+    download_button.configure(text="Download", command=lambda: download_video(resolutions_var))
+    to_main_menu()
 
 ''' Calculate the nearest measurement for bytes '''
 def bytes_to_nearest_measurement(bytes):
@@ -462,8 +447,7 @@ def load_entry_and_resolutions_button():
     start_menu_frame.pack_forget()
     want_to_download_button.pack_forget()
     want_to_convert_to_audio_button.pack_forget()
-    back_to_menu_frame.pack(side='bottom')
-    back_to_menu_button.pack(pady=5)
+    to_main_menu()
 
 ''' function to download audio file only '''
 def download_audio_only():
@@ -481,8 +465,7 @@ def download_audio_only():
     start_menu_frame.pack_forget()
     want_to_download_button.pack_forget()
     want_to_convert_to_audio_button.pack_forget()
-    back_to_menu_frame.pack(side='bottom')
-    back_to_menu_button.pack(pady=5)
+    to_main_menu()
 
 def show_converters():
     hide_all_buttons()
@@ -500,16 +483,14 @@ def show_converters():
     convert_wma_to_mp3_button.grid(row=4, column=0, padx=5, pady=5)
     convert_wma_to_flac_button.grid(row=4, column=1, padx=5, pady=5)
     convert_wma_to_wav_button.grid(row=4, column=2, padx=5, pady=5)
-    back_to_menu_frame.pack(side='bottom')
-    back_to_menu_button.pack(pady=5)
+    to_main_menu()
 
 def show_youtube_downloader():
     hide_all_buttons()
     youtube_menu_frame.pack(padx=10, pady=130)
     want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
     want_to_download_audio_button.grid(row=0, column=1, padx=5, pady=5)
-    back_to_menu_frame.pack(side='bottom')
-    back_to_menu_button.pack(pady=5)
+    to_main_menu()
 
 def hide_all_buttons():
     start_menu_frame.pack_forget()
@@ -532,10 +513,14 @@ def back_to_main_menu():
     download_audio_button.pack_forget()
     start_menu_frame.pack(padx=10, pady=130)
 
+def to_main_menu():
+    back_to_menu_frame.pack(side='bottom')
+    back_to_menu_button.pack(pady=5)
+
 ''' Create a app window '''
 app = ctk.CTk()
 ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("custom")
+ctk.set_default_color_theme(custom_theme)
 
 ''' Title of the window '''
 app.title("ZipTube")
@@ -671,9 +656,7 @@ progress_label = ctk.CTkLabel(content_frame, text="")
 status_label = ctk.CTkLabel(content_frame, text="")
 
 ''' Create a donate button '''
-donation_button = ctk.CTkButton(
-    content_frame, text="Donate", command=open_donation_window
-)
+donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window)
 
 ''' Add the on_close function to the close button '''
 app.protocol("WM_DELETE_WINDOW", on_close)
