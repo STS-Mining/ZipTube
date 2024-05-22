@@ -107,7 +107,8 @@ def download_video(resolutions_var):
     global download_button, output_path
     url = entry_url.get()
     resolution = resolutions_var.get()
-    if not resolution:  # Check if resolution is not selected
+    ''' Check if the resolution has not been selected '''
+    if not resolution:
         messagebox.showerror("Error", "Please select a resolution.")
         return
 
@@ -152,9 +153,9 @@ def download_video(resolutions_var):
 ''' Function while the download is in progress '''
 def on_progress(stream, chunk, bytes_remaining):
     global start_time, bytes_downloaded_prev, download_button, donation_button, output_path, download_audio_button
-    download_button.configure(state="disabled")  # Disable the download button
-    download_audio_button.configure(state="disabled")  # Disable the download button
-    resolutions_button.configure(state="disabled")  # Disable the resolutions button
+    download_button.configure(state="disabled")
+    download_audio_button.configure(state="disabled")
+    resolutions_button.configure(state="disabled")
     total_size = stream.filesize
     bytes_downloaded = total_size - bytes_remaining
     progress_percentage = (bytes_downloaded / total_size) * 100
@@ -284,7 +285,7 @@ def convert_to_audio(video_file):
     global progress_label, status_label
     progress_label.pack(pady="10p")
     status_label.pack(pady="10p")
-    audio_file = video_file.replace(".mp4", ".mp3")  # Change extension to mp3
+    audio_file = video_file.replace(".mp4", ".mp3")
     video = mp.VideoFileClip(video_file)
     video.audio.write_audiofile(audio_file)
     video.close()
@@ -347,21 +348,21 @@ def open_donation_window():
 ''' Hide the labels after 3 seconds '''
 def hide_labels():
     global resolutions_var
-    # resolutions_var.set("")  # Clear the resolutions variable
-    status_label.pack_forget()  # Hide the status label
-    progress_label.pack_forget()  # Hide the progress label
-    resolutions_button.pack_forget()  # Hide the resolutions button
-    download_button.configure(state="normal")  # Enable the download button
+    # resolutions_var.set("")
+    status_label.pack_forget()
+    progress_label.pack_forget()
+    resolutions_button.pack_forget()
+    download_button.configure(state="normal")
     download_button.configure(text="Download Another Video", command=start_app_again)
-    download_audio_button.configure(state="normal")  # Enable the download button
+    download_audio_button.configure(state="normal")
     download_audio_button.configure(
         text="Download Another Song", command=download_audio_only
     )
-    donation_button.pack_forget()  # Hide the donation button
-    resolutions_frame.pack_forget()  # Hide the resolutions frame
-    entry_url.delete(0, ctk.END)  # Clear the entry URL
-    donation_button.pack(pady="10p")  # Show the donation button
-    convert_to_audio_button.pack(pady=10)  # Show the convert to audio button
+    donation_button.pack_forget()
+    resolutions_frame.pack_forget()
+    entry_url.delete(0, ctk.END)
+    donation_button.pack(pady="10p")
+    convert_to_audio_button.pack(pady=10)
     back_to_menu_frame.pack(side='bottom')
     back_to_menu_button.pack(pady=5)
 
@@ -406,7 +407,7 @@ def print_available_resolutions(url):
 ''' Function to load the resolutions for a YouTube video '''
 def load_resolutions():
     global resolutions_var
-    url = entry_url.get().strip()  # Get the URL and remove leading/trailing whitespace
+    url = entry_url.get().strip()
 
     ''' Regular expression pattern to match YouTube video URLs '''
     youtube_url_pattern = r"^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$"
@@ -425,13 +426,13 @@ def load_resolutions():
 ''' Function to start a new download '''
 def start_app_again():
     global resolutions_var
-    resolutions_var.set("")  # Clear the resolutions variable
-    donation_button.pack_forget()  # Hide the donation button
-    download_button.pack_forget()  # Hide the download button
-    convert_to_audio_button.pack_forget()  # Hide the convert to audio button
-    resolutions_button.configure(state="normal")  # Enable the resolutions button
+    resolutions_var.set("")
+    donation_button.pack_forget()
+    download_button.pack_forget()
+    convert_to_audio_button.pack_forget()
+    resolutions_button.configure(state="normal")
     resolutions_button.configure(text="Load Resolutions", command=load_resolutions)
-    resolutions_button.pack(pady=10)  # Show the resolutions button
+    resolutions_button.pack(pady=10)
     download_button.configure(
         text="Download", command=lambda: download_video(resolutions_var)
     )
@@ -449,18 +450,18 @@ def bytes_to_nearest_measurement(bytes):
 def load_entry_and_resolutions_button():
     global entry_url, resolutions_button, resolutions_frame, download_button, convert_to_audio_button
     youtube_menu_frame.pack_forget()
-    resolutions_button.pack_forget()  # Hide the resolutions button
-    resolutions_frame.pack_forget()  # Hide the resolutions frame
-    entry_url.delete(0, ctk.END)  # Clear the entry URL
-    donation_button.pack_forget()  # Hide the donation button
-    download_button.pack_forget()  # Hide the download button
-    convert_to_audio_button.pack_forget()  # Hide the convert to audio button
+    resolutions_button.pack_forget()
+    resolutions_frame.pack_forget()
+    entry_url.delete(0, ctk.END)
+    donation_button.pack_forget()
+    download_button.pack_forget()
+    convert_to_audio_button.pack_forget()
     want_to_download_audio_button.pack_forget()
-    entry_url.pack(pady=10)  # Show the entry URL
-    resolutions_button.pack(pady="10p")  # Show the resolutions button
-    start_menu_frame.pack_forget()  # Hide the start menu frame
-    want_to_download_button.pack_forget()  # Hide the want to download button
-    want_to_convert_to_audio_button.pack_forget()  # Hide the want to convert to audio button
+    entry_url.pack(pady=10)
+    resolutions_button.pack(pady="10p")
+    start_menu_frame.pack_forget()
+    want_to_download_button.pack_forget()
+    want_to_convert_to_audio_button.pack_forget()
     back_to_menu_frame.pack(side='bottom')
     back_to_menu_button.pack(pady=5)
 
@@ -468,18 +469,18 @@ def load_entry_and_resolutions_button():
 def download_audio_only():
     global entry_url, resolutions_button, resolutions_frame, download_button, convert_to_audio_button
     youtube_menu_frame.pack_forget()
-    resolutions_button.pack_forget()  # Hide the resolutions button
-    resolutions_frame.pack_forget()  # Hide the resolutions frame
-    entry_url.delete(0, ctk.END)  # Clear the entry URL
-    donation_button.pack_forget()  # Hide the donation button
-    download_button.pack_forget()  # Hide the download button
-    convert_to_audio_button.pack_forget()  # Hide the convert to audio button
-    entry_url.pack(pady=10)  # Show the entry URL
+    resolutions_button.pack_forget()
+    resolutions_frame.pack_forget()
+    entry_url.delete(0, ctk.END)
+    donation_button.pack_forget()
+    download_button.pack_forget()
+    convert_to_audio_button.pack_forget()
+    entry_url.pack(pady=10)
     download_audio_button.configure(text="Download", command=download_audio)
     download_audio_button.pack(pady=10)
-    start_menu_frame.pack_forget()  # Hide the start menu frame
-    want_to_download_button.pack_forget()  # Hide the want to download button
-    want_to_convert_to_audio_button.pack_forget()  # Hide the want to convert to audio button
+    start_menu_frame.pack_forget()
+    want_to_download_button.pack_forget()
+    want_to_convert_to_audio_button.pack_forget()
     back_to_menu_frame.pack(side='bottom')
     back_to_menu_button.pack(pady=5)
 
