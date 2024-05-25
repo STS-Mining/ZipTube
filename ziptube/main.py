@@ -57,14 +57,22 @@ from convertors import (
 )
 
 ''' Icon and logo location on system '''
+app_name = "ZipTube"
 icon = "ziptube/assets/images/icon.ico"
 logo = "ziptube/assets/images/logo.png"
 custom_theme = "ziptube/assets/themes/custom.json"
-website_url = "https://www.youtube.com"
+website_url = "https://sts-mining.github.io/website/"
+discord_link = "https://discord.gg/Fd5uEgs4"
+github_url = "https://github.com/STS-Mining"
+feedback_email = "sts@github.com"
 
 ''' Function to link website to main screen in a button '''
 def open_webpage(url):
     webbrowser.open(url, new=2)  # new=2: open in a new tab, if possible
+
+def open_feedback_email():
+    subject = f"{app_name} Feedback"
+    webbrowser.open(f"mailto:{feedback_email}?subject={subject}")
 
 ''' Save location for all files downloaded '''
 def choose_save_location():
@@ -483,7 +491,7 @@ def back_to_main_menu():
 
 ''' Function to go back to the main menu screen '''
 def to_main_menu():
-    back_to_menu_frame.pack(side='bottom')
+    back_to_menu_frame.pack(side='bottom', pady=10)
     back_to_menu_button.pack(pady=10)
 
 ''' Function to hide buttons at bottom of screen '''
@@ -498,7 +506,7 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme(custom_theme)
 
 ''' Title of the window '''
-app.title("ZipTube")
+app.title(app_name)
 app.iconbitmap(icon)
 
 ''' Set min and max width and height '''
@@ -527,7 +535,7 @@ start_menu_frame = ctk.CTkFrame(content_frame)
 start_menu_frame.pack(padx=10, pady=130)
 
 ''' Custom definitions for start menu only '''
-start_font = ctk.CTkFont(family="calibri", size=15, weight="normal")
+start_font = ctk.CTkFont(family="calibri", size=17, weight="normal")
 start_menu_color = "orange"
 start_menu_height = 50
 start_menu_width = 150
@@ -547,10 +555,10 @@ youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
 
 ''' Custom definitions for start menu only '''
-start_bottom_font = ctk.CTkFont(family="calibri", size=15, weight="normal")
+start_bottom_font = ctk.CTkFont(family="calibri", size=13, weight="normal")
 start_bottom_menu_color = "red"
-start_bottom_menu_height = 30
-start_bottom_menu_width = 90
+start_bottom_menu_height = 25
+start_bottom_menu_width = 75
 start_bottom_corner_radius = 33
 start_bottom_button_config = {
     'font': start_bottom_font,
@@ -564,9 +572,15 @@ start_bottom_button_config = {
 bottom_menu_frame = ctk.CTkFrame(content_frame)
 bottom_menu_frame.pack(side="bottom", pady=10)
 website_button = ctk.CTkButton(bottom_menu_frame, text="Website", command=lambda: open_webpage(website_url), **start_bottom_button_config)
+feedback_button = ctk.CTkButton(bottom_menu_frame, text="Feedback", command=open_feedback_email, **start_bottom_button_config)
+github_button = ctk.CTkButton(bottom_menu_frame, text="GitHub", command=lambda: open_webpage(github_url), **start_bottom_button_config)
+discord_button = ctk.CTkButton(bottom_menu_frame, text="Discord", command=lambda: open_webpage(discord_link), **start_bottom_button_config)
 donation_button = ctk.CTkButton(bottom_menu_frame, text="Donate", command=open_donation_window, **start_bottom_button_config)
 website_button.grid(row=0, column=0, padx=5, pady=5)
-donation_button.grid(row=0, column=1, padx=5, pady=5)
+feedback_button.grid(row=0, column=1, padx=5, pady=5)
+github_button.grid(row=0, column=2, padx=5, pady=5)
+discord_button.grid(row=0, column=3, padx=5, pady=5)
+donation_button.grid(row=0, column=4, padx=5, pady=5)
 
 ''' Youtube menu frame '''
 youtube_menu_frame = ctk.CTkFrame(content_frame)
