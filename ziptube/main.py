@@ -6,6 +6,18 @@ Download YouTube videos, audio and convert videos to audio
 +------------------+-------------------------------------------------+
 | Version          | Description                                     |
 +==================+=================================================+
+| Version 1.25     | Download Youtube Videos, download only audio    |
+|                  | from videos on youtube also.                    |
+|                  | Convert audio files from mp4 (video) to mp3     |
+|                  | Convert audio files from mp3 to wav, flac & wma |
+|                  | Convert audio files from wav to flac, mp3 & wma |
+|                  | Convert audio files from flac to mp3, wav & wma |
+|                  | Convert audio files from wma to mp3, wav & flac |
+|                  | Create function for the main menu button,       |
+|                  | add custom theme from local assets directory    |
+|                  | Add website button at bottom of main screen     |
+|                  | Change button sizes and colors throughout app   |
++------------------+-------------------------------------------------+
 | Version 1.24     | Download Youtube Videos, download only audio    |
 |                  | from videos on youtube also.                    |
 |                  | Convert audio files from mp4 (video) to mp3     |
@@ -24,13 +36,6 @@ Download YouTube videos, audio and convert videos to audio
 |                  | Convert audio files from flac to mp3, wav & wma |
 |                  | Convert audio files from wma to mp3, wav & flac |
 +------------------+-------------------------------------------------+
-| Version 1.22     | Download Youtube Videos, download only audio    |
-|                  | from videos on youtube also.                    |
-|                  | Convert audio files from mp4 (video) to mp3     |
-|                  | Convert audio files from mp3 to wav, flac & wma |
-|                  | Convert audio files from wav to flac, mp3 & wma |
-|                  | Convert audio files from flac to mp3, wav & wma |
-+------------------+-------------------------------------------------+
 '''
 
 import customtkinter as ctk
@@ -42,6 +47,7 @@ import pyperclip
 from PIL import Image
 import os
 import re
+import webbrowser
 from tkinter import filedialog
 import moviepy.editor as mp
 from convertors import (
@@ -54,6 +60,11 @@ from convertors import (
 icon = "ziptube/assets/images/icon.ico"
 logo = "ziptube/assets/images/logo.png"
 custom_theme = "ziptube/assets/themes/custom.json"
+website_url = "https://www.youtube.com"
+
+''' Function to link website to main screen in a button '''
+def open_webpage(url):
+    webbrowser.open(url, new=2)  # new=2: open in a new tab, if possible
 
 ''' Save location for all files downloaded '''
 def choose_save_location():
@@ -65,7 +76,6 @@ def choose_save_location():
 def download_audio():
     global download_audio_button, output_path
     url = entry_url.get()
-    ''' Regular expression pattern to match YouTube URLs '''
     youtube_url_pattern = r"^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$"
     if not url:
         messagebox.showerror("Error", "Please enter a YouTube URL.")
@@ -78,26 +88,19 @@ def download_audio():
             yt = YouTube(url, on_progress_callback=on_progress)
             audio_stream = yt.streams.filter(only_audio=True, abr="128kbps").first()
             print(audio_stream.default_filename)
-            ''' This is the directory where the file will be saved '''
             save_dir = choose_save_location()
             output_path = save_dir
-            ''' Get the filename with extension '''
             filename = audio_stream.default_filename
-            ''' Rename file to mp3 from mp4 '''
             filename = filename.replace(".mp4", ".mp3")
-            ''' Check if the file already exists '''
             file_path = os.path.join(save_dir, filename)
             if os.path.exists(file_path):
-                ''' Ask the user to enter a new filename '''
                 new_filename = simpledialog.askstring(
                     "Rename File",
                     "A file with this name already exists. Please enter a new filename:",
                     initialvalue=filename,
                 )
                 if new_filename is None:
-                    ''' User canceled renaming, so stop the download process '''
                     return
-            ''' Download the file with the modified filename '''
             audio_stream.download(output_path=save_dir, filename=filename)
             status_label.configure(text=f"File saved as: {filename}")
         except Exception:
@@ -105,7 +108,6 @@ def download_audio():
                 text=f"Error, Audio selected can't be downloaded ...",
                 text_color="red",
             )
-            ''' Schedule hiding labels after 2 seconds '''
             app.after(2000, hide_labels)
 
 
@@ -124,27 +126,20 @@ def download_video(resolutions_var):
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
         stream = yt.streams.filter(res=resolution).first()
-        ''' This is the directory where the file will be saved '''
         save_dir = choose_save_location()
         output_path = save_dir
-        ''' Get the filename with extension '''
         filename = stream.default_filename
-        ''' Append resolution to the filename '''
         filename_with_resolution = f"{os.path.splitext(filename)[0]}-{resolution}{os.path.splitext(filename)[1]}"
-        ''' Check if the file already exists '''
         file_path = os.path.join(save_dir, filename_with_resolution)
         if os.path.exists(file_path):
-            ''' Ask the user to enter a new filename '''
             new_filename = simpledialog.askstring(
                 "Rename File",
                 "A file with this name already exists. Please enter a new filename:",
                 initialvalue=filename_with_resolution,
             )
             if new_filename is None:
-                ''' User canceled renaming, so stop the download process '''
                 return
             filename_with_resolution = new_filename
-        ''' Download the file with the modified filename '''
         stream.download(output_path=save_dir, filename=filename_with_resolution)
         status_label.configure(text=f"File saved as: {filename_with_resolution}")
         to_main_menu()
@@ -153,12 +148,11 @@ def download_video(resolutions_var):
             text=f"Error, resolution selected doesn't exist for video ...",
             text_color="red",
         )
-        ''' Schedule hiding labels after 2 seconds '''
         app.after(2000, hide_labels)
 
 ''' Function while the download is in progress '''
 def on_progress(stream, chunk, bytes_remaining):
-    global start_time, bytes_downloaded_prev, download_button, donation_button, output_path, download_audio_button
+    global start_time, bytes_downloaded_prev, download_button, output_path, download_audio_button
     download_button.configure(state="disabled")
     download_audio_button.configure(state="disabled")
     resolutions_button.configure(state="disabled")
@@ -166,12 +160,10 @@ def on_progress(stream, chunk, bytes_remaining):
     bytes_downloaded = total_size - bytes_remaining
     progress_percentage = (bytes_downloaded / total_size) * 100
     download_finished = bytes_downloaded == total_size
-    donation_button.pack(pady="10p")
     to_main_menu()
     if download_finished:
         download_button.configure(text="Download Complete!", border_color="#00d11c")
         download_audio_button.configure(text="Download Complete!", border_color="#00d11c")
-        ''' Schedule hiding labels after 3 seconds '''
         app.after(3000, hide_labels)
     else:
         download_button.configure(text=f"Downloading ... {int(progress_percentage)}%", border_color="yellow")
@@ -180,7 +172,6 @@ def on_progress(stream, chunk, bytes_remaining):
         time_elapsed = current_time - start_time
         bytes_downloaded_since_last = bytes_downloaded - bytes_downloaded_prev
         download_speed = (bytes_downloaded_since_last / time_elapsed / 1_000_000)  
-        ''' Convert to Mbps '''
         start_time = current_time
         bytes_downloaded_prev = bytes_downloaded
         progress_label.configure(
@@ -287,7 +278,6 @@ def convert_to_audio(video_file):
     status_label.configure(text=f"File saved as: {audio_file}")
     to_main_menu()
     
-
 ''' Function for donation window '''
 def open_donation_window():
     donation_window = ctk.CTk()
@@ -350,10 +340,8 @@ def hide_labels():
     download_button.configure(text="Download Another Video", command=start_app_again)
     download_audio_button.configure(state="normal")
     download_audio_button.configure(text="Download Another Song", command=download_audio_only)
-    donation_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
-    donation_button.pack(pady="10p")
     convert_to_audio_button.pack(pady=10)
     to_main_menu()
 
@@ -367,15 +355,12 @@ def print_available_resolutions(url):
             key=lambda x: int(x[:-1]),
         )
         resolutions_var = ctk.StringVar()
-
         ''' Function to handle resolution selection '''
         def select_resolution(resolution):
             resolutions_var.set(resolution)
-
         ''' Create a frame to hold the resolution buttons '''
         selected_resolution = ctk.StringVar()
         resolutions_frame.pack(pady=10)
-
         ''' Create a radio button for each available resolution '''
         for i, resolution in enumerate(resolutions):
             button = ctk.CTkRadioButton(
@@ -389,7 +374,6 @@ def print_available_resolutions(url):
             )
             button.grid(row=0, column=i, padx=5, pady=5)
             to_main_menu()
-
         return resolutions_var
     except Exception as e:
         print(f"Error fetching resolutions for URL {url}: {e}")
@@ -398,15 +382,12 @@ def print_available_resolutions(url):
 def load_resolutions():
     global resolutions_var
     url = entry_url.get().strip()
-    ''' Regular expression pattern to match YouTube video URLs '''
     youtube_url_pattern = r"^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$"
-
     if not url:
         messagebox.showerror("Error", "Please enter a YouTube video URL.")
     elif not re.match(youtube_url_pattern, url):
         messagebox.showerror("Error", "Please enter a valid YouTube video URL.")
     else:
-        ''' Call print_available_resolutions to print available resolutions '''
         resolutions_var = print_available_resolutions(url)
         download_button.pack(pady=10)
         to_main_menu()
@@ -415,7 +396,6 @@ def load_resolutions():
 def start_app_again():
     global resolutions_var
     resolutions_var.set("")
-    donation_button.pack_forget()
     download_button.pack_forget()
     convert_to_audio_button.pack_forget()
     resolutions_button.configure(state="normal")
@@ -438,7 +418,6 @@ def load_entry_and_resolutions_button():
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
-    donation_button.pack_forget()
     download_button.pack_forget()
     convert_to_audio_button.pack_forget()
     want_to_download_audio_button.pack_forget()
@@ -456,7 +435,6 @@ def download_audio_only():
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
-    donation_button.pack_forget()
     download_button.pack_forget()
     convert_to_audio_button.pack_forget()
     entry_url.pack(pady=10)
@@ -469,7 +447,8 @@ def download_audio_only():
 
 def show_converters():
     hide_all_buttons()
-    convertor_frame.pack(padx=10, pady=90)
+    hide_bottom_menu_frame()
+    convertor_frame.pack(padx=10, pady=70)
     want_to_convert_to_audio_button.grid(row=0, column=1, padx=5, pady=5)
     convert_mp3_to_flac_button.grid(row=1, column=0, padx=5, pady=5)
     convert_mp3_to_wav_button.grid(row=1, column=1, padx=5, pady=5)
@@ -487,6 +466,7 @@ def show_converters():
 
 def show_youtube_downloader():
     hide_all_buttons()
+    hide_bottom_menu_frame()
     youtube_menu_frame.pack(padx=10, pady=130)
     want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
     want_to_download_audio_button.grid(row=0, column=1, padx=5, pady=5)
@@ -494,9 +474,11 @@ def show_youtube_downloader():
 
 def hide_all_buttons():
     start_menu_frame.pack_forget()
+    hide_bottom_menu_frame()
 
 def back_to_main_menu():
     hide_all_buttons()
+    hide_bottom_menu_frame()
     back_to_menu_frame.pack_forget()
     convertor_frame.pack_forget()
     youtube_menu_frame.pack_forget()
@@ -504,7 +486,6 @@ def back_to_main_menu():
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
     entry_url.pack_forget()
-    donation_button.pack_forget()
     download_button.pack_forget()
     convert_to_audio_button.pack_forget()
     want_to_download_audio_button.pack_forget()
@@ -515,7 +496,12 @@ def back_to_main_menu():
 
 def to_main_menu():
     back_to_menu_frame.pack(side='bottom')
-    back_to_menu_button.pack(pady=5)
+    back_to_menu_button.pack(pady=10)
+
+def hide_bottom_menu_frame():
+    bottom_menu_frame.pack_forget()
+    website_button.pack_forget()
+    donation_button.pack_forget()
 
 ''' Create a app window '''
 app = ctk.CTk()
@@ -552,10 +538,10 @@ start_menu_frame = ctk.CTkFrame(content_frame)
 start_menu_frame.pack(padx=10, pady=130)
 
 ''' Custom definitions for start menu only '''
-start_font = ctk.CTkFont(family="calibri", size=19, weight="normal")
-start_menu_color = "green"
-start_menu_height = 60
-start_menu_width = 180
+start_font = ctk.CTkFont(family="calibri", size=15, weight="normal")
+start_menu_color = "orange"
+start_menu_height = 40
+start_menu_width = 120
 start_corner_radius = 33
 start_button_config = {
     'font': start_font,
@@ -566,10 +552,18 @@ start_button_config = {
 }
 
 ''' Buttons for opening the sub-menus '''
-converters_button = ctk.CTkButton(start_menu_frame, text="Converters", command=show_converters, **start_button_config)
-youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="YouTube\nDownloader", command=show_youtube_downloader, **start_button_config)
+converters_button = ctk.CTkButton(start_menu_frame, text="Convert", command=show_converters, **start_button_config)
+youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_button_config)
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
+
+''' Bottom of the main screen donation and website buttons '''
+bottom_menu_frame = ctk.CTkFrame(content_frame)
+bottom_menu_frame.pack(side="bottom", pady=10)
+website_button = ctk.CTkButton(bottom_menu_frame, text="Website", command=lambda: open_webpage(website_url), **start_button_config)
+donation_button = ctk.CTkButton(bottom_menu_frame, text="Donate", command=open_donation_window, **start_button_config)
+website_button.grid(row=0, column=0, padx=5, pady=5)
+donation_button.grid(row=0, column=1, padx=5, pady=5)
 
 ''' Youtube menu frame '''
 youtube_menu_frame = ctk.CTkFrame(content_frame)
@@ -578,10 +572,10 @@ youtube_menu_frame = ctk.CTkFrame(content_frame)
 convertor_frame = ctk.CTkFrame(content_frame)
 
 ''' Custom definitions for convertor menu '''
-convertor_font = ctk.CTkFont(family="Calibri", size=14, weight="normal")
+convertor_font = ctk.CTkFont(family="Calibri", size=15, weight="normal")
 convertor_menu_color = "green"
-convertor_menu_height = 30
-convertor_menu_width = 90
+convertor_menu_height = 40
+convertor_menu_width = 120
 convertor_corner_radius = 33
 convertor_button_config = {
     'font': convertor_font,
@@ -624,7 +618,7 @@ main_button_config = {
     'corner_radius': main_corner_radius
 }
 
-''' Create a button to always to user back to the main menu '''
+''' Create a button to always get the user back to the main menu '''
 back_to_menu_frame = ctk.CTkFrame(content_frame)
 back_to_menu_button = ctk.CTkButton(back_to_menu_frame, text="Main Menu", command=back_to_main_menu, **main_button_config)
 
@@ -654,9 +648,6 @@ progress_label = ctk.CTkLabel(content_frame, text="")
 
 ''' Create the status label '''
 status_label = ctk.CTkLabel(content_frame, text="")
-
-''' Create a donate button '''
-donation_button = ctk.CTkButton(content_frame, text="Donate", command=open_donation_window)
 
 ''' Add the on_close function to the close button '''
 app.protocol("WM_DELETE_WINDOW", on_close)
