@@ -188,7 +188,6 @@ def on_progress(stream, chunk, bytes_remaining):
 ''' Function to ask for confirmation before closing the window '''
 def on_close():
     if messagebox.askokcancel("Confirmation", "Are you sure you want to close the application?"):
-        ''' Close the app '''
         app.destroy()
 
 ''' Function for the window for renaming the file '''
@@ -474,7 +473,6 @@ def show_youtube_downloader():
 
 def hide_all_buttons():
     start_menu_frame.pack_forget()
-    hide_bottom_menu_frame()
 
 def back_to_main_menu():
     hide_all_buttons()
@@ -493,6 +491,7 @@ def back_to_main_menu():
     want_to_convert_to_audio_button.pack_forget()
     download_audio_button.pack_forget()
     start_menu_frame.pack(padx=10, pady=130)
+    bottom_menu_frame.pack(side="bottom", pady=10)
 
 def to_main_menu():
     back_to_menu_frame.pack(side='bottom')
@@ -557,11 +556,25 @@ youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", com
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
 
+''' Custom definitions for start menu only '''
+start_bottom_font = ctk.CTkFont(family="calibri", size=15, weight="normal")
+start_bottom_menu_color = "red"
+start_bottom_menu_height = 30
+start_bottom_menu_width = 90
+start_bottom_corner_radius = 33
+start_bottom_button_config = {
+    'font': start_bottom_font,
+    'height': start_bottom_menu_height,
+    'width': start_bottom_menu_width,
+    'border_color': start_bottom_menu_color,
+    'corner_radius': start_bottom_corner_radius
+}
+
 ''' Bottom of the main screen donation and website buttons '''
 bottom_menu_frame = ctk.CTkFrame(content_frame)
 bottom_menu_frame.pack(side="bottom", pady=10)
-website_button = ctk.CTkButton(bottom_menu_frame, text="Website", command=lambda: open_webpage(website_url), **start_button_config)
-donation_button = ctk.CTkButton(bottom_menu_frame, text="Donate", command=open_donation_window, **start_button_config)
+website_button = ctk.CTkButton(bottom_menu_frame, text="Website", command=lambda: open_webpage(website_url), **start_bottom_button_config)
+donation_button = ctk.CTkButton(bottom_menu_frame, text="Donate", command=open_donation_window, **start_bottom_button_config)
 website_button.grid(row=0, column=0, padx=5, pady=5)
 donation_button.grid(row=0, column=1, padx=5, pady=5)
 
@@ -607,8 +620,8 @@ convert_wma_to_wav_button = ctk.CTkButton(convertor_frame, text="WMA to WAV", co
 ''' Custom definitions for main menu button only '''
 main_menu_font = ctk.CTkFont(family="calibri", size=15, weight="normal")
 main_menu_color = "blue"
-main_menu_height = 40
-main_menu_width = 120
+main_menu_height = 30
+main_menu_width = 90
 main_corner_radius = 33
 main_button_config = {
     'font': main_menu_font,
