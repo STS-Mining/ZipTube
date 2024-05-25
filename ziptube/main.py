@@ -190,22 +190,6 @@ def on_close():
     if messagebox.askokcancel("Confirmation", "Are you sure you want to close the application?"):
         app.destroy()
 
-''' Function for the window for renaming the file '''
-def rename_file(filename_with_resolution):
-    rename_file_window = ctk.CTk()
-    rename_file_window.title("Rename File")
-    rename_file_window.geometry("600x150")
-    rename_file_window.minsize(600, 150)
-    rename_file_window.maxsize(600, 150)
-    rename_file_window.iconbitmap(icon)
-    rename_file_label = ctk.CTkLabel(
-        rename_file_window,
-        text="A file with this name already exists. Please enter a new filename:",
-        initialvalue=filename_with_resolution,
-    )
-    rename_file_label.pack(padx="10p", pady="10p")
-    rename_file_window.mainloop()
-
 ''' Function convert video to audio '''
 def convert_video_to_audio():
     filename = filedialog.askopenfilename(
@@ -280,17 +264,19 @@ def convert_to_audio(video_file):
 ''' Function for donation window '''
 def open_donation_window():
     donation_window = ctk.CTk()
-    donation_window.title("Notification")
-    donation_window.geometry("600x360")
-    donation_window.minsize(600, 360)
-    donation_window.maxsize(720, 480)
+    donation_window.title("Please Donate ...")
+    new_width = min_max_width // 1.25
+    new_height = min_max_height // 1.5
+    donation_window.geometry(f"{new_width}x{new_height}")
+    donation_window.minsize(new_width, new_height)
+    donation_window.maxsize(new_width, new_height)
     donation_window.iconbitmap(icon)
 
     ''' Create a label with the donation message '''
     donation_label = ctk.CTkLabel(
         donation_window,
         text="Enjoy using our app?? \nWould you like us to keep it well maintained? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.",
-        font=("Helvetica", 18),
+        font=("calibri", 18),
     )
     donation_label.pack(padx=10, pady=10)
 
@@ -543,8 +529,8 @@ start_menu_frame.pack(padx=10, pady=130)
 ''' Custom definitions for start menu only '''
 start_font = ctk.CTkFont(family="calibri", size=15, weight="normal")
 start_menu_color = "orange"
-start_menu_height = 40
-start_menu_width = 120
+start_menu_height = 50
+start_menu_width = 150
 start_corner_radius = 33
 start_button_config = {
     'font': start_font,
