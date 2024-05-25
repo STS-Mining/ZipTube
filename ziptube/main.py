@@ -273,16 +273,20 @@ def convert_to_audio(video_file):
 def open_donation_window():
     donation_window = ctk.CTk()
     donation_window.title("Please Donate ...")
-    new_width = min_max_width // 1.25
-    new_height = min_max_height // 1.5
+    new_width = int(min_max_width // 1.25)
+    new_height = int(min_max_height // 1.85)
     donation_window.geometry(f"{new_width}x{new_height}")
     donation_window.minsize(new_width, new_height)
     donation_window.maxsize(new_width, new_height)
     donation_window.iconbitmap(icon)
 
+    ''' Create a frame to hold the content '''
+    donation_frame = ctk.CTkFrame(donation_window)
+    donation_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
+
     ''' Create a label with the donation message '''
     donation_label = ctk.CTkLabel(
-        donation_window,
+        donation_frame,
         text="Enjoy using our app?? \nWould you like us to keep it well maintained? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.",
         font=("calibri", 18),
     )
@@ -304,19 +308,24 @@ def open_donation_window():
         copied_label.pack()
         copied_label.after(2000, copied_label.pack_forget)
 
+    ''' Create a frame for the buttons to align them properly '''
+    button_frame = ctk.CTkFrame(donation_frame)
+    button_frame.pack(pady=10)
+
     ''' Create buttons to copy wallet addresses '''
-    for wallet in wallets:
+    for i, wallet in enumerate(wallets):
         copy_button = ctk.CTkButton(
-            donation_window,
+            button_frame,
             text=f"{wallet['name']} Address",
             command=lambda name=wallet["name"], addr=wallet["address"]: copy_address(
                 name, addr
             ),
+            **main_button_config
         )
-        copy_button.pack(pady=5)
+        copy_button.grid(row=0, column=i, padx=5, pady=5)
 
     ''' Label to display "Copied to Clipboard" message '''
-    copied_label = ctk.CTkLabel(donation_window, text="")
+    copied_label = ctk.CTkLabel(donation_frame, text="")
     copied_label.pack(pady=5)
 
     ''' Start the donation window's main loop '''
@@ -492,7 +501,7 @@ def back_to_main_menu():
 ''' Function to go back to the main menu screen '''
 def to_main_menu():
     back_to_menu_frame.pack(side='bottom', pady=10)
-    back_to_menu_button.pack(pady=10)
+    back_to_menu_button.pack(pady=5)
 
 ''' Function to hide buttons at bottom of screen '''
 def hide_bottom_menu_frame():
@@ -624,8 +633,8 @@ convert_wma_to_wav_button = ctk.CTkButton(convertor_frame, text="WMA to WAV", co
 ''' Custom definitions for main menu button only '''
 main_menu_font = ctk.CTkFont(family="calibri", size=15, weight="normal")
 main_menu_color = "blue"
-main_menu_height = 30
-main_menu_width = 90
+main_menu_height = 25
+main_menu_width = 75
 main_corner_radius = 33
 main_button_config = {
     'font': main_menu_font,
