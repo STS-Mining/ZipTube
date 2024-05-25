@@ -444,6 +444,7 @@ def download_audio_only():
     want_to_convert_to_audio_button.pack_forget()
     to_main_menu()
 
+''' Function to show all the available convertors '''
 def show_converters():
     hide_all_buttons()
     hide_bottom_menu_frame()
@@ -463,6 +464,7 @@ def show_converters():
     convert_wma_to_wav_button.grid(row=4, column=2, padx=5, pady=5)
     to_main_menu()
 
+''' Function to show the download buttons available '''
 def show_youtube_downloader():
     hide_all_buttons()
     hide_bottom_menu_frame()
@@ -493,10 +495,12 @@ def back_to_main_menu():
     start_menu_frame.pack(padx=10, pady=130)
     bottom_menu_frame.pack(side="bottom", pady=10)
 
+''' Function to go back to the main menu screen '''
 def to_main_menu():
     back_to_menu_frame.pack(side='bottom')
     back_to_menu_button.pack(pady=10)
 
+''' Function to hide buttons at bottom of screen '''
 def hide_bottom_menu_frame():
     bottom_menu_frame.pack_forget()
     website_button.pack_forget()
