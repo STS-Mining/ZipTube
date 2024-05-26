@@ -1,114 +1,51 @@
 #!/usr/bin/env python3
 
-'''This module will
-convert mp3 files to flac
-using multiple parallel processes'''
+'''This module will convert a single mp3 file to flac using ffmpeg'''
 
 import os
-import sys
 import subprocess
-from multiprocessing.pool import ThreadPool
-from multiprocessing import cpu_count
-import time
-import datetime
+import tkinter as tk
+from tkinter import filedialog
 
-FFMPEG_PATH = "Path/To/Location/ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
-CONVERT_FROM = "MP3"
-CONVERT_TO = "Flac"
+FFMPEG_PATH = "ziptube/assets/programs/ffmpeg/bin/ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
+CONVERT_TO = "flac"
 
-def convert_mp3_to_flac(task):
-    '''Start up a new ffmpeg subprocess transcode the given audio file
-    and save the newly transcoded file to a directory within the same
-    directory of the original audio '''
-    root_path = task[0]
-    filename = task[1]
-    full_path = os.path.join(root_path, filename)
+def convert_mp3_to_flac(file_path):
+    '''Convert the given MP3 file to FLAC using ffmpeg'''
+    root_path, filename = os.path.split(file_path)
     new_filename = os.path.splitext(filename)[0] + "." + CONVERT_TO
-    new_path = os.path.join(root_path,
-                            os.path.basename(root_path) + "-" + FOLDER_NAME,
-                            new_filename)
+    new_path = os.path.join(root_path, new_filename)
 
-    completed = subprocess.run([FFMPEG_PATH,  # Use FFMPEG_PATH instead of "ffmpeg"
+    completed = subprocess.run([FFMPEG_PATH,
                                 "-loglevel",
                                 "quiet",
                                 "-hide_banner",
                                 "-y",
                                 "-i",
-                                full_path,
-                                "-write_id3v1",
-                                "1",
-                                "-id3v2_version",
-                                "3",
+                                file_path,
                                 "-codec:a",
                                 "flac",
                                 new_path],
                                stderr=subprocess.DEVNULL,
                                stdout=subprocess.DEVNULL,
                                stdin=subprocess.PIPE)
-    # If you don't provide stdin pipe, ffmpeg will not exit gracefully
-    # when running multiple instances and will require you to reset your
-    # terminal once this script finishes executing
-    # Remove the original files once they have been transcoded
-    # if completed.returncode == 0:
-        # subprocess.call(["rm", full_path]) # remove the original file once transcoded
     print(f"'{new_path}' - return code {completed.returncode}")
     if completed.returncode != 0:
-        completed.timestamp = datetime.datetime.now().ctime()
+        print(f"Conversion failed for {file_path}")
     return completed
 
 
 if __name__ == "__main__":
-    FOLDERS = []
-    FOLDER_NAME = f"{CONVERT_TO}s"
-    AUDIO_FILE_TYPES = ("flac",
-                        "aac",
-                        "aiff",
-                        "m4a",
-                        "ogg",
-                        "opus",
-                        "raw",
-                        "wav",
-                        "wma",
-                        "mp3",
-                        "webm")
-    STARTTIME = time.time()
-    # Get all of the source audio filenames
-    for root, dirs, files in os.walk(os.getcwd()):
-        source_audio_filenames = []
-        for file in files:
-            if file.endswith(f".{CONVERT_FROM.lower()}"):
-                source_audio_filenames.append((root, file))
-        FOLDERS.append((root, source_audio_filenames))
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
 
-    with ThreadPool(cpu_count())as p:
-        PROCESSES = []
-        for Folder in FOLDERS:
-            try:
-                # Stop directories being created within the output directories
-                if FOLDER_NAME in Folder[0]:
-                    continue
-                NewFolderName = os.path.basename(Folder[0]) + "-" + FOLDER_NAME
-                os.mkdir(os.path.join(Folder[0], NewFolderName))
-            except FileExistsError:
-                pass
-            PROCESSES += Folder[1]
-        print(f"Converting {len(PROCESSES)} {CONVERT_FROM} files to {CONVERT_TO}")
-        JOBS = p.map(convert_mp3_to_flac, PROCESSES)
-        FAILED_JOBS = []
-        for job in JOBS:
-            if job.returncode != 0:
-                FAILED_JOBS.append(job)
-        MESSAGE = (f"Converting Finished! \r {len(PROCESSES)-len(FAILED_JOBS)}/{len(PROCESSES)} "
-                   f"{CONVERT_FROM} files converted to {CONVERT_TO} in \r{time.time() - STARTTIME:.4f} seconds")
-        try:
-            subprocess.run(["notify-send", "--urgency=low", MESSAGE])
-        except FileNotFoundError:
-            pass
-
-        if len(FAILED_JOBS) > 0:
-            with open("nautilus-transcode.log", 'a+') as f:
-                for failedJob in FAILED_JOBS:
-                    f.write(f"{failedJob.timestamp} args:{failedJob.args}"
-                            f"return code:{failedJob.returncode}\n")
-    print("Done")
-    sys.exit(0)
+    file_path = filedialog.askopenfilename(filetypes=[("MP3 files", "*.mp3"), ("All files", "*.*")])
+    if file_path:
+        print(f"Converting {file_path} to FLAC...")
+        result = convert_mp3_to_flac(file_path)
+        if result.returncode == 0:
+            print("Conversion successful!")
+        else:
+            print("Conversion failed.")
+    else:
+        print("No file selected.")
