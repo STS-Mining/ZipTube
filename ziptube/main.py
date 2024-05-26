@@ -676,7 +676,7 @@ resolutions_button = ctk.CTkButton(main_frame, text="Load Resolutions", command=
 resolutions_var = None
 
 ''' Create and position GUI elements '''
-convert_to_audio_button = ctk.CTkButton(main_frame, text="Convert Video 2 Audio", command=convert_video_to_audio)
+convert_to_audio_button = ctk.CTkButton(main_frame, text="Convert Video to Audio", command=convert_video_to_audio)
 
 ''' Create a label and the progress bar to display the download progress '''
 progress_label = ctk.CTkLabel(main_frame, text="")
