@@ -468,6 +468,12 @@ def show_converters():
     convert_wma_to_wav_button.grid(row=4, column=2, padx=5, pady=5)
     to_main_menu()
 
+''' Function to show all the available convertors '''
+def hide_converters():
+    hide_all_buttons()
+    hide_footer_frame()
+    convertors_frame.pack_forget()
+
 ''' Function to show the download buttons available '''
 def show_youtube_downloader():
     hide_all_buttons()

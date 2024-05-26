@@ -35,7 +35,7 @@ def convert(file_path):
     else:
         status_label = f"Conversion failed for: \n{new_filename}"
         print(status_label)
-    return completed
+    return completed, status_label
 
 if __name__ == "__main__":
     root = tk.Tk()
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     file_path = filedialog.askopenfilename(filetypes=[(f"{CONVERT_FROM.upper()} files", f"*.{CONVERT_FROM.lower()}"), ("All files", "*.*")])
     if file_path:
         print(f"Converting {file_path} to {CONVERT_TO.capitalize()}...")
-        result = convert(file_path)
+        result, status_label = convert(file_path)
         if result.returncode == 0:
             print("Conversion successful!")
         else:
