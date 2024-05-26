@@ -222,40 +222,40 @@ def convert_audio_file(filetypes, conversion_function):
 
 ''' Conversion functions using the generic function '''
 def convert_flac_to_mp3():
-    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_mp3)
+    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_mp3.convert_flac_to_mp3)
 
 def convert_flac_to_wav():
-    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_wav)
+    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_wav.convert_flac_to_wav)
 
 def convert_flac_to_wma():
-    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_wma)
+    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_wma.convert_flac_to_wma)
 
 def convert_mp3_to_flac():
-    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_flac)
+    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_flac.convert_mp3_to_flac)
 
 def convert_mp3_to_wav():
-    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_wav)
+    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_wav.convert_mp3_to_wav)
 
 def convert_mp3_to_wma():
-    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_wma)
+    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_wma.convert_mp3_to_wma)
 
 def convert_wav_to_flac():
-    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_flac)
+    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_flac.convert_wav_to_flac)
 
 def convert_wav_to_mp3():
-    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_mp3)
+    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_mp3.convert_wav_to_mp3)
 
 def convert_wav_to_wma():
-    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_wma)
+    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_wma.convert_wav_to_wma)
 
 def convert_wma_to_flac():
-    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_flac)
+    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_flac.convert_wma_to_flac)
 
 def convert_wma_to_mp3():
-    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_mp3)
+    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_mp3.convert_wma_to_mp3)
 
 def convert_wma_to_wav():
-    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_wav)
+    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_wav.convert_wma_to_wav)
 
 ''' Function to convert video to audio '''
 def convert_to_audio(video_file):
