@@ -452,7 +452,7 @@ def download_audio_only():
 def show_converters():
     hide_all_buttons()
     hide_footer_frame()
-    convertors_frame.pack(padx=10, pady=70)
+    convertors_frame.pack(padx=10, pady=90)
     want_to_convert_to_audio_button.grid(row=0, column=1, padx=5, pady=5)
     convert_mp3_to_flac_button.grid(row=1, column=0, padx=5, pady=5)
     convert_mp3_to_wav_button.grid(row=1, column=1, padx=5, pady=5)
@@ -600,17 +600,11 @@ github_button.grid(row=0, column=2, padx=5, pady=5)
 discord_button.grid(row=0, column=3, padx=5, pady=5)
 donation_button.grid(row=0, column=4, padx=5, pady=5)
 
-''' Youtube menu frame '''
-youtube_menu_frame = ctk.CTkFrame(main_frame)
-
-''' Convertor Frame '''
-convertors_frame = ctk.CTkFrame(main_frame)
-
 ''' Custom definitions for convertor menu '''
-convertors_font = ctk.CTkFont(family="Calibri", size=15, weight="normal")
+convertors_font = ctk.CTkFont(family="Calibri", size=13, weight="normal")
 convertors_menu_color = "green"
-convertors_menu_height = 40
-convertors_menu_width = 120
+convertors_menu_height = 30
+convertors_menu_width = 90
 convertors_corner_radius = 33
 convertors_button_config = {
     'font': convertors_font,
@@ -620,9 +614,15 @@ convertors_button_config = {
     'corner_radius': convertors_corner_radius
 }
 
+''' Youtube menu frame '''
+youtube_menu_frame = ctk.CTkFrame(main_frame)
+
 ''' Define all the other buttons for YouTube menu '''
 want_to_download_button = ctk.CTkButton(youtube_menu_frame, text="Download Video", command=load_entry_and_resolutions_button, **convertors_button_config)
 want_to_download_audio_button = ctk.CTkButton(youtube_menu_frame, text="Download Audio", command=download_audio_only, **convertors_button_config)
+
+''' Convertor Frame '''
+convertors_frame = ctk.CTkFrame(main_frame)
 
 ''' Define all the other buttons for Converter menu '''
 want_to_convert_to_audio_button = ctk.CTkButton(convertors_frame, text="Video to Audio (mp3)", command=convert_video_to_audio, **convertors_button_config)
@@ -642,8 +642,8 @@ convert_wma_to_wav_button = ctk.CTkButton(convertors_frame, text="WMA to WAV", c
 ''' Custom definitions for main menu button only '''
 main_menu_font = ctk.CTkFont(family="calibri", size=15, weight="normal")
 main_menu_color = "blue"
-main_menu_height = 25
-main_menu_width = 75
+main_menu_height = 33
+main_menu_width = 99
 main_corner_radius = 33
 main_button_config = {
     'font': main_menu_font,
