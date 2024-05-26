@@ -1,7 +1,8 @@
 ''' 
 Author: STS-Mining
-ZipTube Version 1.24
-Download YouTube videos, audio and convert videos to audio
+Download YouTube videos to MP4 format,
+Download only audio from YouTube videos,
+Convert Audio files to various different formats.
 
 +------------------+-------------------------------------------------+
 | Version          | Description                                     |
@@ -303,7 +304,7 @@ def open_donation_window():
     def copy_address(name, address):
         pyperclip.copy(address)
         copied_label.configure(
-            text=f"\n{name} Address Copied to Clipboard\n\n{address}"
+            text=f"\n{name} address copied to clipboard\n\n{address}"
         )
         copied_label.pack()
         copied_label.after(2000, copied_label.pack_forget)
@@ -316,7 +317,7 @@ def open_donation_window():
     for i, wallet in enumerate(wallets):
         copy_button = ctk.CTkButton(
             button_frame,
-            text=f"{wallet['name']} Address",
+            text=f"{wallet['name']} Wallet Address",
             command=lambda name=wallet["name"], addr=wallet["address"]: copy_address(
                 name, addr
             ),
@@ -425,7 +426,7 @@ def load_entry_and_resolutions_button():
     want_to_download_audio_button.pack_forget()
     entry_url.pack(pady=10)
     resolutions_button.pack(pady="10p")
-    start_menu_frame.pack_forget()
+    main_menu_frame.pack_forget()
     want_to_download_button.pack_forget()
     want_to_convert_to_audio_button.pack_forget()
     to_main_menu()
@@ -442,7 +443,7 @@ def download_audio_only():
     entry_url.pack(pady=10)
     download_audio_button.configure(text="Download", command=download_audio)
     download_audio_button.pack(pady=10)
-    start_menu_frame.pack_forget()
+    main_menu_frame.pack_forget()
     want_to_download_button.pack_forget()
     want_to_convert_to_audio_button.pack_forget()
     to_main_menu()
@@ -450,8 +451,8 @@ def download_audio_only():
 ''' Function to show all the available convertors '''
 def show_converters():
     hide_all_buttons()
-    hide_bottom_menu_frame()
-    convertor_frame.pack(padx=10, pady=70)
+    hide_footer_frame()
+    convertors_frame.pack(padx=10, pady=70)
     want_to_convert_to_audio_button.grid(row=0, column=1, padx=5, pady=5)
     convert_mp3_to_flac_button.grid(row=1, column=0, padx=5, pady=5)
     convert_mp3_to_wav_button.grid(row=1, column=1, padx=5, pady=5)
@@ -470,20 +471,20 @@ def show_converters():
 ''' Function to show the download buttons available '''
 def show_youtube_downloader():
     hide_all_buttons()
-    hide_bottom_menu_frame()
+    hide_footer_frame()
     youtube_menu_frame.pack(padx=10, pady=130)
     want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
     want_to_download_audio_button.grid(row=0, column=1, padx=5, pady=5)
     to_main_menu()
 
 def hide_all_buttons():
-    start_menu_frame.pack_forget()
+    main_menu_frame.pack_forget()
 
 def back_to_main_menu():
     hide_all_buttons()
-    hide_bottom_menu_frame()
+    hide_footer_frame()
     back_to_menu_frame.pack_forget()
-    convertor_frame.pack_forget()
+    convertors_frame.pack_forget()
     youtube_menu_frame.pack_forget()
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
@@ -495,8 +496,8 @@ def back_to_main_menu():
     want_to_download_button.pack_forget()
     want_to_convert_to_audio_button.pack_forget()
     download_audio_button.pack_forget()
-    start_menu_frame.pack(padx=10, pady=130)
-    bottom_menu_frame.pack(side="bottom", pady=10)
+    main_menu_frame.pack(padx=10, pady=130)
+    footer_frame.pack(side="bottom", pady=10)
 
 ''' Function to go back to the main menu screen '''
 def to_main_menu():
@@ -504,8 +505,8 @@ def to_main_menu():
     back_to_menu_button.pack(pady=5)
 
 ''' Function to hide buttons at bottom of screen '''
-def hide_bottom_menu_frame():
-    bottom_menu_frame.pack_forget()
+def hide_footer_frame():
+    footer_frame.pack_forget()
     website_button.pack_forget()
     donation_button.pack_forget()
 
@@ -526,8 +527,8 @@ app.minsize(min_max_width, min_max_height)
 app.maxsize(min_max_width, min_max_height)
 
 ''' Create a frame to hold the content '''
-content_frame = ctk.CTkFrame(app)
-content_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
+main_frame = ctk.CTkFrame(app)
+main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
 ''' Define global variables to track download progress '''
 start_time = time.time()
@@ -536,55 +537,57 @@ bytes_downloaded_prev = 0
 ''' Create a label and the entry widget for the video url '''
 pil_image = Image.open(logo)
 logo_image = ctk.CTkImage(pil_image, size=(250, 60))
-heading = ctk.CTkLabel(content_frame, image=logo_image, text="")
+heading = ctk.CTkLabel(main_frame, image=logo_image, text="")
 heading.pack(pady="10p")
 
 ''' Initialize the main frame '''
-start_menu_frame = ctk.CTkFrame(content_frame)
-start_menu_frame.pack(padx=10, pady=130)
+main_menu_frame = ctk.CTkFrame(main_frame)
+main_menu_frame.pack(padx=10, pady=130)
 
 ''' Custom definitions for start menu only '''
-start_font = ctk.CTkFont(family="calibri", size=17, weight="normal")
-start_menu_color = "orange"
-start_menu_height = 50
-start_menu_width = 150
-start_corner_radius = 33
-start_button_config = {
-    'font': start_font,
-    'height': start_menu_height,
-    'width': start_menu_width,
-    'border_color': start_menu_color,
-    'corner_radius': start_corner_radius
+main_menu_font = ctk.CTkFont(family="calibri", size=17, weight="normal")
+main_menu_color = "orange"
+main_menu_height = 50
+main_menu_width = 150
+main_menu_corner_radius = 33
+main_menu_button_config = {
+    'font': main_menu_font,
+    'height': main_menu_height,
+    'width': main_menu_width,
+    'border_color': main_menu_color,
+    'corner_radius': main_menu_corner_radius
 }
 
 ''' Buttons for opening the sub-menus '''
-converters_button = ctk.CTkButton(start_menu_frame, text="Convert", command=show_converters, **start_button_config)
-youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_button_config)
+converters_button = ctk.CTkButton(main_menu_frame, text="Convert", command=show_converters, **main_menu_button_config)
+youtube_downloader_button = ctk.CTkButton(main_menu_frame, text="Download", command=show_youtube_downloader, **main_menu_button_config)
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
 
+''' Initialize the main frame '''
+footer_frame = ctk.CTkFrame(main_frame)
+footer_frame.pack(side="bottom", pady=10)
+
 ''' Custom definitions for start menu only '''
-start_bottom_font = ctk.CTkFont(family="calibri", size=13, weight="normal")
-start_bottom_menu_color = "red"
-start_bottom_menu_height = 25
-start_bottom_menu_width = 75
-start_bottom_corner_radius = 33
-start_bottom_button_config = {
-    'font': start_bottom_font,
-    'height': start_bottom_menu_height,
-    'width': start_bottom_menu_width,
-    'border_color': start_bottom_menu_color,
-    'corner_radius': start_bottom_corner_radius
+footer_font = ctk.CTkFont(family="calibri", size=13, weight="normal")
+footer_menu_color = "red"
+footer_menu_height = 25
+footer_menu_width = 75
+footer_corner_radius = 33
+footer_config = {
+    'font': footer_font,
+    'height': footer_menu_height,
+    'width': footer_menu_width,
+    'border_color': footer_menu_color,
+    'corner_radius': footer_corner_radius
 }
 
 ''' Bottom of the main screen donation and website buttons '''
-bottom_menu_frame = ctk.CTkFrame(content_frame)
-bottom_menu_frame.pack(side="bottom", pady=10)
-website_button = ctk.CTkButton(bottom_menu_frame, text="Website", command=lambda: open_webpage(website_url), **start_bottom_button_config)
-feedback_button = ctk.CTkButton(bottom_menu_frame, text="Feedback", command=open_feedback_email, **start_bottom_button_config)
-github_button = ctk.CTkButton(bottom_menu_frame, text="GitHub", command=lambda: open_webpage(github_url), **start_bottom_button_config)
-discord_button = ctk.CTkButton(bottom_menu_frame, text="Discord", command=lambda: open_webpage(discord_link), **start_bottom_button_config)
-donation_button = ctk.CTkButton(bottom_menu_frame, text="Donate", command=open_donation_window, **start_bottom_button_config)
+website_button = ctk.CTkButton(footer_frame, text="Website", command=lambda: open_webpage(website_url), **footer_config)
+feedback_button = ctk.CTkButton(footer_frame, text="Feedback", command=open_feedback_email, **footer_config)
+github_button = ctk.CTkButton(footer_frame, text="GitHub", command=lambda: open_webpage(github_url), **footer_config)
+discord_button = ctk.CTkButton(footer_frame, text="Discord", command=lambda: open_webpage(discord_link), **footer_config)
+donation_button = ctk.CTkButton(footer_frame, text="Donate", command=open_donation_window, **footer_config)
 website_button.grid(row=0, column=0, padx=5, pady=5)
 feedback_button.grid(row=0, column=1, padx=5, pady=5)
 github_button.grid(row=0, column=2, padx=5, pady=5)
@@ -592,43 +595,43 @@ discord_button.grid(row=0, column=3, padx=5, pady=5)
 donation_button.grid(row=0, column=4, padx=5, pady=5)
 
 ''' Youtube menu frame '''
-youtube_menu_frame = ctk.CTkFrame(content_frame)
+youtube_menu_frame = ctk.CTkFrame(main_frame)
 
 ''' Convertor Frame '''
-convertor_frame = ctk.CTkFrame(content_frame)
+convertors_frame = ctk.CTkFrame(main_frame)
 
 ''' Custom definitions for convertor menu '''
-convertor_font = ctk.CTkFont(family="Calibri", size=15, weight="normal")
-convertor_menu_color = "green"
-convertor_menu_height = 40
-convertor_menu_width = 120
-convertor_corner_radius = 33
-convertor_button_config = {
-    'font': convertor_font,
-    'height': convertor_menu_height,
-    'width': convertor_menu_width,
-    'border_color': convertor_menu_color,
-    'corner_radius': convertor_corner_radius
+convertors_font = ctk.CTkFont(family="Calibri", size=15, weight="normal")
+convertors_menu_color = "green"
+convertors_menu_height = 40
+convertors_menu_width = 120
+convertors_corner_radius = 33
+convertors_button_config = {
+    'font': convertors_font,
+    'height': convertors_menu_height,
+    'width': convertors_menu_width,
+    'border_color': convertors_menu_color,
+    'corner_radius': convertors_corner_radius
 }
 
 ''' Define all the other buttons for YouTube menu '''
-want_to_download_button = ctk.CTkButton(youtube_menu_frame, text="Download Video", command=load_entry_and_resolutions_button, **convertor_button_config)
-want_to_download_audio_button = ctk.CTkButton(youtube_menu_frame, text="Download Audio", command=download_audio_only, **convertor_button_config)
+want_to_download_button = ctk.CTkButton(youtube_menu_frame, text="Download Video", command=load_entry_and_resolutions_button, **convertors_button_config)
+want_to_download_audio_button = ctk.CTkButton(youtube_menu_frame, text="Download Audio", command=download_audio_only, **convertors_button_config)
 
 ''' Define all the other buttons for Converter menu '''
-want_to_convert_to_audio_button = ctk.CTkButton(convertor_frame, text="Video to Audio", command=convert_video_to_audio, **convertor_button_config)
-convert_mp3_to_flac_button = ctk.CTkButton(convertor_frame, text="MP3 to FLAC", command=convert_mp3_to_flac, **convertor_button_config)
-convert_mp3_to_wav_button = ctk.CTkButton(convertor_frame, text="MP3 to WAV", command=convert_mp3_to_wav, **convertor_button_config)
-convert_mp3_to_wma_button = ctk.CTkButton(convertor_frame, text="MP3 to WMA", command=convert_mp3_to_wma, **convertor_button_config)
-convert_flac_to_mp3_button = ctk.CTkButton(convertor_frame, text="FLAC to MP3", command=convert_flac_to_mp3, **convertor_button_config)
-convert_flac_to_wav_button = ctk.CTkButton(convertor_frame, text="FLAC to WAV", command=convert_flac_to_wav, **convertor_button_config)
-convert_flac_to_wma_button = ctk.CTkButton(convertor_frame, text="FLAC to WMA", command=convert_flac_to_wma, **convertor_button_config)
-convert_wav_to_mp3_button = ctk.CTkButton(convertor_frame, text="WAV to MP3", command=convert_wav_to_mp3, **convertor_button_config)
-convert_wav_to_flac_button = ctk.CTkButton(convertor_frame, text="WAV to FLAC", command=convert_wav_to_flac, **convertor_button_config)
-convert_wav_to_wma_button = ctk.CTkButton(convertor_frame, text="WAV to WMA", command=convert_wav_to_wma, **convertor_button_config)
-convert_wma_to_mp3_button = ctk.CTkButton(convertor_frame, text="WMA to MP3", command=convert_wma_to_mp3, **convertor_button_config)
-convert_wma_to_flac_button = ctk.CTkButton(convertor_frame, text="WMA to FLAC", command=convert_wma_to_flac, **convertor_button_config)
-convert_wma_to_wav_button = ctk.CTkButton(convertor_frame, text="WMA to WAV", command=convert_wma_to_wav, **convertor_button_config)
+want_to_convert_to_audio_button = ctk.CTkButton(convertors_frame, text="Video to Audio (mp3)", command=convert_video_to_audio, **convertors_button_config)
+convert_mp3_to_flac_button = ctk.CTkButton(convertors_frame, text="MP3 to FLAC", command=convert_mp3_to_flac, **convertors_button_config)
+convert_mp3_to_wav_button = ctk.CTkButton(convertors_frame, text="MP3 to WAV", command=convert_mp3_to_wav, **convertors_button_config)
+convert_mp3_to_wma_button = ctk.CTkButton(convertors_frame, text="MP3 to WMA", command=convert_mp3_to_wma, **convertors_button_config)
+convert_flac_to_mp3_button = ctk.CTkButton(convertors_frame, text="FLAC to MP3", command=convert_flac_to_mp3, **convertors_button_config)
+convert_flac_to_wav_button = ctk.CTkButton(convertors_frame, text="FLAC to WAV", command=convert_flac_to_wav, **convertors_button_config)
+convert_flac_to_wma_button = ctk.CTkButton(convertors_frame, text="FLAC to WMA", command=convert_flac_to_wma, **convertors_button_config)
+convert_wav_to_mp3_button = ctk.CTkButton(convertors_frame, text="WAV to MP3", command=convert_wav_to_mp3, **convertors_button_config)
+convert_wav_to_flac_button = ctk.CTkButton(convertors_frame, text="WAV to FLAC", command=convert_wav_to_flac, **convertors_button_config)
+convert_wav_to_wma_button = ctk.CTkButton(convertors_frame, text="WAV to WMA", command=convert_wav_to_wma, **convertors_button_config)
+convert_wma_to_mp3_button = ctk.CTkButton(convertors_frame, text="WMA to MP3", command=convert_wma_to_mp3, **convertors_button_config)
+convert_wma_to_flac_button = ctk.CTkButton(convertors_frame, text="WMA to FLAC", command=convert_wma_to_flac, **convertors_button_config)
+convert_wma_to_wav_button = ctk.CTkButton(convertors_frame, text="WMA to WAV", command=convert_wma_to_wav, **convertors_button_config)
 
 ''' Custom definitions for main menu button only '''
 main_menu_font = ctk.CTkFont(family="calibri", size=15, weight="normal")
@@ -645,35 +648,35 @@ main_button_config = {
 }
 
 ''' Create a button to always get the user back to the main menu '''
-back_to_menu_frame = ctk.CTkFrame(content_frame)
+back_to_menu_frame = ctk.CTkFrame(main_frame)
 back_to_menu_button = ctk.CTkButton(back_to_menu_frame, text="Main Menu", command=back_to_main_menu, **main_button_config)
 
 ''' Create a label and the entry widget for the video url '''
-entry_url = ctk.CTkEntry(content_frame, width=390, placeholder_text=("Paste URL here..."))
+entry_url = ctk.CTkEntry(main_frame, width=390, placeholder_text=("Paste URL here..."))
 
 ''' Create a resolutions frame to hold the resolutions '''
-resolutions_frame = ctk.CTkFrame(content_frame)
+resolutions_frame = ctk.CTkFrame(main_frame)
 
 ''' Create a download button '''
-download_button = ctk.CTkButton(content_frame, text="Download", command=lambda: download_video(resolutions_var))
+download_button = ctk.CTkButton(main_frame, text="Download", command=lambda: download_video(resolutions_var))
 
 ''' Create a download audio button '''
-download_audio_button = ctk.CTkButton(content_frame, text="Download", command=download_audio)
+download_audio_button = ctk.CTkButton(main_frame, text="Download", command=download_audio)
 
 ''' Create a resolutions button '''
-resolutions_button = ctk.CTkButton(content_frame, text="Load Resolutions", command=load_resolutions)
+resolutions_button = ctk.CTkButton(main_frame, text="Load Resolutions", command=load_resolutions)
 
 ''' Define resolutions_var globally '''
 resolutions_var = None
 
 ''' Create and position GUI elements '''
-convert_to_audio_button = ctk.CTkButton(content_frame, text="Convert Video 2 Audio", command=convert_video_to_audio)
+convert_to_audio_button = ctk.CTkButton(main_frame, text="Convert Video 2 Audio", command=convert_video_to_audio)
 
 ''' Create a label and the progress bar to display the download progress '''
-progress_label = ctk.CTkLabel(content_frame, text="")
+progress_label = ctk.CTkLabel(main_frame, text="")
 
 ''' Create the status label '''
-status_label = ctk.CTkLabel(content_frame, text="")
+status_label = ctk.CTkLabel(main_frame, text="")
 
 ''' Add the on_close function to the close button '''
 app.protocol("WM_DELETE_WINDOW", on_close)
