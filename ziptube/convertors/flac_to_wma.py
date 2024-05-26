@@ -8,8 +8,8 @@ import tkinter as tk
 from tkinter import filedialog
 
 FFMPEG_PATH = "ziptube/assets/ffmpeg/bin/ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
-CONVERT_TO = "wma"
 CONVERT_FROM = "flac"
+CONVERT_TO = "wma"
 
 def convert(file_path):
     root_path, filename = os.path.split(file_path)
@@ -29,11 +29,13 @@ def convert(file_path):
                                stderr=subprocess.DEVNULL,
                                stdout=subprocess.DEVNULL,
                                stdin=subprocess.PIPE)
-    print(f"'{new_path}' - Conversion Successful ...")
-    if completed.returncode != 0:
-        print(f"Conversion failed for {file_path}")
+    if completed.returncode == 0:
+        status_label = f"'{new_filename}' - Conversion Successful ..."
+        print(status_label)
+    else:
+        status_label = f"Conversion failed for: \n{new_filename}"
+        print(status_label)
     return completed
-
 
 if __name__ == "__main__":
     root = tk.Tk()
@@ -41,7 +43,7 @@ if __name__ == "__main__":
 
     file_path = filedialog.askopenfilename(filetypes=[(f"{CONVERT_FROM.upper()} files", f"*.{CONVERT_FROM.lower()}"), ("All files", "*.*")])
     if file_path:
-        print(f"Converting {file_path} to {CONVERT_TO.capitalize}...")
+        print(f"Converting {file_path} to {CONVERT_TO.capitalize()}...")
         result = convert(file_path)
         if result.returncode == 0:
             print("Conversion successful!")
