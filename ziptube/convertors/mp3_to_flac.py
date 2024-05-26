@@ -7,7 +7,7 @@ import subprocess
 import tkinter as tk
 from tkinter import filedialog
 
-FFMPEG_PATH = "ziptube/assets/programs/ffmpeg/bin/ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
+FFMPEG_PATH = "ziptube/assets/ffmpeg/bin/ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
 CONVERT_TO = "flac"
 
 def convert_mp3_to_flac(file_path):

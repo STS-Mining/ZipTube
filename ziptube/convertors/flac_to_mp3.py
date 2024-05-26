@@ -12,7 +12,7 @@ from multiprocessing import cpu_count
 import time
 import datetime
 
-FFMPEG_PATH = "Path/To/Location/ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
+FFMPEG_PATH = "ziptube/assets/ffmpeg/bin/ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
 CONVERT_FROM = "Flac"
 CONVERT_TO = "MP3"
 
