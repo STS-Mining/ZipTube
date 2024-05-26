@@ -9,9 +9,9 @@ from tkinter import filedialog
 
 FFMPEG_PATH = "ziptube/assets/ffmpeg/bin/ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
 CONVERT_TO = "flac"
+CONVERT_FROM = "mp3"
 
-def convert_mp3_to_flac(file_path):
-    '''Convert the given MP3 file to FLAC using ffmpeg'''
+def convert(file_path):
     root_path, filename = os.path.split(file_path)
     new_filename = os.path.splitext(filename)[0] + "." + CONVERT_TO
     new_path = os.path.join(root_path, new_filename)
@@ -24,12 +24,12 @@ def convert_mp3_to_flac(file_path):
                                 "-i",
                                 file_path,
                                 "-codec:a",
-                                "flac",
+                                CONVERT_TO,
                                 new_path],
                                stderr=subprocess.DEVNULL,
                                stdout=subprocess.DEVNULL,
                                stdin=subprocess.PIPE)
-    print(f"'{new_path}' - return code {completed.returncode}")
+    print(f"'{new_path}' - Conversion Successful ...")
     if completed.returncode != 0:
         print(f"Conversion failed for {file_path}")
     return completed
@@ -39,10 +39,10 @@ if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()  # Hide the root window
 
-    file_path = filedialog.askopenfilename(filetypes=[("MP3 files", "*.mp3"), ("All files", "*.*")])
+    file_path = filedialog.askopenfilename(filetypes=[(f"{CONVERT_FROM.upper()} files", f"*.{CONVERT_FROM.lower()}"), ("All files", "*.*")])
     if file_path:
-        print(f"Converting {file_path} to FLAC...")
-        result = convert_mp3_to_flac(file_path)
+        print(f"Converting {file_path} to {CONVERT_TO.capitalize}...")
+        result = convert(file_path)
         if result.returncode == 0:
             print("Conversion successful!")
         else:
