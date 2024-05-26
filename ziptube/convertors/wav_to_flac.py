@@ -13,7 +13,7 @@ CONVERT_TO = "flac"
 
 def start_countdown(seconds, countdown_label, app):
     if seconds > 0:
-        countdown_label.configure(text=f"Closing in {seconds} seconds...")
+        countdown_label.configure(text=f"Closing window in {seconds} seconds...")
         app.after(1000, start_countdown, seconds - 1, countdown_label, app)
     else:
         app.destroy()
@@ -72,7 +72,7 @@ def convert(file_path):
             status_label.configure(text=f"Successfully Converted ... \n\n{new_filename}")
         else:
             status_label.configure(text=f"Conversion failed ... \n\n{new_filename}")
-        start_countdown(10, countdown_label, app)  # Start the countdown after the conversion is complete
+        start_countdown(5, countdown_label, app)  # Start the countdown after the conversion is complete
 
     app.after(100, run_conversion)  # Delay the conversion to ensure the UI is fully rendered
     app.mainloop()
