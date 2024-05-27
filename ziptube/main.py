@@ -317,7 +317,7 @@ def open_donation_window():
     for i, wallet in enumerate(wallets):
         copy_button = ctk.CTkButton(
             button_frame,
-            text=f"{wallet['name']} Wallet Address",
+            text=f"{wallet['name']} Address",
             command=lambda name=wallet["name"], addr=wallet["address"]: copy_address(
                 name, addr
             ),
@@ -452,7 +452,7 @@ def download_audio_only():
 def show_converters():
     hide_all_buttons()
     hide_footer_frame()
-    convertors_frame.pack(padx=10, pady=90)
+    convertors_frame.pack(padx=10, pady=85)
     want_to_convert_to_audio_button.grid(row=0, column=1, padx=5, pady=5)
     convert_mp3_to_flac_button.grid(row=1, column=0, padx=5, pady=5)
     convert_mp3_to_wav_button.grid(row=1, column=1, padx=5, pady=5)
@@ -536,6 +536,44 @@ app.maxsize(min_max_width, min_max_height)
 main_frame = ctk.CTkFrame(app)
 main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
+''' Custom button configurations to be set here '''
+base_config = {
+    'font': ctk.CTkFont(family="calibri", size=15, weight="normal"),
+    'height': 40,
+    'width': 120,
+    'corner_radius': 33
+}
+
+button_specifics = {
+    'main': {'border_color': "blue"},
+    'convertors': {
+        'font': ctk.CTkFont(family="calibri", size=13, weight="normal"),
+        'border_color': "green",
+        'height': 30,
+        'width': 90
+    },
+    'start_menu': {'border_color': "orange"},
+    'footer': {
+        'font': ctk.CTkFont(family="calibri", size=13, weight="normal"),
+        'border_color': "red",
+        'height': 20,
+        'width': 60
+    }
+}
+
+def create_button_config(button_type):
+    if button_type not in button_specifics:
+        raise ValueError("Invalid button type")
+    
+    config = base_config.copy()
+    config.update(button_specifics[button_type])
+    return config
+
+main_button_config = create_button_config('main')
+convertors_button_config = create_button_config('convertors')
+footer_button_config = create_button_config('footer')
+start_menu_button_config = create_button_config('start_menu')
+
 ''' Define global variables to track download progress '''
 start_time = time.time()
 bytes_downloaded_prev = 0
@@ -550,20 +588,6 @@ heading.pack(pady="10p")
 start_menu_frame = ctk.CTkFrame(main_frame)
 start_menu_frame.pack(padx=10, pady=130)
 
-''' Custom definitions for start menu only '''
-start_menu_font = ctk.CTkFont(family="calibri", size=17, weight="normal")
-start_menu_color = "orange"
-start_menu_height = 40
-start_menu_width = 120
-start_menu_corner_radius = 33
-start_menu_button_config = {
-    'font': start_menu_font,
-    'height': start_menu_height,
-    'width': start_menu_width,
-    'border_color': start_menu_color,
-    'corner_radius': start_menu_corner_radius
-}
-
 ''' Buttons for opening the sub-menus '''
 converters_button = ctk.CTkButton(start_menu_frame, text="Convert", command=show_converters, **start_menu_button_config)
 youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_menu_button_config)
@@ -573,20 +597,6 @@ converters_button.grid(row=0, column=1, padx=5, pady=5)
 ''' Initialize the main frame '''
 footer_frame = ctk.CTkFrame(main_frame)
 footer_frame.pack(side="bottom", pady=10)
-
-''' Custom definitions for start menu only '''
-footer_menu_font = ctk.CTkFont(family="calibri", size=13, weight="normal")
-footer_menu_color = "red"
-footer_menu_height = 25
-footer_menu_width = 75
-footer_corner_radius = 33
-footer_button_config = {
-    'font': footer_menu_font,
-    'height': footer_menu_height,
-    'width': footer_menu_width,
-    'border_color': footer_menu_color,
-    'corner_radius': footer_corner_radius
-}
 
 ''' Bottom of the main screen donation and website buttons '''
 website_button = ctk.CTkButton(footer_frame, text="Website", command=lambda: open_webpage(website_url), **footer_button_config)
@@ -600,20 +610,6 @@ github_button.grid(row=0, column=2, padx=5, pady=5)
 discord_button.grid(row=0, column=3, padx=5, pady=5)
 donation_button.grid(row=0, column=4, padx=5, pady=5)
 
-''' Custom definitions for convertor menu '''
-convertors_menu_font = ctk.CTkFont(family="Calibri", size=13, weight="normal")
-convertors_menu_color = "green"
-convertors_menu_height = 30
-convertors_menu_width = 90
-convertors_corner_radius = 33
-convertors_button_config = {
-    'font': convertors_menu_font,
-    'height': convertors_menu_height,
-    'width': convertors_menu_width,
-    'border_color': convertors_menu_color,
-    'corner_radius': convertors_corner_radius
-}
-
 ''' Youtube menu frame '''
 youtube_menu_frame = ctk.CTkFrame(main_frame)
 
@@ -625,7 +621,7 @@ want_to_download_audio_button = ctk.CTkButton(youtube_menu_frame, text="Download
 convertors_frame = ctk.CTkFrame(main_frame)
 
 ''' Define all the other buttons for Converter menu '''
-want_to_convert_to_audio_button = ctk.CTkButton(convertors_frame, text="Video to Audio\n(mp4) to (mp3)", command=convert_video_to_audio, **convertors_button_config)
+want_to_convert_to_audio_button = ctk.CTkButton(convertors_frame, text="Video to Audio", command=convert_video_to_audio, **convertors_button_config)
 convert_mp3_to_flac_button = ctk.CTkButton(convertors_frame, text="MP3 to FLAC", command=convert_mp3_to_flac, **convertors_button_config)
 convert_mp3_to_wav_button = ctk.CTkButton(convertors_frame, text="MP3 to WAV", command=convert_mp3_to_wav, **convertors_button_config)
 convert_mp3_to_wma_button = ctk.CTkButton(convertors_frame, text="MP3 to WMA", command=convert_mp3_to_wma, **convertors_button_config)
@@ -638,20 +634,6 @@ convert_wav_to_wma_button = ctk.CTkButton(convertors_frame, text="WAV to WMA", c
 convert_wma_to_mp3_button = ctk.CTkButton(convertors_frame, text="WMA to MP3", command=convert_wma_to_mp3, **convertors_button_config)
 convert_wma_to_flac_button = ctk.CTkButton(convertors_frame, text="WMA to FLAC", command=convert_wma_to_flac, **convertors_button_config)
 convert_wma_to_wav_button = ctk.CTkButton(convertors_frame, text="WMA to WAV", command=convert_wma_to_wav, **convertors_button_config)
-
-''' Custom definitions for main menu button only '''
-main_menu_font = ctk.CTkFont(family="calibri", size=15, weight="normal")
-main_menu_color = "blue"
-main_menu_height = 33
-main_menu_width = 99
-main_corner_radius = 33
-main_button_config = {
-    'font': main_menu_font,
-    'height': main_menu_height,
-    'width': main_menu_width,
-    'border_color': main_menu_color,
-    'corner_radius': main_corner_radius
-}
 
 ''' Create a button to always get the user back to the main menu '''
 back_to_menu_frame = ctk.CTkFrame(main_frame)
