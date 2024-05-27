@@ -59,13 +59,13 @@ from convertors import (
 
 # Icon and logo location on system #
 app_name = "ZipTube"
-icon = "ziptube/assets/images/icon.ico"
-logo = "ziptube/assets/images/logo.png"
-custom_theme = "ziptube/assets/themes/custom.json"
+icon = "ziptube\\assets\\images\\icon.ico"
+logo = "ziptube\\assets\\images\\logo.png"
+custom_theme = "ziptube\\assets\\themes\\custom.json"
 website_url = "https://sts-mining.github.io/website/"
 discord_link = "https://discord.gg/Fd5uEgs4"
 github_url = "https://github.com/STS-Mining"
-feedback_email = "sts@github.com"
+feedback_email = "stsmining.ziptube@gmail.com"
 
 # Function to link website to main screen in a button #
 def open_webpage(url):

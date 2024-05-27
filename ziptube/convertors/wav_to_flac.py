@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!\\usr\\bin\\env python3
 
 '''This module will convert a single wav file to flac using ffmpeg'''
 
@@ -7,7 +7,7 @@ import subprocess
 import customtkinter as ctk
 from tkinter import filedialog
 
-FFMPEG_PATH = "ziptube/assets/ffmpeg/bin/ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
+FFMPEG_PATH = "ziptube\\assets\\ffmpeg\\bin\\ffmpeg.exe"  # Specify the full path to ffmpeg.exe here
 CONVERT_FROM = "wav"
 CONVERT_TO = "flac"
 
@@ -21,8 +21,8 @@ def start_countdown(seconds, countdown_label, app):
 def convert(file_path):
     ''' Icon and logo location on system '''
     app_name = "ZipTube"
-    icon = "ziptube/assets/images/icon.ico"
-    custom_theme = "ziptube/assets/themes/custom.json"
+    icon = "ziptube\\assets\\images\\icon.ico"
+    custom_theme = "ziptube\\assets\\themes\\custom.json"
 
     ''' Create a app window '''
     app = ctk.CTk()
