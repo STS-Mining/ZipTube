@@ -546,15 +546,15 @@ logo_image = ctk.CTkImage(pil_image, size=(250, 60))
 heading = ctk.CTkLabel(main_frame, image=logo_image, text="")
 heading.pack(pady="10p")
 
-''' Initialize the main frame '''
+''' Initialize the main menu frame '''
 main_menu_frame = ctk.CTkFrame(main_frame)
 main_menu_frame.pack(padx=10, pady=130)
 
 ''' Custom definitions for start menu only '''
 main_menu_font = ctk.CTkFont(family="calibri", size=17, weight="normal")
 main_menu_color = "orange"
-main_menu_height = 50
-main_menu_width = 150
+main_menu_height = 40
+main_menu_width = 120
 main_menu_corner_radius = 33
 main_menu_button_config = {
     'font': main_menu_font,
@@ -625,7 +625,7 @@ want_to_download_audio_button = ctk.CTkButton(youtube_menu_frame, text="Download
 convertors_frame = ctk.CTkFrame(main_frame)
 
 ''' Define all the other buttons for Converter menu '''
-want_to_convert_to_audio_button = ctk.CTkButton(convertors_frame, text="Video to Audio (mp3)", command=convert_video_to_audio, **convertors_button_config)
+want_to_convert_to_audio_button = ctk.CTkButton(convertors_frame, text="Video to Audio\n(mp4) to (mp3)", command=convert_video_to_audio, **convertors_button_config)
 convert_mp3_to_flac_button = ctk.CTkButton(convertors_frame, text="MP3 to FLAC", command=convert_mp3_to_flac, **convertors_button_config)
 convert_mp3_to_wav_button = ctk.CTkButton(convertors_frame, text="MP3 to WAV", command=convert_mp3_to_wav, **convertors_button_config)
 convert_mp3_to_wma_button = ctk.CTkButton(convertors_frame, text="MP3 to WMA", command=convert_mp3_to_wma, **convertors_button_config)
