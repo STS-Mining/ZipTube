@@ -63,7 +63,7 @@ icon = "ziptube\\assets\\images\\icon.ico"
 logo = "ziptube\\assets\\images\\logo.png"
 custom_theme = "ziptube\\assets\\themes\\custom.json"
 website_url = "https://sts-mining.github.io/website/"
-discord_link = "https://discord.gg/Fd5uEgs4"
+discord_link = "https://discord.gg/DvvMH9dC6N"
 github_url = "https://github.com/STS-Mining"
 feedback_email = "stsmining.ziptube@gmail.com"
 
