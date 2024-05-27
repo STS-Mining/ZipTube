@@ -426,7 +426,7 @@ def load_entry_and_resolutions_button():
     want_to_download_audio_button.pack_forget()
     entry_url.pack(pady=10)
     resolutions_button.pack(pady="10p")
-    main_menu_frame.pack_forget()
+    start_menu_frame.pack_forget()
     want_to_download_button.pack_forget()
     want_to_convert_to_audio_button.pack_forget()
     to_main_menu()
@@ -443,7 +443,7 @@ def download_audio_only():
     entry_url.pack(pady=10)
     download_audio_button.configure(text="Download", command=download_audio)
     download_audio_button.pack(pady=10)
-    main_menu_frame.pack_forget()
+    start_menu_frame.pack_forget()
     want_to_download_button.pack_forget()
     want_to_convert_to_audio_button.pack_forget()
     to_main_menu()
@@ -484,7 +484,7 @@ def show_youtube_downloader():
     to_main_menu()
 
 def hide_all_buttons():
-    main_menu_frame.pack_forget()
+    start_menu_frame.pack_forget()
 
 def back_to_main_menu():
     hide_all_buttons()
@@ -502,7 +502,7 @@ def back_to_main_menu():
     want_to_download_button.pack_forget()
     want_to_convert_to_audio_button.pack_forget()
     download_audio_button.pack_forget()
-    main_menu_frame.pack(padx=10, pady=130)
+    start_menu_frame.pack(padx=10, pady=130)
     footer_frame.pack(side="bottom", pady=10)
 
 ''' Function to go back to the main menu screen '''
@@ -547,26 +547,26 @@ heading = ctk.CTkLabel(main_frame, image=logo_image, text="")
 heading.pack(pady="10p")
 
 ''' Initialize the main menu frame '''
-main_menu_frame = ctk.CTkFrame(main_frame)
-main_menu_frame.pack(padx=10, pady=130)
+start_menu_frame = ctk.CTkFrame(main_frame)
+start_menu_frame.pack(padx=10, pady=130)
 
 ''' Custom definitions for start menu only '''
-main_menu_font = ctk.CTkFont(family="calibri", size=17, weight="normal")
-main_menu_color = "orange"
-main_menu_height = 40
-main_menu_width = 120
-main_menu_corner_radius = 33
-main_menu_button_config = {
-    'font': main_menu_font,
-    'height': main_menu_height,
-    'width': main_menu_width,
-    'border_color': main_menu_color,
-    'corner_radius': main_menu_corner_radius
+start_menu_font = ctk.CTkFont(family="calibri", size=17, weight="normal")
+start_menu_color = "orange"
+start_menu_height = 40
+start_menu_width = 120
+start_menu_corner_radius = 33
+start_menu_button_config = {
+    'font': start_menu_font,
+    'height': start_menu_height,
+    'width': start_menu_width,
+    'border_color': start_menu_color,
+    'corner_radius': start_menu_corner_radius
 }
 
 ''' Buttons for opening the sub-menus '''
-converters_button = ctk.CTkButton(main_menu_frame, text="Convert", command=show_converters, **main_menu_button_config)
-youtube_downloader_button = ctk.CTkButton(main_menu_frame, text="Download", command=show_youtube_downloader, **main_menu_button_config)
+converters_button = ctk.CTkButton(start_menu_frame, text="Convert", command=show_converters, **start_menu_button_config)
+youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_menu_button_config)
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
 
@@ -575,13 +575,13 @@ footer_frame = ctk.CTkFrame(main_frame)
 footer_frame.pack(side="bottom", pady=10)
 
 ''' Custom definitions for start menu only '''
-footer_font = ctk.CTkFont(family="calibri", size=13, weight="normal")
+footer_menu_font = ctk.CTkFont(family="calibri", size=13, weight="normal")
 footer_menu_color = "red"
 footer_menu_height = 25
 footer_menu_width = 75
 footer_corner_radius = 33
-footer_config = {
-    'font': footer_font,
+footer_button_config = {
+    'font': footer_menu_font,
     'height': footer_menu_height,
     'width': footer_menu_width,
     'border_color': footer_menu_color,
@@ -589,11 +589,11 @@ footer_config = {
 }
 
 ''' Bottom of the main screen donation and website buttons '''
-website_button = ctk.CTkButton(footer_frame, text="Website", command=lambda: open_webpage(website_url), **footer_config)
-feedback_button = ctk.CTkButton(footer_frame, text="Feedback", command=open_feedback_email, **footer_config)
-github_button = ctk.CTkButton(footer_frame, text="GitHub", command=lambda: open_webpage(github_url), **footer_config)
-discord_button = ctk.CTkButton(footer_frame, text="Discord", command=lambda: open_webpage(discord_link), **footer_config)
-donation_button = ctk.CTkButton(footer_frame, text="Donate", command=open_donation_window, **footer_config)
+website_button = ctk.CTkButton(footer_frame, text="Website", command=lambda: open_webpage(website_url), **footer_button_config)
+feedback_button = ctk.CTkButton(footer_frame, text="Feedback", command=open_feedback_email, **footer_button_config)
+github_button = ctk.CTkButton(footer_frame, text="GitHub", command=lambda: open_webpage(github_url), **footer_button_config)
+discord_button = ctk.CTkButton(footer_frame, text="Discord", command=lambda: open_webpage(discord_link), **footer_button_config)
+donation_button = ctk.CTkButton(footer_frame, text="Donate", command=open_donation_window, **footer_button_config)
 website_button.grid(row=0, column=0, padx=5, pady=5)
 feedback_button.grid(row=0, column=1, padx=5, pady=5)
 github_button.grid(row=0, column=2, padx=5, pady=5)
@@ -601,13 +601,13 @@ discord_button.grid(row=0, column=3, padx=5, pady=5)
 donation_button.grid(row=0, column=4, padx=5, pady=5)
 
 ''' Custom definitions for convertor menu '''
-convertors_font = ctk.CTkFont(family="Calibri", size=13, weight="normal")
+convertors_menu_font = ctk.CTkFont(family="Calibri", size=13, weight="normal")
 convertors_menu_color = "green"
 convertors_menu_height = 30
 convertors_menu_width = 90
 convertors_corner_radius = 33
 convertors_button_config = {
-    'font': convertors_font,
+    'font': convertors_menu_font,
     'height': convertors_menu_height,
     'width': convertors_menu_width,
     'border_color': convertors_menu_color,
