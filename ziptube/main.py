@@ -57,7 +57,7 @@ from convertors import (
     wav_to_wma, wma_to_flac, wma_to_mp3, wma_to_wav
 )
 
-''' Icon and logo location on system '''
+# Icon and logo location on system #
 app_name = "ZipTube"
 icon = "ziptube/assets/images/icon.ico"
 logo = "ziptube/assets/images/logo.png"
@@ -67,21 +67,21 @@ discord_link = "https://discord.gg/Fd5uEgs4"
 github_url = "https://github.com/STS-Mining"
 feedback_email = "sts@github.com"
 
-''' Function to link website to main screen in a button '''
+# Function to link website to main screen in a button #
 def open_webpage(url):
     webbrowser.open(url, new=2)  # new=2: open in a new tab, if possible
 
+# Function to send emails for feedback on app #
 def open_feedback_email():
     subject = f"{app_name} Feedback"
     webbrowser.open(f"mailto:{feedback_email}?subject={subject}")
 
-''' Save location for all files downloaded '''
+# Save location for all files downloaded #
 def choose_save_location():
     save_location = filedialog.askdirectory()
     return save_location
 
-
-''' Function to download only audio files '''
+# Function to download only audio files #
 def download_audio():
     global download_audio_button, output_path
     url = entry_url.get()
@@ -120,12 +120,12 @@ def download_audio():
             app.after(2000, hide_labels)
 
 
-''' Function that downloads the video once the download button is pressed '''
+# Function that downloads the video once the download button is pressed #
 def download_video(resolutions_var):
     global download_button, output_path
     url = entry_url.get()
     resolution = resolutions_var.get()
-    ''' Check if the resolution has not been selected '''
+    # Check if the resolution has not been selected #
     if not resolution:
         messagebox.showerror("Error", "Please select a resolution.")
         return
@@ -159,7 +159,7 @@ def download_video(resolutions_var):
         )
         app.after(2000, hide_labels)
 
-''' Function while the download is in progress '''
+# Function while the download is in progress #
 def on_progress(stream, chunk, bytes_remaining):
     global start_time, bytes_downloaded_prev, download_button, output_path, download_audio_button
     download_button.configure(state="disabled")
@@ -194,12 +194,12 @@ def on_progress(stream, chunk, bytes_remaining):
         status_label.configure(text=f"Saving to local location ... {output_path}")
         to_main_menu()
 
-''' Function to ask for confirmation before closing the window '''
+# Function to ask for confirmation before closing the window #
 def on_close():
     if messagebox.askokcancel("Confirmation", "Are you sure you want to close the application?"):
         app.destroy()
 
-''' Function convert video to audio '''
+# Function convert video to audio #
 def convert_video_to_audio():
     filename = filedialog.askopenfilename(
         initialdir="/",
@@ -209,8 +209,7 @@ def convert_video_to_audio():
     if filename:
         convert_to_audio(filename)
 
-''' Generic Function that runs all the 
-audio convertors with same information '''
+# Generic Function that runs all the audio convertors with same information #
 def convert_audio_file(filetypes, conversion_function):
     filename = filedialog.askopenfilename(
         initialdir="/",
@@ -220,44 +219,55 @@ def convert_audio_file(filetypes, conversion_function):
     if filename:
         conversion_function(filename)
 
-''' Conversion functions using the generic function '''
+# Function to convert FLAC to MP3 #
 def convert_flac_to_mp3():
     convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_mp3.convert)
 
+# Function to convert FLAC to WAV #
 def convert_flac_to_wav():
     convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_wav.convert)
 
+# Function to convert FLAC to WMA #
 def convert_flac_to_wma():
     convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_wma.convert)
 
+# Function to convert MP3 to FLAC #
 def convert_mp3_to_flac():
     convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_flac.convert)
 
+# Function to convert MP3 to WAV #
 def convert_mp3_to_wav():
     convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_wav.convert)
 
+# Function to convert MP3 to WMA #
 def convert_mp3_to_wma():
     convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_wma.convert)
 
+# Function to convert WAV to FLAC #
 def convert_wav_to_flac():
     convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_flac.convert)
 
+# Function to convert WAV to MP3 #
 def convert_wav_to_mp3():
     convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_mp3.convert)
 
+# Function to convert WAV to WMA #
 def convert_wav_to_wma():
     convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_wma.convert)
 
+# Function to convert WMA to FLAC #
 def convert_wma_to_flac():
     convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_flac.convert)
 
+# Function to convert WMA to MP3 #
 def convert_wma_to_mp3():
     convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_mp3.convert)
 
+# Function to convert WMA to WAV #
 def convert_wma_to_wav():
     convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_wav.convert)
 
-''' Function to convert video to audio '''
+# Function to convert video to audio #
 def convert_to_audio(video_file):
     global progress_label, status_label
     progress_label.pack(pady="10p")
@@ -270,7 +280,7 @@ def convert_to_audio(video_file):
     status_label.configure(text=f"File saved as: {audio_file}")
     to_main_menu()
     
-''' Function for donation window '''
+# Function for donation window #
 def open_donation_window():
     donation_window = ctk.CTk()
     donation_window.title("Please Donate ...")
@@ -281,11 +291,11 @@ def open_donation_window():
     donation_window.maxsize(new_width, new_height)
     donation_window.iconbitmap(icon)
 
-    ''' Create a frame to hold the content '''
+    # Create a frame to hold the content #
     donation_frame = ctk.CTkFrame(donation_window)
     donation_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
-    ''' Create a label with the donation message '''
+    # Create a label with the donation message #
     donation_label = ctk.CTkLabel(
         donation_frame,
         text="Enjoy using our app?? \nWould you like us to keep it well maintained? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.",
@@ -293,14 +303,14 @@ def open_donation_window():
     )
     donation_label.pack(padx=10, pady=10)
 
-    ''' Define wallet addresses and labels '''
+    # Define wallet addresses and labels #
     wallets = [
         {"name": "BTC", "address": "12pGQNkdk8C3H32GBtUzXjxgZvxVZLRxsB"},
         {"name": "ETH", "address": "0x7801af1b2acd60e56f9bf0d5039beb3d99ba8bc4"},
         {"name": "DOGE", "address": "D6TE4ZgBfjJ1neYztZFQWiihPZNBS418P5"},
     ]
 
-    ''' Function to copy wallet address to clipboard '''
+    # Function to copy wallet address to clipboard #
     def copy_address(name, address):
         pyperclip.copy(address)
         copied_label.configure(
@@ -309,11 +319,11 @@ def open_donation_window():
         copied_label.pack()
         copied_label.after(2000, copied_label.pack_forget)
 
-    ''' Create a frame for the buttons to align them properly '''
+    # Create a frame for the buttons to align them properly #
     button_frame = ctk.CTkFrame(donation_frame)
     button_frame.pack(pady=10)
 
-    ''' Create buttons to copy wallet addresses '''
+    # Create buttons to copy wallet addresses #
     for i, wallet in enumerate(wallets):
         copy_button = ctk.CTkButton(
             button_frame,
@@ -325,14 +335,14 @@ def open_donation_window():
         )
         copy_button.grid(row=0, column=i, padx=5, pady=5)
 
-    ''' Label to display "Copied to Clipboard" message '''
+    # Label to display "Copied to Clipboard" message #
     copied_label = ctk.CTkLabel(donation_frame, text="")
     copied_label.pack(pady=5)
 
-    ''' Start the donation window's main loop '''
+    # Start the donation window's main loop #
     donation_window.mainloop()
 
-''' Hide the labels after 3 seconds '''
+# Hide the labels after 3 seconds #
 def hide_labels():
     global resolutions_var
     # resolutions_var.set("")
@@ -348,7 +358,7 @@ def hide_labels():
     convert_to_audio_button.pack(pady=10)
     to_main_menu()
 
-''' Function to print all available resolutions for a YouTube video '''
+# Function to print all available resolutions for a YouTube video #
 def print_available_resolutions(url):
     try:
         yt = YouTube(url)
@@ -358,13 +368,13 @@ def print_available_resolutions(url):
             key=lambda x: int(x[:-1]),
         )
         resolutions_var = ctk.StringVar()
-        ''' Function to handle resolution selection '''
+        # Function to handle resolution selection #
         def select_resolution(resolution):
             resolutions_var.set(resolution)
-        ''' Create a frame to hold the resolution buttons '''
+        # Create a frame to hold the resolution buttons #
         selected_resolution = ctk.StringVar()
         resolutions_frame.pack(pady=10)
-        ''' Create a radio button for each available resolution '''
+        # Create a radio button for each available resolution #
         for i, resolution in enumerate(resolutions):
             button = ctk.CTkRadioButton(
                 resolutions_frame,
@@ -381,7 +391,7 @@ def print_available_resolutions(url):
     except Exception as e:
         print(f"Error fetching resolutions for URL {url}: {e}")
 
-''' Function to load the resolutions for a YouTube video '''
+# Function to load the resolutions for a YouTube video #
 def load_resolutions():
     global resolutions_var
     url = entry_url.get().strip()
@@ -395,7 +405,7 @@ def load_resolutions():
         download_button.pack(pady=10)
         to_main_menu()
 
-''' Function to start a new download '''
+# Function to start a new download #
 def start_app_again():
     global resolutions_var
     resolutions_var.set("")
@@ -407,14 +417,14 @@ def start_app_again():
     download_button.configure(text="Download", command=lambda: download_video(resolutions_var))
     to_main_menu()
 
-''' Calculate the nearest measurement for bytes '''
+# Calculate the nearest measurement for bytes #
 def bytes_to_nearest_measurement(bytes):
     for unit in ["Bytes", "KB", "MB", "GB", "TB", "PB"]:
         if bytes < 1024:
             return f"{bytes:.2f} {unit}"
         bytes /= 1024
 
-''' Function to load entry widget for the video url and resolutions button '''
+# Function to load entry widget for the video url and resolutions button #
 def load_entry_and_resolutions_button():
     global entry_url, resolutions_button, resolutions_frame, download_button, convert_to_audio_button
     youtube_menu_frame.pack_forget()
@@ -431,7 +441,7 @@ def load_entry_and_resolutions_button():
     want_to_convert_to_audio_button.pack_forget()
     to_main_menu()
 
-''' function to download audio file only '''
+# function to download audio file only #
 def download_audio_only():
     global entry_url, resolutions_button, resolutions_frame, download_button, convert_to_audio_button
     youtube_menu_frame.pack_forget()
@@ -448,7 +458,7 @@ def download_audio_only():
     want_to_convert_to_audio_button.pack_forget()
     to_main_menu()
 
-''' Function to show all the available convertors '''
+# Function to show all the available convertors #
 def show_converters():
     hide_all_buttons()
     hide_footer_frame()
@@ -468,13 +478,13 @@ def show_converters():
     convert_wma_to_wav_button.grid(row=4, column=2, padx=5, pady=5)
     to_main_menu()
 
-''' Function to show all the available convertors '''
+# Function to show all the available convertors #
 def hide_converters():
     hide_all_buttons()
     hide_footer_frame()
     convertors_frame.pack_forget()
 
-''' Function to show the download buttons available '''
+# Function to show the download buttons available #
 def show_youtube_downloader():
     hide_all_buttons()
     hide_footer_frame()
@@ -505,38 +515,38 @@ def back_to_main_menu():
     start_menu_frame.pack(padx=10, pady=130)
     footer_frame.pack(side="bottom", pady=10)
 
-''' Function to go back to the main menu screen '''
+# Function to go back to the main menu screen #
 def to_main_menu():
     back_to_menu_frame.pack(side='bottom', pady=10)
     back_to_menu_button.pack(pady=5)
 
-''' Function to hide buttons at bottom of screen '''
+# Function to hide buttons at bottom of screen #
 def hide_footer_frame():
     footer_frame.pack_forget()
     website_button.pack_forget()
     donation_button.pack_forget()
 
-''' Create a app window '''
+# Create a app window #
 app = ctk.CTk()
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme(custom_theme)
 
-''' Title of the window '''
+# Title of the window #
 app.title(app_name)
 app.iconbitmap(icon)
 
-''' Set min and max width and height '''
+# Set min and max width and height #
 min_max_height = 550
 min_max_width = 650
 app.geometry(f"{min_max_width}x{min_max_height}")
 app.minsize(min_max_width, min_max_height)
 app.maxsize(min_max_width, min_max_height)
 
-''' Create a frame to hold the content '''
+# Create a frame to hold the content #
 main_frame = ctk.CTkFrame(app)
 main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
-''' Custom button configurations to be set here '''
+# Custom button configurations to be set here #
 base_config = {
     'font': ctk.CTkFont(family="calibri", size=15, weight="normal"),
     'height': 40,
@@ -574,31 +584,31 @@ convertors_button_config = create_button_config('convertors')
 footer_button_config = create_button_config('footer')
 start_menu_button_config = create_button_config('start_menu')
 
-''' Define global variables to track download progress '''
+# Define global variables to track download progress #
 start_time = time.time()
 bytes_downloaded_prev = 0
 
-''' Create a label and the entry widget for the video url '''
+# Create a label and the entry widget for the video url #
 pil_image = Image.open(logo)
 logo_image = ctk.CTkImage(pil_image, size=(250, 60))
 heading = ctk.CTkLabel(main_frame, image=logo_image, text="")
 heading.pack(pady="10p")
 
-''' Initialize the main menu frame '''
+# Initialize the main menu frame #
 start_menu_frame = ctk.CTkFrame(main_frame)
 start_menu_frame.pack(padx=10, pady=130)
 
-''' Buttons for opening the sub-menus '''
+# Buttons for opening the sub-menus #
 converters_button = ctk.CTkButton(start_menu_frame, text="Convert", command=show_converters, **start_menu_button_config)
 youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_menu_button_config)
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
 
-''' Initialize the main frame '''
+# Initialize the main frame #
 footer_frame = ctk.CTkFrame(main_frame)
 footer_frame.pack(side="bottom", pady=10)
 
-''' Bottom of the main screen donation and website buttons '''
+# Bottom of the main screen donation and website buttons #
 website_button = ctk.CTkButton(footer_frame, text="Website", command=lambda: open_webpage(website_url), **footer_button_config)
 feedback_button = ctk.CTkButton(footer_frame, text="Feedback", command=open_feedback_email, **footer_button_config)
 github_button = ctk.CTkButton(footer_frame, text="GitHub", command=lambda: open_webpage(github_url), **footer_button_config)
@@ -610,17 +620,17 @@ github_button.grid(row=0, column=2, padx=5, pady=5)
 discord_button.grid(row=0, column=3, padx=5, pady=5)
 donation_button.grid(row=0, column=4, padx=5, pady=5)
 
-''' Youtube menu frame '''
+# Youtube menu frame #
 youtube_menu_frame = ctk.CTkFrame(main_frame)
 
-''' Define all the other buttons for YouTube menu '''
+# Define all the other buttons for YouTube menu #
 want_to_download_button = ctk.CTkButton(youtube_menu_frame, text="Download Video", command=load_entry_and_resolutions_button, **convertors_button_config)
 want_to_download_audio_button = ctk.CTkButton(youtube_menu_frame, text="Download Audio", command=download_audio_only, **convertors_button_config)
 
-''' Convertor Frame '''
+# Convertor Frame #
 convertors_frame = ctk.CTkFrame(main_frame)
 
-''' Define all the other buttons for Converter menu '''
+# Define all the other buttons for Converter menu #
 want_to_convert_to_audio_button = ctk.CTkButton(convertors_frame, text="Video to Audio", command=convert_video_to_audio, **convertors_button_config)
 convert_mp3_to_flac_button = ctk.CTkButton(convertors_frame, text="MP3 to FLAC", command=convert_mp3_to_flac, **convertors_button_config)
 convert_mp3_to_wav_button = ctk.CTkButton(convertors_frame, text="MP3 to WAV", command=convert_mp3_to_wav, **convertors_button_config)
@@ -635,40 +645,40 @@ convert_wma_to_mp3_button = ctk.CTkButton(convertors_frame, text="WMA to MP3", c
 convert_wma_to_flac_button = ctk.CTkButton(convertors_frame, text="WMA to FLAC", command=convert_wma_to_flac, **convertors_button_config)
 convert_wma_to_wav_button = ctk.CTkButton(convertors_frame, text="WMA to WAV", command=convert_wma_to_wav, **convertors_button_config)
 
-''' Create a button to always get the user back to the main menu '''
+# Create a button to always get the user back to the main menu #
 back_to_menu_frame = ctk.CTkFrame(main_frame)
 back_to_menu_button = ctk.CTkButton(back_to_menu_frame, text="Main Menu", command=back_to_main_menu, **main_button_config)
 
-''' Create a label and the entry widget for the video url '''
+# Create a label and the entry widget for the video url #
 entry_url = ctk.CTkEntry(main_frame, width=390, placeholder_text=("Paste URL here..."))
 
-''' Create a resolutions frame to hold the resolutions '''
+# Create a resolutions frame to hold the resolutions #
 resolutions_frame = ctk.CTkFrame(main_frame)
 
-''' Create a download button '''
+# Create a download button #
 download_button = ctk.CTkButton(main_frame, text="Download", command=lambda: download_video(resolutions_var))
 
-''' Create a download audio button '''
+# Create a download audio button #
 download_audio_button = ctk.CTkButton(main_frame, text="Download", command=download_audio)
 
-''' Create a resolutions button '''
+# Create a resolutions button #
 resolutions_button = ctk.CTkButton(main_frame, text="Load Resolutions", command=load_resolutions)
 
-''' Define resolutions_var globally '''
+# Define resolutions_var globally #
 resolutions_var = None
 
-''' Create and position GUI elements '''
+# Create and position GUI elements #
 convert_to_audio_button = ctk.CTkButton(main_frame, text="Convert Video to Audio", command=convert_video_to_audio)
 
-''' Create a label and the progress bar to display the download progress '''
+# Create a label and the progress bar to display the download progress #
 progress_label = ctk.CTkLabel(main_frame, text="")
 
-''' Create the status label '''
+# Create the status label #
 status_label = ctk.CTkLabel(main_frame, text="")
 
-''' Add the on_close function to the close button '''
+# Add the on_close function to the close button #
 app.protocol("WM_DELETE_WINDOW", on_close)
 
-''' Start the app '''
+# Start the app #
 if __name__ == "__main__":
     app.mainloop()
