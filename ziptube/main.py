@@ -59,8 +59,8 @@ from convertors import (
 
 # Icon and logo location on system #
 app_name = "ZipTube"
-icon = "ziptube\\assets\\images\\icon.ico"
-logo = "ziptube\\assets\\images\\logo.png"
+icon = "ziptube\\assets\\images\\icon2.ico"
+logo = "ziptube\\assets\\images\\logo2.png"
 custom_theme = "ziptube\\assets\\themes\\custom.json"
 website_url = "https://sts-mining.github.io/website/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
