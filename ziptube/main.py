@@ -7,6 +7,20 @@ Convert Audio files to various different formats.
 +------------------+-------------------------------------------------+
 | Version          | Description                                     |
 +==================+=================================================+
+| Version 1.26     | Download Youtube Videos, download only audio    |
+|                  | from videos on youtube also.                    |
+|                  | Convert audio files from mp4 (video) to mp3     |
+|                  | Convert audio files from mp3 to wav, flac & wma |
+|                  | Convert audio files from wav to flac, mp3 & wma |
+|                  | Convert audio files from flac to mp3, wav & wma |
+|                  | Convert audio files from wma to mp3, wav & flac |
+|                  | Create function for the main menu button,       |
+|                  | add custom theme from local assets directory    |
+|                  | Add website button at bottom of main screen     |
+|                  | Change button sizes and colors throughout app   |
+|                  | Check how much hard disk capacity your local    |
+|                  | machine has, to know which drive to chose       |
++------------------+-------------------------------------------------+
 | Version 1.25     | Download Youtube Videos, download only audio    |
 |                  | from videos on youtube also.                    |
 |                  | Convert audio files from mp4 (video) to mp3     |
@@ -28,14 +42,6 @@ Convert Audio files to various different formats.
 |                  | Convert audio files from wma to mp3, wav & flac |
 |                  | Create function for the main menu button,       |
 |                  | add custom theme from local assets directory    |
-+------------------+-------------------------------------------------+
-| Version 1.23     | Download Youtube Videos, download only audio    |
-|                  | from videos on youtube also.                    |
-|                  | Convert audio files from mp4 (video) to mp3     |
-|                  | Convert audio files from mp3 to wav, flac & wma |
-|                  | Convert audio files from wav to flac, mp3 & wma |
-|                  | Convert audio files from flac to mp3, wav & wma |
-|                  | Convert audio files from wma to mp3, wav & flac |
 +------------------+-------------------------------------------------+
 '''
 
