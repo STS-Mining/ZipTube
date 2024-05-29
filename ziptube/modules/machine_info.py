@@ -1,6 +1,5 @@
 import psutil
 import cpuinfo
-import GPUtil
 
 def get_disk_info():
     partitions = psutil.disk_partitions()
@@ -35,22 +34,6 @@ def get_cpu_info():
         'threads': psutil.cpu_count(logical=True)
     }
 
-def get_gpu_info():
-    gpus = GPUtil.getGPUs()
-    gpu_info = []
-
-    for gpu in gpus:
-        gpu_info.append({
-            'name': gpu.name,
-            'driver_version': gpu.driver,
-            'memory_total': gpu.memoryTotal,
-            'memory_free': gpu.memoryFree,
-            'memory_used': gpu.memoryUsed,
-            'temperature': gpu.temperature
-        })
-    
-    return gpu_info
-
 def disks():
     print("CPU Information:")
     cpu = get_cpu_info()
@@ -59,26 +42,10 @@ def disks():
     print(f"  Threads: {cpu['threads']}")
     print()
 
-    print("GPU Information:")
-    gpus = get_gpu_info()
-    if gpus:
-        for gpu in gpus:
-            print(f"  Name: {gpu['name']}")
-            print(f"  Driver Version: {gpu['driver_version']}")
-            print(f"  Total Memory: {gpu['memory_total']} MB")
-            print(f"  Used Memory: {gpu['memory_used']} MB")
-            print(f"  Free Memory: {gpu['memory_free']} MB")
-            print(f"  Temperature: {gpu['temperature']}°C")
-            print()
-    else:
-        print("  No GPUs found")
-        print()
-
     print("Disk Information:")
     disks = get_disk_info()
     for disk in disks:
         print(f"  Device: {disk['device']}")
-        print(f"    Mountpoint: {disk['mountpoint']}")
         print(f"    Total Space: {disk['total_gb']:.2f} GB")
         print(f"    Used Space: {disk['used_gb']:.2f} GB ({disk['percent_used']}%)")
         print(f"    Free Space: {disk['free_gb']:.2f} GB")
