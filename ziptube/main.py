@@ -56,11 +56,12 @@ from convertors import (
     mp3_to_wav, mp3_to_wma, wav_to_flac, wav_to_mp3,
     wav_to_wma, wma_to_flac, wma_to_mp3, wma_to_wav
 )
+from modules import machine_info
 
 # Icon and logo location on system #
 app_name = "ZipTube"
-icon = "ziptube\\assets\\images\\icon2.ico"
-logo = "ziptube\\assets\\images\\logo2.png"
+icon = "ziptube\\assets\\images\\icon.ico"
+logo = "ziptube\\assets\\images\\logo.png"
 custom_theme = "ziptube\\assets\\themes\\custom.json"
 website_url = "https://sts-mining.github.io/website/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
@@ -266,6 +267,10 @@ def convert_wma_to_mp3():
 # Function to convert WMA to WAV #
 def convert_wma_to_wav():
     convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_wav.convert)
+
+# Function to check disk space
+def check_disk_space():
+    machine_info.disks()
 
 # Function to convert video to audio #
 def convert_to_audio(video_file):
@@ -601,8 +606,10 @@ start_menu_frame.pack(padx=10, pady=130)
 # Buttons for opening the sub-menus #
 converters_button = ctk.CTkButton(start_menu_frame, text="Convert", command=show_converters, **start_menu_button_config)
 youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_menu_button_config)
+local_info_button = ctk.CTkButton(start_menu_frame, text="Disk Space", command=check_disk_space, **start_menu_button_config)
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
+local_info_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Initialize the main frame #
 footer_frame = ctk.CTkFrame(main_frame)
