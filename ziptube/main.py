@@ -56,13 +56,8 @@ import re
 import webbrowser
 from tkinter import filedialog
 import moviepy.editor as mp
-from convertors import (
-    flac_to_mp3, flac_to_wav, flac_to_wma, mp3_to_flac,
-    mp3_to_wav, mp3_to_wma, wav_to_flac, wav_to_mp3,
-    wav_to_wma, wma_to_flac, wma_to_mp3, wma_to_wav
-)
 from modules import ( 
-    machine_info, app_help, donation
+    machine_info, app_help, donation, convertors
 )
 
 # Icon and logo location on system #
@@ -216,64 +211,6 @@ def convert_video_to_audio():
     )
     if filename:
         convert_to_audio(filename)
-
-# Generic Function that runs all the audio convertors with same information #
-def convert_audio_file(filetypes, conversion_function):
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Audio File",
-        filetypes=filetypes
-    )
-    if filename:
-        conversion_function(filename)
-
-# Function to convert FLAC to MP3 #
-def convert_flac_to_mp3():
-    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_mp3.convert)
-
-# Function to convert FLAC to WAV #
-def convert_flac_to_wav():
-    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_wav.convert)
-
-# Function to convert FLAC to WMA #
-def convert_flac_to_wma():
-    convert_audio_file([("Audio files", "*.flac"), ("all files", "*.*")], flac_to_wma.convert)
-
-# Function to convert MP3 to FLAC #
-def convert_mp3_to_flac():
-    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_flac.convert)
-
-# Function to convert MP3 to WAV #
-def convert_mp3_to_wav():
-    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_wav.convert)
-
-# Function to convert MP3 to WMA #
-def convert_mp3_to_wma():
-    convert_audio_file([("Audio files", "*.mp3"), ("all files", "*.*")], mp3_to_wma.convert)
-
-# Function to convert WAV to FLAC #
-def convert_wav_to_flac():
-    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_flac.convert)
-
-# Function to convert WAV to MP3 #
-def convert_wav_to_mp3():
-    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_mp3.convert)
-
-# Function to convert WAV to WMA #
-def convert_wav_to_wma():
-    convert_audio_file([("Audio files", "*.wav"), ("all files", "*.*")], wav_to_wma.convert)
-
-# Function to convert WMA to FLAC #
-def convert_wma_to_flac():
-    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_flac.convert)
-
-# Function to convert WMA to MP3 #
-def convert_wma_to_mp3():
-    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_mp3.convert)
-
-# Function to convert WMA to WAV #
-def convert_wma_to_wav():
-    convert_audio_file([("Audio files", "*.wma"), ("all files", "*.*")], wma_to_wav.convert)
 
 # Function to check disk space
 def check_disk_space():
@@ -594,18 +531,18 @@ convertors_frame = ctk.CTkFrame(main_frame)
 
 # Define all the other buttons for Converter menu #
 want_to_convert_to_audio_button = ctk.CTkButton(convertors_frame, text="Video to Audio", command=convert_video_to_audio, **convertors_button_config)
-convert_mp3_to_flac_button = ctk.CTkButton(convertors_frame, text="MP3 to FLAC", command=convert_mp3_to_flac, **convertors_button_config)
-convert_mp3_to_wav_button = ctk.CTkButton(convertors_frame, text="MP3 to WAV", command=convert_mp3_to_wav, **convertors_button_config)
-convert_mp3_to_wma_button = ctk.CTkButton(convertors_frame, text="MP3 to WMA", command=convert_mp3_to_wma, **convertors_button_config)
-convert_flac_to_mp3_button = ctk.CTkButton(convertors_frame, text="FLAC to MP3", command=convert_flac_to_mp3, **convertors_button_config)
-convert_flac_to_wav_button = ctk.CTkButton(convertors_frame, text="FLAC to WAV", command=convert_flac_to_wav, **convertors_button_config)
-convert_flac_to_wma_button = ctk.CTkButton(convertors_frame, text="FLAC to WMA", command=convert_flac_to_wma, **convertors_button_config)
-convert_wav_to_mp3_button = ctk.CTkButton(convertors_frame, text="WAV to MP3", command=convert_wav_to_mp3, **convertors_button_config)
-convert_wav_to_flac_button = ctk.CTkButton(convertors_frame, text="WAV to FLAC", command=convert_wav_to_flac, **convertors_button_config)
-convert_wav_to_wma_button = ctk.CTkButton(convertors_frame, text="WAV to WMA", command=convert_wav_to_wma, **convertors_button_config)
-convert_wma_to_mp3_button = ctk.CTkButton(convertors_frame, text="WMA to MP3", command=convert_wma_to_mp3, **convertors_button_config)
-convert_wma_to_flac_button = ctk.CTkButton(convertors_frame, text="WMA to FLAC", command=convert_wma_to_flac, **convertors_button_config)
-convert_wma_to_wav_button = ctk.CTkButton(convertors_frame, text="WMA to WAV", command=convert_wma_to_wav, **convertors_button_config)
+convert_mp3_to_flac_button = ctk.CTkButton(convertors_frame, text="MP3 to FLAC", command=convertors.convert_mp3_to_flac, **convertors_button_config)
+convert_mp3_to_wav_button = ctk.CTkButton(convertors_frame, text="MP3 to WAV", command=convertors.convert_mp3_to_wav, **convertors_button_config)
+convert_mp3_to_wma_button = ctk.CTkButton(convertors_frame, text="MP3 to WMA", command=convertors.convert_mp3_to_wma, **convertors_button_config)
+convert_flac_to_mp3_button = ctk.CTkButton(convertors_frame, text="FLAC to MP3", command=convertors.convert_flac_to_mp3, **convertors_button_config)
+convert_flac_to_wav_button = ctk.CTkButton(convertors_frame, text="FLAC to WAV", command=convertors.convert_flac_to_wav, **convertors_button_config)
+convert_flac_to_wma_button = ctk.CTkButton(convertors_frame, text="FLAC to WMA", command=convertors.convert_flac_to_wma, **convertors_button_config)
+convert_wav_to_mp3_button = ctk.CTkButton(convertors_frame, text="WAV to MP3", command=convertors.convert_wav_to_mp3, **convertors_button_config)
+convert_wav_to_flac_button = ctk.CTkButton(convertors_frame, text="WAV to FLAC", command=convertors.convert_wav_to_flac, **convertors_button_config)
+convert_wav_to_wma_button = ctk.CTkButton(convertors_frame, text="WAV to WMA", command=convertors.convert_wav_to_wma, **convertors_button_config)
+convert_wma_to_mp3_button = ctk.CTkButton(convertors_frame, text="WMA to MP3", command=convertors.convert_wma_to_mp3, **convertors_button_config)
+convert_wma_to_flac_button = ctk.CTkButton(convertors_frame, text="WMA to FLAC", command=convertors.convert_wma_to_flac, **convertors_button_config)
+convert_wma_to_wav_button = ctk.CTkButton(convertors_frame, text="WMA to WAV", command=convertors.convert_wma_to_wav, **convertors_button_config)
 
 # Create a button to always get the user back to the main menu #
 back_to_menu_frame = ctk.CTkFrame(main_frame)
