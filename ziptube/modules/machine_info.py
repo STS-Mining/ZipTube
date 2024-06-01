@@ -78,7 +78,7 @@ def disks():
     status_label = ctk.CTkLabel(main_frame, font=("calibri", 18, "normal"), text="")
     status_label.pack(pady=10)
     countdown_label = ctk.CTkLabel(main_frame, font=("calibri", 18, "normal"), text="")
-    countdown_label.pack(pady=10)
+    countdown_label.pack(side='bottom', pady=10)
 
     # Gather information to display
     info_text = ""

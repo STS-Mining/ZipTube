@@ -62,7 +62,9 @@ from convertors import (
     mp3_to_wav, mp3_to_wma, wav_to_flac, wav_to_mp3,
     wav_to_wma, wma_to_flac, wma_to_mp3, wma_to_wav
 )
-from modules import machine_info
+from modules import ( 
+    machine_info, app_help
+)
 
 # Icon and logo location on system #
 app_name = "ZipTube"
@@ -291,6 +293,10 @@ def convert_to_audio(video_file):
     status_label.configure(text=f"File saved as: {audio_file}")
     to_main_menu()
     
+# Function for about app window #
+def open_about_window():
+    app_help.about_app()
+
 # Function for donation window #
 def open_donation_window():
     donation_window = ctk.CTk()
@@ -627,11 +633,13 @@ feedback_button = ctk.CTkButton(footer_frame, text="Feedback", command=open_feed
 github_button = ctk.CTkButton(footer_frame, text="GitHub", command=lambda: open_webpage(github_url), **footer_button_config)
 discord_button = ctk.CTkButton(footer_frame, text="Discord", command=lambda: open_webpage(discord_link), **footer_button_config)
 donation_button = ctk.CTkButton(footer_frame, text="Donate", command=open_donation_window, **footer_button_config)
+about_button = ctk.CTkButton(footer_frame, text="Help", command=open_about_window, **footer_button_config)
 website_button.grid(row=0, column=0, padx=5, pady=5)
 feedback_button.grid(row=0, column=1, padx=5, pady=5)
 github_button.grid(row=0, column=2, padx=5, pady=5)
 discord_button.grid(row=0, column=3, padx=5, pady=5)
 donation_button.grid(row=0, column=4, padx=5, pady=5)
+about_button.grid(row=0, column=5, padx=5, pady=5)
 
 # Youtube menu frame #
 youtube_menu_frame = ctk.CTkFrame(main_frame)
