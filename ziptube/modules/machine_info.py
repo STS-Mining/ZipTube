@@ -86,18 +86,18 @@ def disks():
     # CPU Information
     info_text += "CPU Information:\n"
     cpu = get_cpu_info()
-    info_text += f"  Brand: {cpu['brand']}\n"
-    info_text += f"  Cores: {cpu['cores']}\n"
-    info_text += f"  Threads: {cpu['threads']}\n\n"
+    info_text += f"Brand: {cpu['brand']}\n"
+    info_text += f"Cores: {cpu['cores']}\n"
+    info_text += f"Threads: {cpu['threads']}\n\n"
 
     # Disk Information
     info_text += "Disk Information:\n"
     disks = get_disk_info()
     for disk in disks:
-        info_text += f"  Device: {disk['device']}\n"
-        info_text += f"    Total Space: {disk['total_gb']:.2f} GB\n"
-        info_text += f"    Used Space: {disk['used_gb']:.2f} GB ({disk['percent_used']}%)\n"
-        info_text += f"    Free Space: {disk['free_gb']:.2f} GB\n\n"
+        info_text += f"Device: {disk['device']}\n"
+        info_text += f"Total Space: {disk['total_gb']:.2f} GB\n"
+        info_text += f"Used Space: {disk['used_gb']:.2f} GB ({disk['percent_used']}%)\n"
+        info_text += f"Free Space: {disk['free_gb']:.2f} GB\n\n"
 
     # Set the gathered information to the status_label
     status_label.configure(text=info_text)
