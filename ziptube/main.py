@@ -50,7 +50,6 @@ from pytube import YouTube
 import time
 import tkinter.simpledialog as simpledialog
 import tkinter.messagebox as messagebox
-import pyperclip
 from PIL import Image
 import os
 import re
@@ -63,7 +62,7 @@ from convertors import (
     wav_to_wma, wma_to_flac, wma_to_mp3, wma_to_wav
 )
 from modules import ( 
-    machine_info, app_help
+    machine_info, app_help, donation
 )
 
 # Icon and logo location on system #
@@ -294,70 +293,12 @@ def convert_to_audio(video_file):
     to_main_menu()
     
 # Function for about app window #
-def open_about_window():
+def open_help_window():
     app_help.about_app()
 
 # Function for donation window #
 def open_donation_window():
-    donation_window = ctk.CTk()
-    donation_window.title("Please Donate ...")
-    new_width = int(min_max_width // 1.25)
-    new_height = int(min_max_height // 1.85)
-    donation_window.geometry(f"{new_width}x{new_height}")
-    donation_window.minsize(new_width, new_height)
-    donation_window.maxsize(new_width, new_height)
-    donation_window.iconbitmap(icon)
-
-    # Create a frame to hold the content #
-    donation_frame = ctk.CTkFrame(donation_window)
-    donation_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
-
-    # Create a label with the donation message #
-    donation_label = ctk.CTkLabel(
-        donation_frame,
-        text="Enjoy using our app?? \nWould you like us to keep it well maintained? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.",
-        font=("calibri", 18),
-    )
-    donation_label.pack(padx=10, pady=10)
-
-    # Define wallet addresses and labels #
-    wallets = [
-        {"name": "BTC", "address": "12pGQNkdk8C3H32GBtUzXjxgZvxVZLRxsB"},
-        {"name": "ETH", "address": "0x7801af1b2acd60e56f9bf0d5039beb3d99ba8bc4"},
-        {"name": "DOGE", "address": "D6TE4ZgBfjJ1neYztZFQWiihPZNBS418P5"},
-    ]
-
-    # Function to copy wallet address to clipboard #
-    def copy_address(name, address):
-        pyperclip.copy(address)
-        copied_label.configure(
-            text=f"\n{name} address copied to clipboard\n\n{address}"
-        )
-        copied_label.pack()
-        copied_label.after(2000, copied_label.pack_forget)
-
-    # Create a frame for the buttons to align them properly #
-    button_frame = ctk.CTkFrame(donation_frame)
-    button_frame.pack(pady=10)
-
-    # Create buttons to copy wallet addresses #
-    for i, wallet in enumerate(wallets):
-        copy_button = ctk.CTkButton(
-            button_frame,
-            text=f"{wallet['name']} Address",
-            command=lambda name=wallet["name"], addr=wallet["address"]: copy_address(
-                name, addr
-            ),
-            **main_button_config
-        )
-        copy_button.grid(row=0, column=i, padx=5, pady=5)
-
-    # Label to display "Copied to Clipboard" message #
-    copied_label = ctk.CTkLabel(donation_frame, text="")
-    copied_label.pack(pady=5)
-
-    # Start the donation window's main loop #
-    donation_window.mainloop()
+    donation.open_donation_window()
 
 # Hide the labels after 3 seconds #
 def hide_labels():
@@ -633,13 +574,13 @@ feedback_button = ctk.CTkButton(footer_frame, text="Feedback", command=open_feed
 github_button = ctk.CTkButton(footer_frame, text="GitHub", command=lambda: open_webpage(github_url), **footer_button_config)
 discord_button = ctk.CTkButton(footer_frame, text="Discord", command=lambda: open_webpage(discord_link), **footer_button_config)
 donation_button = ctk.CTkButton(footer_frame, text="Donate", command=open_donation_window, **footer_button_config)
-about_button = ctk.CTkButton(footer_frame, text="Help", command=open_about_window, **footer_button_config)
+help_button = ctk.CTkButton(footer_frame, text="Help", command=open_help_window, **footer_button_config)
 website_button.grid(row=0, column=0, padx=5, pady=5)
 feedback_button.grid(row=0, column=1, padx=5, pady=5)
 github_button.grid(row=0, column=2, padx=5, pady=5)
 discord_button.grid(row=0, column=3, padx=5, pady=5)
 donation_button.grid(row=0, column=4, padx=5, pady=5)
-about_button.grid(row=0, column=5, padx=5, pady=5)
+help_button.grid(row=0, column=5, padx=5, pady=5)
 
 # Youtube menu frame #
 youtube_menu_frame = ctk.CTkFrame(main_frame)
