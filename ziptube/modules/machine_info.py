@@ -68,7 +68,6 @@ def disks():
     min_max_width = 550
     app.geometry(f"{min_max_width}x{min_max_height}")
     app.minsize(min_max_width, min_max_height)
-    app.maxsize(min_max_width, min_max_height)
 
     ''' Create a frame to hold the content '''
     main_frame = ctk.CTkFrame(app)
