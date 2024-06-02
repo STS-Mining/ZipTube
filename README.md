@@ -1,4 +1,4 @@
-<img src="https://github.com/STS-Mining/Python/blob/main/ziptube/assets/images/logo.png" width="150">
+<img src="https://github.com/STS-Mining/Python/blob/main/ziptube/assets/images/logo.png" width="350">
 
 ### Features
 
@@ -12,20 +12,22 @@
 - Convert WAV to MP3, Flac & WMA
 - Convert WMA to MP3, Flac & WAV
 
-## First you need to clone this repo by running the following command in your terminal
+### Instructions on how to clone and run using terminal
+
+- First you need to clone this repo by running the following command in your terminal
 
 ```console
 git clone https://github.com/STS-Mining/Python
 ```
 
-## Then you need to install all the dependencies from the requirements.txt file, you can do this by running the following code in your terminal
+- Install all the dependencies from the requirements.txt file, you can do this by running the following code in your terminal
 
 ```console
 cd ziptube
 pip install -r requirements.txt
 ```
 
-## Once you have them all installed and running, simply navigate to the main.py file directory and then type the following command to run the script
+- Once you have them all installed, simply navigate to the main.py file directory and then type the following command to run the script
 
 - Windows
 
