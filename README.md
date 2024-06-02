@@ -16,19 +16,19 @@
 
 <div style="display: flex; flex-wrap: wrap;">
     <div style="flex: 1; min-width: 250px; margin: 10px;">
-        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/main_menu.png" width="100%">
+        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/main_menu.png" width="33%">
     </div>
     <div style="flex: 1; min-width: 250px; margin: 10px;">
-        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_menu.png" width="100%">
+        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_menu.png" width="33%">
     </div>
     <div style="flex: 1; min-width: 250px; margin: 10px;">
-        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/conversion_menu.png" width="100%">
+        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/conversion_menu.png" width="33%">
     </div>
     <div style="flex: 1; min-width: 250px; margin: 10px;">
-        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_video.png" width="100%">
+        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_video.png" width="33%">
     </div>
     <div style="flex: 1; min-width: 250px; margin: 10px;">
-        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_audio.png" width="100%">
+        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_audio.png" width="33%">
     </div>
 </div>
 
