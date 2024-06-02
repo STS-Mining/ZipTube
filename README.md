@@ -1,4 +1,4 @@
-<img src="https://github.com/STS-Mining/Python/blob/main/ziptube/assets/images/logo.png" width="350">
+<img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/logo.png" width="350">
 
 ### Features
 
@@ -11,6 +11,8 @@
 - Convert Flac to MP3, WAV & WMA
 - Convert WAV to MP3, Flac & WMA
 - Convert WMA to MP3, Flac & WAV
+- Check available disk space on local machine
+- CPU information
 
 ### Instructions on how to clone and run using terminal
 
