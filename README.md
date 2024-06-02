@@ -34,7 +34,7 @@ pip install -r requirements.txt
 cd ziptube
 ```
 
-- Now depending on your operating system use the commands below
+### Now depending on your operating system use the commands below
 
 - Windows
 
@@ -55,3 +55,7 @@ To support this project you can send a donation to one of the following accounts
 - ETH: `0x7801af1b2acd60e56f9bf0d5039beb3d99ba8bc4`
 - BTC: `12pGQNkdk8C3H32GBtUzXjxgZvxVZLRxsB`
 - DOGE: `D6TE4ZgBfjJ1neYztZFQWiihPZNBS418P5`
+
+## Feedback / Help
+
+If you have any questions or issues regarding this software you can <a href="https://discord.gg/nVMgU9yQcw">Join Our Discord</a>
