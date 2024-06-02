@@ -1,3 +1,17 @@
+<img src="https://github.com/STS-Mining/Python/blob/main/ziptube/assets/images/logo.png" width="150">
+
+### Features
+
+- Download almost any video from YouTube for free (mp4 format)
+- Choose the resolution of the video you want to download
+- Choose where you want the files saved on your pc
+- Download audio only from video files on YouTube
+- Convert video to audio (mp3 format)
+- Convert MP3 to Flac, WAV & WMA
+- Convert Flac to MP3, WAV & WMA
+- Convert WAV to MP3, Flac & WMA
+- Convert WMA to MP3, Flac & WAV
+
 # First you need to clone this repo by running the following command in your terminal
 
 ```console
@@ -9,6 +23,7 @@ git clone https://github.com/STS-Mining/Python
 # You can do this by running the following code in your terminal
 
 ```console
+cd ziptube
 pip install -r requirements.txt
 ```
 
@@ -27,3 +42,11 @@ python main.py
 ```console
 python3 main.py
 ```
+
+## Donations
+
+To support this project you can send a donation to one of the following accounts:
+
+- ETH: `0x7801af1b2acd60e56f9bf0d5039beb3d99ba8bc4`
+- BTC: `12pGQNkdk8C3H32GBtUzXjxgZvxVZLRxsB`
+- DOGE: `D6TE4ZgBfjJ1neYztZFQWiihPZNBS418P5`
