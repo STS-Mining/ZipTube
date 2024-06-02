@@ -45,7 +45,7 @@ def get_cpu_info():
 
 def disks():
     ''' Icon and logo location on system '''
-    app_name = "ZipTube"
+    app_name = "ZipTube - Disk Space"
     icon_path = "ziptube\\assets\\images\\icon.ico"
     custom_theme = "ziptube\\assets\\themes\\custom.json"
 

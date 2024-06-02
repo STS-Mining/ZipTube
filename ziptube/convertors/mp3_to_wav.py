@@ -20,7 +20,7 @@ def start_countdown(seconds, countdown_label, app):
 
 def convert(file_path):
     ''' Icon and logo location on system '''
-    app_name = "ZipTube"
+    app_name = f"ZipTube - {CONVERT_FROM.upper()} to {CONVERT_TO.upper()}"
     icon = "ziptube\\assets\\images\\icon.ico"
     custom_theme = "ziptube\\assets\\themes\\custom.json"
 

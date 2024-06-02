@@ -10,7 +10,7 @@ def open_donation_window():
     donation_window = ctk.CTk()
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme(custom_theme)
-    donation_window.title("Please Donate ...")
+    donation_window.title("ZipTube - Please Donate ...")
     new_width = int(500)
     new_height = int(320)
     donation_window.geometry(f"{new_width}x{new_height}")
