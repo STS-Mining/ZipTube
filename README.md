@@ -1,4 +1,4 @@
-<img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/logo.png" width="350">
+<img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/logo.png" width="450">
 
 ### Features
 
@@ -25,11 +25,16 @@ git clone https://github.com/STS-Mining/Python
 - Install all the dependencies from the requirements.txt file, you can do this by running the following code in your terminal
 
 ```console
-cd ziptube
 pip install -r requirements.txt
 ```
 
-- Once you have them all installed, simply navigate to the main.py file directory and then type the following command to run the script
+- Once you have the requirements installed, simply navigate to the main.py file
+
+```console
+cd ziptube
+```
+
+- Now depending on your operating system use the commands below
 
 - Windows
 
