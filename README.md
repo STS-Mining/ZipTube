@@ -1,4 +1,8 @@
-# First thing you need to do is install all the dependencies from the requirements.txt file
+# First you need to clone this repo by running the following command in your terminal
+
+git clone https://github.com/STS-Mining/Python.git
+
+# Then you need to install all the dependencies from the requirements.txt file
 
 # You can do this by running the following code in your terminal
 
