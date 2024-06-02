@@ -14,6 +14,8 @@
 - Check available disk space on local machine
 - CPU information
 
+<img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/main_menu.png" width="450">
+
 ### Instructions on how to clone and run using terminal
 
 - First you need to clone this repo by running the following command in your terminal
