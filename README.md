@@ -14,23 +14,7 @@
 - Check available disk space on local machine
 - CPU information
 
-<div style="display: flex; flex-wrap: wrap;">
-    <div style="flex: 1; min-width: 250px; margin: 10px;">
-        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/main_menu.png" width="33%">
-    </div>
-    <div style="flex: 1; min-width: 250px; margin: 10px;">
-        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_menu.png" width="33%">
-    </div>
-    <div style="flex: 1; min-width: 250px; margin: 10px;">
-        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/conversion_menu.png" width="33%">
-    </div>
-    <div style="flex: 1; min-width: 250px; margin: 10px;">
-        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_video.png" width="33%">
-    </div>
-    <div style="flex: 1; min-width: 250px; margin: 10px;">
-        <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_audio.png" width="33%">
-    </div>
-</div>
+<img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/main_menu.png" width="350">
 
 ### Instructions on how to clone and run using terminal
 
