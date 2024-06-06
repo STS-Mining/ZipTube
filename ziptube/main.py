@@ -60,13 +60,14 @@ import tkinter.simpledialog as simpledialog
 import tkinter.messagebox as messagebox
 from PIL import Image
 import os
+import psutil
+import pyperclip
+import cpuinfo
+import subprocess
 import re
 import webbrowser
 from tkinter import filedialog
 import moviepy.editor as mp
-from modules import ( 
-    machine_info, app_help, donation, convertors
-)
 
 # Icon and logo location on system #
 app_name = "ZipTube"
@@ -77,6 +78,7 @@ website_url = "https://sts-mining.github.io/website/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
 github_url = "https://github.com/STS-Mining"
 feedback_email = "stsmining.ziptube@gmail.com"
+ffmpeg_path = "ziptube\\assets\\ffmpeg\\bin\\ffmpeg.exe"
 
 # Function to link website to main screen in a button #
 def open_webpage(url):
@@ -205,6 +207,403 @@ def on_progress(stream, chunk, bytes_remaining):
         status_label.configure(text=f"Saving to local location ... {output_path}")
         to_main_menu()
 
+def disks_countdown(seconds, countdown_label, app):
+    if seconds > 0:
+        countdown_label.configure(text=f"Closing window in {seconds} seconds...")
+        app.after(1000, disks_countdown, seconds - 1, countdown_label, app)
+    else:
+        app.destroy()
+
+def get_disk_info():
+    partitions = psutil.disk_partitions()
+    disk_info = []
+
+    for partition in partitions:
+        try:
+            usage = psutil.disk_usage(partition.mountpoint)
+            total_gb = usage.total / (1024**3)
+            used_gb = usage.used / (1024**3)
+            free_gb = usage.free / (1024**3)
+            percent_used = usage.percent
+
+            disk_info.append({
+                'device': partition.device,
+                'mountpoint': partition.mountpoint,
+                'total_gb': total_gb,
+                'used_gb': used_gb,
+                'free_gb': free_gb,
+                'percent_used': percent_used
+            })
+        except Exception as e:
+            print(f"Could not get usage for {partition.device}: {e}\n")
+    
+    return disk_info
+
+def get_cpu_info():
+    info = cpuinfo.get_cpu_info()
+    return {
+        'brand': info['brand_raw'],
+        'cores': psutil.cpu_count(logical=False),
+        'threads': psutil.cpu_count(logical=True)
+    }
+
+def disks():
+    ''' Icon and logo location on system '''
+    app_name = "ZipTube - Disk Space"
+    icon_path = "ziptube\\assets\\images\\icon.ico"
+    custom_theme = "ziptube\\assets\\themes\\custom.json"
+
+    ''' Create a app window '''
+    app = ctk.CTk()
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme(custom_theme)
+
+    ''' Title of the window '''
+    app.title(app_name)
+
+    ''' Check if the icon file exists '''
+    if os.path.exists(icon_path):
+        app.iconbitmap(icon_path)
+    else:
+        print(f"Icon file not found: {icon_path}")
+
+    ''' Set min and max width and height '''
+    min_max_height = 600
+    min_max_width = 550
+    app.geometry(f"{min_max_width}x{min_max_height}")
+    app.minsize(min_max_width, min_max_height)
+
+    ''' Create a frame to hold the content '''
+    main_frame = ctk.CTkFrame(app)
+    main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
+
+    ''' Create the labels '''
+    status_label = ctk.CTkLabel(main_frame, font=("calibri", 18, "normal"), text="")
+    status_label.pack(pady=10)
+    countdown_label = ctk.CTkLabel(main_frame, font=("calibri", 18, "normal"), text="")
+    countdown_label.pack(side='bottom', pady=10)
+
+    # Gather information to display
+    info_text = ""
+
+    # CPU Information
+    info_text += "CPU Information:\n"
+    cpu = get_cpu_info()
+    info_text += f"Brand: {cpu['brand']}\n"
+    info_text += f"Cores: {cpu['cores']}\n"
+    info_text += f"Threads: {cpu['threads']}\n\n"
+
+    # Disk Information
+    info_text += "Disk Information:\n"
+    disks = get_disk_info()
+    for disk in disks:
+        info_text += f"Device: {disk['device']}\n"
+        info_text += f"Total Space: {disk['total_gb']:.2f} GB\n"
+        info_text += f"Used Space: {disk['used_gb']:.2f} GB ({disk['percent_used']}%)\n"
+        info_text += f"Free Space: {disk['free_gb']:.2f} GB\n\n"
+
+    # Set the gathered information to the status_label
+    status_label.configure(text=info_text)
+    disks_countdown(20, countdown_label, app)
+
+    # Start the main loop
+    app.mainloop()
+
+def app_help_countdown(seconds, countdown_label, app, callback):
+    if seconds > 0:
+        countdown_label.configure(text=f"Returning to menu in {seconds} seconds...")
+        app.after(1000, app_help_countdown, seconds - 1, countdown_label, app, callback)
+    else:
+        callback()
+
+def about_app():
+    ''' Icon and logo location on system '''
+    app_name = "ZipTube - Help"
+    icon_path = "ziptube\\assets\\images\\icon.ico"
+    custom_theme = "ziptube\\assets\\themes\\custom.json"
+
+    ''' Create a app window '''
+    app = ctk.CTk()
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme(custom_theme)
+
+    ''' Title of the window '''
+    app.title(app_name)
+
+    ''' Check if the icon file exists '''
+    if os.path.exists(icon_path):
+        app.iconbitmap(icon_path)
+    else:
+        print(f"Icon file not found: {icon_path}")
+
+    ''' Set min and max width and height '''
+    min_max_height = 300
+    min_max_width = 600
+    app.geometry(f"{min_max_width}x{min_max_height}")
+    app.minsize(min_max_width, min_max_height)
+    app.maxsize(min_max_width, min_max_height)
+
+    ''' Create a frame to hold the content '''
+    main_frame = ctk.CTkFrame(app)
+    main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
+
+    # Initialize the main menu frame #
+    start_menu_frame = ctk.CTkFrame(main_frame)
+    start_menu_frame.pack(padx=10, pady=100)
+
+    # Label to display help information
+    info_label = ctk.CTkLabel(main_frame, font=("calibri", 17, "normal"), text="")
+    info_label.pack(pady=10)
+
+    # Buttons for opening the sub-menus #
+    youtube_downloader_help_button = ctk.CTkButton(start_menu_frame, text="Download Help", command=lambda: show_youtube_downloader_help(info_label, app), font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
+    converters_help_button = ctk.CTkButton(start_menu_frame, text="Convertor Help", command=lambda: show_converters_help(info_label, app), font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
+    disk_info_help_button = ctk.CTkButton(start_menu_frame, text="Disk Space Help", command=lambda: check_disk_space_help(info_label, app), font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
+    youtube_downloader_help_button.grid(row=0, column=0, padx=5, pady=5)
+    converters_help_button.grid(row=0, column=1, padx=5, pady=5)
+    disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
+
+    ''' Create the countdown label '''
+    countdown_label = ctk.CTkLabel(main_frame, font=("calibri", 17, "normal"), text="")
+    countdown_label.pack(side='bottom', pady=10)
+    countdown_timer = 15  # set timer in seconds for screen to go back to menu
+
+    def reset_to_menu():
+        app.title(app_name)
+        info_label.pack_forget()
+        countdown_label.pack_forget()
+        info_label.configure(text="")
+        countdown_label.configure(text="")
+        start_menu_frame.pack(padx=10, pady=100)
+
+    # Function to display YouTube downloader help
+    def show_youtube_downloader_help(label, app):
+        app.title("ZipTube - Help - Downloader")
+        info_text = (
+            "How to use the download function:\n\n"
+            "Here you can download almost any video from YouTube.\n"
+            "Choose the resolution of the video you want to download.\n"
+            "Choose where you want the files saved on your pc.\n"
+            "Once complete you can download another video, or convert video to audio.\n"
+            "This option will strip the audio from the video, and save it in mp3 format only.\n"
+            "You can also choose to only download the audio instead of the video.\n"
+            "This is useful when downloading music files that you like.\n"
+        )
+        start_menu_frame.pack_forget()
+        label.configure(text=info_text)
+        info_label.pack(pady=10)
+        countdown_label.pack(side='bottom', pady=10)
+        app_help_countdown(countdown_timer, countdown_label, app, reset_to_menu)
+
+    # Function to display converters help
+    def show_converters_help(label, app):
+        app.title("ZipTube - Help - Convertor")
+        info_text = (
+            "\nHow to use the convertors:\n\n"
+            "Here you can convert almost any audio file to almost any other audio file.\n"
+            "You can choose where you want the files saved on your pc.\n"
+            "All files converted will be done in the best available bitrate.\n"
+        )
+        start_menu_frame.pack_forget()
+        label.configure(text=info_text)
+        info_label.pack(pady=10)
+        countdown_label.pack(side='bottom', pady=10)
+        app_help_countdown(countdown_timer, countdown_label, app, reset_to_menu)
+
+    # Function to display disk space help
+    def check_disk_space_help(label, app):
+        app.title("ZipTube - Help - Disk Space")
+        info_text = (
+            "\nHow to use the disk space utility:\n\n"
+            "This option will give you basic information about your device.\n"
+            "This will include all available disk drives, space available,\n"
+            "and what cpu / processor is currently installed on your machine.\n"
+        )
+        start_menu_frame.pack_forget()
+        label.configure(text=info_text)
+        info_label.pack(pady=10)
+        countdown_label.pack(side='bottom', pady=10)
+        app_help_countdown(countdown_timer, countdown_label, app, reset_to_menu)
+
+    # Start the main loop
+    app.mainloop()
+
+# Function for donation window #
+def open_donation_window():
+    donation_window = ctk.CTk()
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme(custom_theme)
+    donation_window.title("ZipTube - Please Donate ...")
+    new_width = int(500)
+    new_height = int(320)
+    donation_window.geometry(f"{new_width}x{new_height}")
+    donation_window.minsize(new_width, new_height)
+    donation_window.maxsize(new_width, new_height)
+    
+    # Check if the icon file exists
+    if os.path.exists(icon):
+        donation_window.iconbitmap(icon)
+    else:
+        print(f"Icon file not found: {icon}")
+
+    # Create a frame to hold the content #
+    donation_frame = ctk.CTkFrame(donation_window)
+    donation_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
+
+    # Create a label with the donation message #
+    donation_label = ctk.CTkLabel(
+        donation_frame,
+        text="Enjoy using our app?? \nWould you like us to keep it well maintained? \n\nThen making a donation to one of our following wallets, \nwould help us out and would be greatly appreciated.",
+        font=("calibri", 18),
+        wraplength=new_width - 20
+    )
+    donation_label.pack(padx=10, pady=10)
+
+    # Define wallet addresses and labels #
+    wallets = [
+        {"name": "BTC", "address": "12pGQNkdk8C3H32GBtUzXjxgZvxVZLRxsB"},
+        {"name": "ETH", "address": "0x7801af1b2acd60e56f9bf0d5039beb3d99ba8bc4"},
+        {"name": "DOGE", "address": "D6TE4ZgBfjJ1neYztZFQWiihPZNBS418P5"},
+    ]
+
+    # Function to copy wallet address to clipboard #
+    def copy_address(name, address):
+        pyperclip.copy(address)
+        copied_label.configure(
+            text=f"\n{name} address copied to clipboard\n\n{address}"
+        )
+        copied_label.pack()
+        copied_label.after(2000, copied_label.pack_forget)
+
+    # Create a frame for the buttons to align them properly #
+    button_frame = ctk.CTkFrame(donation_frame)
+    button_frame.pack(pady=10)
+
+    # Create buttons to copy wallet addresses #
+    for i, wallet in enumerate(wallets):
+        copy_button = ctk.CTkButton(
+            button_frame,
+            text=f"{wallet['name']} Address",
+            command=lambda name=wallet["name"], addr=wallet["address"]: copy_address(name, addr),
+            font=("calibri", 15, "normal"),
+            height=40, width=120, corner_radius=33, border_color="blue"
+        )
+        copy_button.grid(row=0, column=i, padx=5, pady=5)
+
+    # Label to display "Copied to Clipboard" message #
+    copied_label = ctk.CTkLabel(donation_frame, text="")
+    copied_label.pack(pady=5)
+
+    # Start the donation window's main loop #
+    donation_window.mainloop()
+
+# Generic Function that runs all the audio convertors with same information #
+def convert_audio_file(filetypes, conversion_function):
+    filename = filedialog.askopenfilename(
+        initialdir="/",
+        title="Select Audio File",
+        filetypes=filetypes
+    )
+    if filename:
+        conversion_function(filename)
+
+def convert_start_countdown(seconds, convert_countdown_label, convert_app):
+    if seconds > 0:
+        convert_countdown_label.configure(text=f"Closing window in {seconds} seconds...")
+        convert_app.after(1000, convert_start_countdown, seconds - 1, convert_countdown_label, convert_app)
+    else:
+        convert_app.destroy()
+
+def create_conversion_window(file_path, convert_from, convert_to):
+    convert_app_name = f"ZipTube - {convert_from.upper()} to {convert_to.upper()}"
+    icon = "ziptube\\assets\\images\\icon.ico"
+    custom_theme = "ziptube\\assets\\themes\\custom.json"
+
+    convert_app = ctk.CTk()
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme(custom_theme)
+
+    convert_app.title(convert_app_name)
+    convert_app.iconbitmap(icon)
+
+    min_max_height = 175
+    min_max_width = 600
+    convert_app.geometry(f"{min_max_width}x{min_max_height}")
+    convert_app.minsize(min_max_width, min_max_height)
+    convert_app.maxsize(min_max_width, min_max_height)
+
+    convert_main_frame = ctk.CTkFrame(convert_app)
+    convert_main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
+
+    ''' Create the labels '''
+    convert_status_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text=f"Converting {convert_from} file to {convert_to} file ...")
+    convert_status_label.pack(pady=10)
+    convert_countdown_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="")
+    convert_countdown_label.pack(pady=10)
+    
+    convert_app.after(100, run_conversion, file_path, convert_from, convert_to, convert_status_label, convert_countdown_label, convert_app)  # Delay the conversion to ensure the UI is fully rendered
+    convert_app.mainloop()
+
+def run_conversion(file_path, convert_from, convert_to, convert_status_label, convert_countdown_label, convert_app):
+    root_path, filename = os.path.split(file_path)
+    new_filename = os.path.splitext(filename)[0] + "." + convert_to
+    new_path = os.path.join(root_path, new_filename)
+    
+    completed = subprocess.run([ffmpeg_path,
+                                "-loglevel",
+                                "quiet",
+                                "-hide_banner",
+                                "-y",
+                                "-i",
+                                file_path,
+                                new_path],
+                                stderr=subprocess.DEVNULL,
+                                stdout=subprocess.DEVNULL,
+                                stdin=subprocess.PIPE)
+    
+    if completed.returncode == 0:
+        convert_status_label.configure(text=f"Successfully Converted ... \n\n{new_filename}")
+    else:
+        convert_status_label.configure(text=f"Conversion failed ... \n\n{new_filename}")
+    
+    convert_start_countdown(5, convert_countdown_label, convert_app)  # Start the countdown after the conversion is complete
+
+def mp3_to_flac(file_path):
+    create_conversion_window(file_path, "mp3", "flac")
+
+def mp3_to_wav(file_path):
+    create_conversion_window(file_path, "mp3", "wav")
+
+def mp3_to_wma(file_path):
+    create_conversion_window(file_path, "mp3", "wma")
+
+def flac_to_mp3(file_path):
+    create_conversion_window(file_path, "flac", "mp3")
+
+def flac_to_wav(file_path):
+    create_conversion_window(file_path, "flac", "wav")
+
+def flac_to_wma(file_path):
+    create_conversion_window(file_path, "flac", "wma")
+
+def wav_to_flac(file_path):
+    create_conversion_window(file_path, "wav", "flac")
+
+def wav_to_mp3(file_path):
+    create_conversion_window(file_path, "wav", "mp3")
+
+def wav_to_wma(file_path):
+    create_conversion_window(file_path, "wav", "wma")
+
+def wma_to_flac(file_path):
+    create_conversion_window(file_path, "wma", "flac")
+
+def wma_to_mp3(file_path):
+    create_conversion_window(file_path, "wma", "mp3")
+
+def wma_to_wav(file_path):
+    create_conversion_window(file_path, "wma", "wav")
+
 # Function to ask for confirmation before closing the window #
 def on_close():
     if messagebox.askokcancel("Confirmation", "Are you sure you want to close the application?"):
@@ -222,7 +621,7 @@ def convert_video_to_audio():
 
 # Function to check disk space
 def check_disk_space():
-    machine_info.disks()
+    disks()
 
 # Function to convert video to audio #
 def convert_to_audio(video_file):
@@ -239,11 +638,7 @@ def convert_to_audio(video_file):
     
 # Function for about app window #
 def open_help_window():
-    app_help.about_app()
-
-# Function for donation window #
-def open_donation_window():
-    donation.open_donation_window()
+    about_app()
 
 # Hide the labels after 3 seconds #
 def hide_labels():
@@ -539,18 +934,18 @@ convertors_frame = ctk.CTkFrame(main_frame)
 
 # Define all the other buttons for Converter menu #
 want_to_convert_to_audio_button = ctk.CTkButton(convertors_frame, text="Video to Audio", command=convert_video_to_audio, **convertors_button_config)
-convert_mp3_to_flac_button = ctk.CTkButton(convertors_frame, text="MP3 to FLAC", command=convertors.convert_mp3_to_flac, **convertors_button_config)
-convert_mp3_to_wav_button = ctk.CTkButton(convertors_frame, text="MP3 to WAV", command=convertors.convert_mp3_to_wav, **convertors_button_config)
-convert_mp3_to_wma_button = ctk.CTkButton(convertors_frame, text="MP3 to WMA", command=convertors.convert_mp3_to_wma, **convertors_button_config)
-convert_flac_to_mp3_button = ctk.CTkButton(convertors_frame, text="FLAC to MP3", command=convertors.convert_flac_to_mp3, **convertors_button_config)
-convert_flac_to_wav_button = ctk.CTkButton(convertors_frame, text="FLAC to WAV", command=convertors.convert_flac_to_wav, **convertors_button_config)
-convert_flac_to_wma_button = ctk.CTkButton(convertors_frame, text="FLAC to WMA", command=convertors.convert_flac_to_wma, **convertors_button_config)
-convert_wav_to_mp3_button = ctk.CTkButton(convertors_frame, text="WAV to MP3", command=convertors.convert_wav_to_mp3, **convertors_button_config)
-convert_wav_to_flac_button = ctk.CTkButton(convertors_frame, text="WAV to FLAC", command=convertors.convert_wav_to_flac, **convertors_button_config)
-convert_wav_to_wma_button = ctk.CTkButton(convertors_frame, text="WAV to WMA", command=convertors.convert_wav_to_wma, **convertors_button_config)
-convert_wma_to_mp3_button = ctk.CTkButton(convertors_frame, text="WMA to MP3", command=convertors.convert_wma_to_mp3, **convertors_button_config)
-convert_wma_to_flac_button = ctk.CTkButton(convertors_frame, text="WMA to FLAC", command=convertors.convert_wma_to_flac, **convertors_button_config)
-convert_wma_to_wav_button = ctk.CTkButton(convertors_frame, text="WMA to WAV", command=convertors.convert_wma_to_wav, **convertors_button_config)
+convert_mp3_to_flac_button = ctk.CTkButton(convertors_frame, text="MP3 to FLAC", command=lambda: convert_audio_file([("MP3 files", "*.mp3")], mp3_to_flac), **convertors_button_config)
+convert_mp3_to_wav_button = ctk.CTkButton(convertors_frame, text="MP3 to WAV", command=lambda: convert_audio_file([("MP3 files", "*.mp3")], mp3_to_wav), **convertors_button_config)
+convert_mp3_to_wma_button = ctk.CTkButton(convertors_frame, text="MP3 to WMA", command=lambda: convert_audio_file([("MP3 files", "*.mp3")], mp3_to_wma), **convertors_button_config)
+convert_flac_to_mp3_button = ctk.CTkButton(convertors_frame, text="FLAC to MP3", command=lambda: convert_audio_file([("FLAC files", "*.flac")], flac_to_mp3), **convertors_button_config)
+convert_flac_to_wav_button = ctk.CTkButton(convertors_frame, text="FLAC to WAV", command=lambda: convert_audio_file([("FLAC files", "*.flac")], flac_to_wav), **convertors_button_config)
+convert_flac_to_wma_button = ctk.CTkButton(convertors_frame, text="FLAC to WMA", command=lambda: convert_audio_file([("FLAC files", "*.flac")], flac_to_wma), **convertors_button_config)
+convert_wav_to_mp3_button = ctk.CTkButton(convertors_frame, text="WAV to MP3", command=lambda: convert_audio_file([("WAV files", "*.wav")], wav_to_mp3), **convertors_button_config)
+convert_wav_to_flac_button = ctk.CTkButton(convertors_frame, text="WAV to FLAC", command=lambda: convert_audio_file([("WAV files", "*.wav")], wav_to_flac), **convertors_button_config)
+convert_wav_to_wma_button = ctk.CTkButton(convertors_frame, text="WAV to WMA", command=lambda: convert_audio_file([("WAV files", "*.wav")], wav_to_wma), **convertors_button_config)
+convert_wma_to_mp3_button = ctk.CTkButton(convertors_frame, text="WMA to MP3", command=lambda: convert_audio_file([("WMA files", "*.wma")], wma_to_mp3), **convertors_button_config)
+convert_wma_to_flac_button = ctk.CTkButton(convertors_frame, text="WMA to FLAC", command=lambda: convert_audio_file([("WMA files", "*.wma")], wma_to_flac), **convertors_button_config)
+convert_wma_to_wav_button = ctk.CTkButton(convertors_frame, text="WMA to WAV", command=lambda: convert_audio_file([("WMA files", "*.wma")], wma_to_wav), **convertors_button_config)
 
 # Create a button to always get the user back to the main menu #
 back_to_menu_frame = ctk.CTkFrame(main_frame)
