@@ -60,6 +60,7 @@ import tkinter.simpledialog as simpledialog
 import tkinter.messagebox as messagebox
 from PIL import Image
 import os
+import sys
 import psutil
 import pyperclip
 import cpuinfo
@@ -69,16 +70,26 @@ import webbrowser
 from tkinter import filedialog
 import moviepy.editor as mp
 
+# https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS2
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 # Icon and logo location on system #
 app_name = "ZipTube"
-icon = "ziptube\\assets\\images\\icon.ico"
-logo = "ziptube\\assets\\images\\logo.png"
-custom_theme = "ziptube\\assets\\themes\\custom.json"
+icon = resource_path("assets\\images\\icon.ico")
+logo = resource_path("assets\\images\\logo.png")
 website_url = "https://sts-mining.github.io/website/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
 github_url = "https://github.com/STS-Mining"
 feedback_email = "stsmining.ziptube@gmail.com"
-ffmpeg_path = "ziptube\\assets\\ffmpeg\\bin\\ffmpeg.exe"
+ffmpeg_path = resource_path("assets\\ffmpeg\\bin\\ffmpeg.exe")
 
 # Function to link website to main screen in a button #
 def open_webpage(url):
@@ -247,16 +258,15 @@ def get_cpu_info():
         'threads': psutil.cpu_count(logical=True)
     }
 
-def disks():
+def check_disk_space():
     ''' Icon and logo location on system '''
     app_name = "ZipTube - Disk Space"
-    icon_path = "ziptube\\assets\\images\\icon.ico"
-    custom_theme = "ziptube\\assets\\themes\\custom.json"
-
+    icon_path = resource_path("assets\\images\\icon.ico")
+    
     ''' Create a app window '''
     app = ctk.CTk()
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme(custom_theme)
+    ctk.set_default_color_theme("ziptube-custom")
 
     ''' Title of the window '''
     app.title(app_name)
@@ -316,16 +326,15 @@ def app_help_countdown(seconds, countdown_label, app, callback):
     else:
         callback()
 
-def about_app():
+def open_help_window():
     ''' Icon and logo location on system '''
     app_name = "ZipTube - Help"
-    icon_path = "ziptube\\assets\\images\\icon.ico"
-    custom_theme = "ziptube\\assets\\themes\\custom.json"
-
+    icon_path = resource_path("assets\\images\\icon.ico")
+    
     ''' Create a app window '''
     app = ctk.CTk()
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme(custom_theme)
+    ctk.set_default_color_theme("ziptube-custom")
 
     ''' Title of the window '''
     app.title(app_name)
@@ -432,7 +441,7 @@ def about_app():
 def open_donation_window():
     donation_window = ctk.CTk()
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme(custom_theme)
+    ctk.set_default_color_theme("ziptube-custom")
     donation_window.title("ZipTube - Please Donate ...")
     new_width = int(500)
     new_height = int(320)
@@ -442,7 +451,7 @@ def open_donation_window():
     
     # Check if the icon file exists
     if os.path.exists(icon):
-        donation_window.iconbitmap(icon)
+        donation_window.wm_iconbitmap(icon)
     else:
         print(f"Icon file not found: {icon}")
 
@@ -516,15 +525,14 @@ def convert_start_countdown(seconds, convert_countdown_label, convert_app):
 
 def create_conversion_window(file_path, convert_from, convert_to):
     convert_app_name = f"ZipTube - {convert_from.upper()} to {convert_to.upper()}"
-    icon = "ziptube\\assets\\images\\icon.ico"
-    custom_theme = "ziptube\\assets\\themes\\custom.json"
-
+    icon = resource_path("assets\\images\\icon.ico")
+    
     convert_app = ctk.CTk()
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme(custom_theme)
+    ctk.set_default_color_theme("ziptube-custom")
 
     convert_app.title(convert_app_name)
-    convert_app.iconbitmap(icon)
+    convert_app.wm_iconbitmap(icon)
 
     min_max_height = 175
     min_max_width = 600
@@ -619,26 +627,49 @@ def convert_video_to_audio():
     if filename:
         convert_to_audio(filename)
 
-# Function to check disk space
-def check_disk_space():
-    disks()
-
-# Function to convert video to audio #
 def convert_to_audio(video_file):
-    global progress_label, status_label
-    progress_label.pack(pady="10p")
-    status_label.pack(pady="10p")
-    audio_file = video_file.replace(".mp4", ".mp3")
-    video = mp.VideoFileClip(video_file)
-    video.audio.write_audiofile(audio_file)
-    video.close()
-    progress_label.configure(text=f"File saved as: {audio_file}")
-    status_label.configure(text=f"File saved as: {audio_file}")
-    to_main_menu()
+    convert_to_audio_app_name = "ZipTube - Video to Audio"
+    icon = resource_path("assets\\images\\icon.ico")
     
-# Function for about app window #
-def open_help_window():
-    about_app()
+    convert_to_audio_app = ctk.CTk()
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme("ziptube-custom")
+
+    convert_to_audio_app.title(convert_to_audio_app_name)
+    convert_to_audio_app.wm_iconbitmap(icon)
+
+    min_max_height = 175
+    min_max_width = 600
+    convert_to_audio_app.geometry(f"{min_max_width}x{min_max_height}")
+    convert_to_audio_app.minsize(min_max_width, min_max_height)
+    convert_to_audio_app.maxsize(min_max_width, min_max_height)
+
+    convert_main_frame = ctk.CTkFrame(convert_to_audio_app)
+    convert_main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
+
+    # Create the labels
+    convert_status_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="Converting Video file to Audio file ...")
+    convert_status_label.pack(pady=10)
+    convert_countdown_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="")
+    convert_countdown_label.pack(pady=10)
+    
+    # Run the conversion after the UI is fully rendered
+    convert_to_audio_app.after(100, video_to_audio_conversion, video_file, convert_status_label, convert_countdown_label, convert_to_audio_app)
+    convert_to_audio_app.mainloop()
+
+def video_to_audio_conversion(video_file, convert_status_label, convert_countdown_label, convert_to_audio_app):
+    try:
+        audio_file = os.path.splitext(video_file)[0] + ".mp3"
+        video = mp.VideoFileClip(video_file)
+        video.audio.write_audiofile(audio_file)
+        video.close()
+        
+        convert_status_label.configure(text=f"Successfully Converted:\n\n{audio_file}")
+    except Exception as e:
+        convert_status_label.configure(text=f"Conversion failed: {str(e)}")
+
+    convert_start_countdown(5, convert_countdown_label, convert_to_audio_app)  # Start the countdown after the conversion is complete
+
 
 # Hide the labels after 3 seconds #
 def hide_labels():
@@ -827,11 +858,11 @@ def hide_footer_frame():
 # Create a app window #
 app = ctk.CTk()
 ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme(custom_theme)
+ctk.set_default_color_theme("ziptube-custom")
 
 # Title of the window #
 app.title(app_name)
-app.iconbitmap(icon)
+app.wm_iconbitmap(icon)
 
 # Set min and max width and height #
 min_max_height = 550
