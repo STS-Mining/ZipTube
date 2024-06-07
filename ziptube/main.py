@@ -84,6 +84,7 @@ def resource_path(relative_path):
 
 # Icon and logo location on system #
 app_name = "ZipTube"
+version = 1.26
 icon = resource_path("assets\\images\\icon.ico")
 logo = resource_path("assets\\images\\logo.png")
 website_url = "https://sts-mining.github.io/website/"
