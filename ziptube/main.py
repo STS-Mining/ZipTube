@@ -239,7 +239,7 @@ def get_disk_info():
             free_gb = usage.free / (1024**3)
             percent_used = usage.percent
 
-            disk_info.disks_append({
+            disk_info.append({
                 'device': partition.device,
                 'mountpoint': partition.mountpoint,
                 'total_gb': total_gb,
@@ -279,19 +279,13 @@ def check_disk_space():
     else:
         print(f"Icon file not found: {icon_path}")
 
-    ''' Set min and max width and height '''
-    min_max_height = 600
-    min_max_width = 550
-    disks_app.geometry(f"{min_max_width}x{min_max_height}")
-    disks_app.minsize(min_max_width, min_max_height)
-
     ''' Create a frame to hold the content '''
     main_frame = ctk.CTkFrame(disks_app)
     main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
     ''' Create the labels '''
     status_label = ctk.CTkLabel(main_frame, font=("calibri", 18, "normal"), text="")
-    status_label.pack(pady=10)
+    status_label.pack(padx=10, pady=10)
     countdown_label = ctk.CTkLabel(main_frame, font=("calibri", 18, "normal"), text="")
     countdown_label.pack(side='bottom', pady=10)
 
@@ -316,17 +310,10 @@ def check_disk_space():
 
     # Set the gathered information to the status_label
     status_label.configure(text=info_text)
-    disks_countdown(20, countdown_label, disks_app)
+    disks_countdown(10, countdown_label, disks_app)
 
     # Start the main loop
     disks_app.mainloop()
-
-def app_help_countdown(seconds, countdown_label, help_app, callback):
-    if seconds > 0:
-        countdown_label.configure(text=f"Returning to menu in {seconds} seconds...")
-        help_app.after(1000, app_help_countdown, seconds - 1, countdown_label, help_app, callback)
-    else:
-        callback()
 
 def open_help_window():
     ''' Icon and logo location on system '''
@@ -347,13 +334,6 @@ def open_help_window():
     else:
         print(f"Icon file not found: {icon_path}")
 
-    ''' Set min and max width and height '''
-    min_max_height = 300
-    min_max_width = 600
-    help_app.geometry(f"{min_max_width}x{min_max_height}")
-    help_app.minsize(min_max_width, min_max_height)
-    help_app.maxsize(min_max_width, min_max_height)
-
     ''' Create a frame to hold the content '''
     main_frame = ctk.CTkFrame(help_app)
     main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
@@ -364,28 +344,23 @@ def open_help_window():
 
     # Label to display help information
     info_label = ctk.CTkLabel(main_frame, font=("calibri", 17, "normal"), text="")
-    info_label.pack(pady=10)
+    info_label.pack(padx=10, pady=10)
+
+    ''' Create the back button '''
+    def reset_to_menu():
+        help_app.title(help_app_name)
+        info_label.pack_forget()
+        back_button.pack_forget()
+        start_menu_frame.pack(padx=10, pady=100)
 
     # Buttons for opening the sub-menus #
     youtube_downloader_help_button = ctk.CTkButton(start_menu_frame, text="Download Help", command=lambda: show_youtube_downloader_help(info_label, help_app), font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
     converters_help_button = ctk.CTkButton(start_menu_frame, text="Convertor Help", command=lambda: show_converters_help(info_label, help_app), font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
     disk_info_help_button = ctk.CTkButton(start_menu_frame, text="Disk Space Help", command=lambda: check_disk_space_help(info_label, help_app), font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
+    back_button = ctk.CTkButton(main_frame, text="Back", font=("calibri", 15, "normal"), command=reset_to_menu, height=20, width=60, corner_radius=33, border_color="blue")
     youtube_downloader_help_button.grid(row=0, column=0, padx=5, pady=5)
     converters_help_button.grid(row=0, column=1, padx=5, pady=5)
     disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
-
-    ''' Create the countdown label '''
-    countdown_label = ctk.CTkLabel(main_frame, font=("calibri", 17, "normal"), text="")
-    countdown_label.pack(side='bottom', pady=10)
-    countdown_timer = 15  # set timer in seconds for screen to go back to menu
-
-    def reset_to_menu():
-        help_app.title(help_app_name)
-        info_label.pack_forget()
-        countdown_label.pack_forget()
-        info_label.configure(text="")
-        countdown_label.configure(text="")
-        start_menu_frame.pack(padx=10, pady=100)
 
     # Function to display YouTube downloader help
     def show_youtube_downloader_help(label, help_app):
@@ -402,9 +377,8 @@ def open_help_window():
         )
         start_menu_frame.pack_forget()
         label.configure(text=info_text)
-        info_label.pack(pady=10)
-        countdown_label.pack(side='bottom', pady=10)
-        app_help_countdown(countdown_timer, countdown_label, help_app, reset_to_menu)
+        info_label.pack(padx=10, pady=10)
+        back_button.pack(side='bottom', pady=10)
 
     # Function to display converters help
     def show_converters_help(label, help_app):
@@ -417,9 +391,8 @@ def open_help_window():
         )
         start_menu_frame.pack_forget()
         label.configure(text=info_text)
-        info_label.pack(pady=10)
-        countdown_label.pack(side='bottom', pady=10)
-        app_help_countdown(countdown_timer, countdown_label, help_app, reset_to_menu)
+        info_label.pack(padx=10, pady=10)
+        back_button.pack(side='bottom', pady=10)
 
     # Function to display disk space help
     def check_disk_space_help(label, help_app):
@@ -432,12 +405,12 @@ def open_help_window():
         )
         start_menu_frame.pack_forget()
         label.configure(text=info_text)
-        info_label.pack(pady=10)
-        countdown_label.pack(side='bottom', pady=10)
-        app_help_countdown(countdown_timer, countdown_label, help_app, reset_to_menu)
+        info_label.pack(padx=10, pady=10)
+        back_button.pack(side='bottom', pady=10)
 
     # Start the main loop
     help_app.mainloop()
+
 
 # Function for donation window #
 def open_donation_window():
@@ -536,18 +509,12 @@ def create_conversion_window(file_path, convert_from, convert_to):
     convert_app.title(convert_app_name)
     convert_app.wm_iconbitmap(icon)
 
-    min_max_height = 175
-    min_max_width = 600
-    convert_app.geometry(f"{min_max_width}x{min_max_height}")
-    convert_app.minsize(min_max_width, min_max_height)
-    convert_app.maxsize(min_max_width, min_max_height)
-
     convert_main_frame = ctk.CTkFrame(convert_app)
     convert_main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
     ''' Create the labels '''
     convert_status_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text=f"Converting {convert_from} file to {convert_to} file ...")
-    convert_status_label.pack(pady=10)
+    convert_status_label.pack(padx=10, pady=10)
     convert_countdown_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="")
     convert_countdown_label.pack(pady=10)
     
@@ -640,18 +607,12 @@ def convert_to_audio(video_file):
     convert_to_audio_app.title(convert_to_audio_app_name)
     convert_to_audio_app.wm_iconbitmap(icon)
 
-    min_max_height = 175
-    min_max_width = 600
-    convert_to_audio_app.geometry(f"{min_max_width}x{min_max_height}")
-    convert_to_audio_app.minsize(min_max_width, min_max_height)
-    convert_to_audio_app.maxsize(min_max_width, min_max_height)
-
     convert_main_frame = ctk.CTkFrame(convert_to_audio_app)
     convert_main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
     # Create the labels
     convert_status_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="Converting Video file to Audio file ...")
-    convert_status_label.pack(pady=10)
+    convert_status_label.pack(padx=10, pady=10)
     convert_countdown_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="")
     convert_countdown_label.pack(pady=10)
     
@@ -931,10 +892,10 @@ start_menu_frame.pack(padx=10, pady=130)
 # Buttons for opening the sub-menus #
 converters_button = ctk.CTkButton(start_menu_frame, text="Convert", command=show_converters, **start_menu_button_config)
 youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_menu_button_config)
-# local_info_button = ctk.CTkButton(start_menu_frame, text="Disk Space", command=check_disk_space, **start_menu_button_config)
+local_info_button = ctk.CTkButton(start_menu_frame, text="Disk Space", command=check_disk_space, **start_menu_button_config)
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
-# local_info_button.grid(row=0, column=2, padx=5, pady=5)
+local_info_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Initialize the main frame #
 footer_frame = ctk.CTkFrame(main_frame)
