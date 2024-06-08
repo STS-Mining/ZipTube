@@ -89,7 +89,7 @@ icon = resource_path("assets\\images\\icon.ico")
 logo = resource_path("assets\\images\\logo.png")
 website_url = "https://sts-mining.github.io/website/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
-github_url = "https://github.com/STS-Mining"
+github_url = "https://github.com/STS-Mining/ZipTube"
 feedback_email = "stsmining.ziptube@gmail.com"
 ffmpeg_path = resource_path("assets\\ffmpeg\\bin\\ffmpeg.exe")
 
