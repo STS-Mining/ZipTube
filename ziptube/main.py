@@ -220,13 +220,7 @@ def on_progress(stream, chunk, bytes_remaining):
         status_label.configure(text=f"Saving to local location ... {output_path}")
         to_main_menu()
 
-def disks_countdown(seconds, countdown_label, disks_app):
-    if seconds > 0:
-        countdown_label.configure(text=f"Closing window in {seconds} seconds...")
-        disks_app.after(1000, disks_countdown, seconds - 1, countdown_label, disks_app)
-    else:
-        disks_app.destroy()
-
+# Function to get disk info #
 def get_disk_info():
     partitions = psutil.disk_partitions()
     disk_info = []
@@ -252,6 +246,7 @@ def get_disk_info():
     
     return disk_info
 
+# Function to get cpu info #
 def get_cpu_info():
     info = cpuinfo.get_cpu_info()
     return {
@@ -260,6 +255,7 @@ def get_cpu_info():
         'threads': psutil.cpu_count(logical=True)
     }
 
+# Function to run both disk and cpu info at the same time and to open the window #
 def check_disk_space():
     ''' Icon and logo location on system '''
     disks_app_name = "ZipTube - Disk Space"
@@ -285,9 +281,7 @@ def check_disk_space():
 
     ''' Create the labels '''
     status_label = ctk.CTkLabel(main_frame, font=("calibri", 18, "normal"), text="")
-    status_label.pack(padx=10, pady=10)
-    countdown_label = ctk.CTkLabel(main_frame, font=("calibri", 18, "normal"), text="")
-    countdown_label.pack(side='bottom', pady=10)
+    status_label.pack(padx=20, pady=10)
 
     # Gather information to display
     info_text = ""
@@ -310,11 +304,11 @@ def check_disk_space():
 
     # Set the gathered information to the status_label
     status_label.configure(text=info_text)
-    disks_countdown(10, countdown_label, disks_app)
 
     # Start the main loop
     disks_app.mainloop()
 
+# Function to open the help window #
 def open_help_window():
     ''' Icon and logo location on system '''
     help_app_name = "ZipTube - Help"
@@ -344,7 +338,7 @@ def open_help_window():
 
     # Label to display help information
     info_label = ctk.CTkLabel(main_frame, font=("calibri", 17, "normal"), text="")
-    info_label.pack(padx=10, pady=10)
+    info_label.pack(padx=20, pady=10)
 
     ''' Create the back button '''
     def reset_to_menu():
@@ -377,7 +371,7 @@ def open_help_window():
         )
         start_menu_frame.pack_forget()
         label.configure(text=info_text)
-        info_label.pack(padx=10, pady=10)
+        info_label.pack(padx=20, pady=10)
         back_button.pack(side='bottom', pady=10)
 
     # Function to display converters help
@@ -391,7 +385,7 @@ def open_help_window():
         )
         start_menu_frame.pack_forget()
         label.configure(text=info_text)
-        info_label.pack(padx=10, pady=10)
+        info_label.pack(padx=20, pady=10)
         back_button.pack(side='bottom', pady=10)
 
     # Function to display disk space help
@@ -405,12 +399,11 @@ def open_help_window():
         )
         start_menu_frame.pack_forget()
         label.configure(text=info_text)
-        info_label.pack(padx=10, pady=10)
+        info_label.pack(padx=20, pady=10)
         back_button.pack(side='bottom', pady=10)
 
     # Start the main loop
     help_app.mainloop()
-
 
 # Function for donation window #
 def open_donation_window():
@@ -441,7 +434,7 @@ def open_donation_window():
         font=("calibri", 18),
         wraplength=new_width - 20
     )
-    donation_label.pack(padx=10, pady=10)
+    donation_label.pack(padx=20, pady=10)
 
     # Define wallet addresses and labels #
     wallets = [
@@ -514,7 +507,7 @@ def create_conversion_window(file_path, convert_from, convert_to):
 
     ''' Create the labels '''
     convert_status_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text=f"Converting {convert_from} file to {convert_to} file ...")
-    convert_status_label.pack(padx=10, pady=10)
+    convert_status_label.pack(padx=20, pady=10)
     convert_countdown_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="")
     convert_countdown_label.pack(pady=10)
     
@@ -612,7 +605,7 @@ def convert_to_audio(video_file):
 
     # Create the labels
     convert_status_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="Converting Video file to Audio file ...")
-    convert_status_label.pack(padx=10, pady=10)
+    convert_status_label.pack(padx=20, pady=10)
     convert_countdown_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="")
     convert_countdown_label.pack(pady=10)
     
