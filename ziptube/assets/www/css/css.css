@@ -1,0 +1,67 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  color: #333;
+}
+header,
+footer {
+  background-color: #222;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+}
+.container {
+  margin: 20px auto;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+h1,
+h2 {
+  color: #222;
+}
+.image-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.image-container img {
+  max-width: 100%;
+  height: auto;
+}
+code {
+  background-color: #f4f4f4;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 1.1em;
+}
+pre {
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+a {
+  color: #1a73e8;
+}
+.donation-info {
+  margin: 20px 0;
+}
+.donation-info code {
+  display: block;
+  margin: 5px 0;
+}
+.features-section {
+  text-align: center;
+}
+.features-section ul {
+  display: inline-block;
+  text-align: left;
+}
+.download-link {
+  text-align: center;
+  font-size: 1.5em; /* Adjust the font size as needed */
+  font-weight: bold;
+  margin: 20px 0;
+}
