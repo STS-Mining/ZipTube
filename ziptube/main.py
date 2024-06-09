@@ -70,6 +70,9 @@ import webbrowser
 from tkinter import filedialog
 import moviepy.editor as mp
 import assets.ffmpeg as ffmpeg
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service as ChromeService
 
 # https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
 def resource_path(relative_path):
@@ -84,19 +87,55 @@ def resource_path(relative_path):
 
 # Icon and logo location on system #
 app_name = "ZipTube"
-current_version = "1.26"
+current_version = "1.26" # Make sure to update this version here
 icon = resource_path("assets\\images\\icon.ico")
 logo = resource_path("assets\\images\\logo.png")
 website_url = "https://www.ziptube.com.au/"
-latest_version_link = "https://www.ziptube.com.au/ZipTube_Windows_setup_1.26.zip"
 discord_link = "https://discord.gg/nVMgU9yQcw"
 github_url = "https://github.com/STS-Mining/ZipTube"
 feedback_email = "stsmining.ziptube@gmail.com"
 ffmpeg_path = resource_path("assets\\ffmpeg\\bin\\ffmpeg.exe")
+chromedriver_path = resource_path("assets\\chromedriver\\chromedriver.exe")  # Ensure this path is correct
 
+def extract_version_from_link(link):
+    """ Extracts the version number from the given link. """
+    match = re.search(r'(\d+\.\d+)', link)
+    if match:
+        return match.group(1)
+    return None
+
+def update_ziptube_version():
+    global latest_version_link
+
+    # Setup the webdriver (Chrome in this case)
+    print("Setting up the Chrome WebDriver...")
+    service = ChromeService(executable_path=chromedriver_path)
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')  # Uncomment to run headlessly
+    driver = webdriver.Chrome(service=service, options=options)
+
+    try:
+        # Open the ziptube server and connect
+        driver.get(website_url)
+        latest_version_link_element = driver.find_element(By.XPATH, "//div[@class='download-link']//a[contains(text(), 'Windows_Setup')]")
+        latest_version_link = latest_version_link_element.get_attribute('href')
+
+        # Extract version number
+        version_number = extract_version_from_link(latest_version_link)
+            
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        version_number = None
+
+    finally:
+        print("Closing the browser...")
+        driver.quit()
+    
+    return version_number
 
 def latest_version():
     global latest_version_frame
+    global latest_version_link
 
     hide_all_buttons()
     hide_footer_frame()
@@ -106,19 +145,23 @@ def latest_version():
         latest_version_frame.destroy()
     
     # Create a new frame
-    latest_version_frame = ctk.CTkFrame(master=main_frame, width=400, height=200)
+    latest_version_frame = ctk.CTkFrame(main_frame, width=400, height=200)
     latest_version_frame.pack(padx=10, pady=90)
     
     latest_text = ""
-    if str(current_version) in latest_version_link:
+    latest_version_number = update_ziptube_version()
+
+    if latest_version_number is None:
+        latest_text += "Unable to check for updates at this time."
+    elif float(current_version) >= float(latest_version_number):
         latest_text += f"Latest Version: {current_version}\nYou are currently running the latest version of ZipTube."
     else:
-        latest_text += f"You are running version {current_version}\nPlease download the latest version."
+        latest_text += f"You are running version {current_version}\nPlease download the latest version {latest_version_number}."
     
     latest_version_label = ctk.CTkLabel(latest_version_frame, font=("Calibri", 18, "normal"), text=latest_text)
     latest_version_label.pack(padx=10, pady=10)
     
-    if str(current_version) not in latest_version_link:
+    if latest_version_number and float(current_version) < float(latest_version_number):
         download_update_button = ctk.CTkButton(latest_version_frame, text="Download Now!", command=lambda: webbrowser.open(latest_version_link))
         download_update_button.pack(padx=10, pady=10)
     
@@ -127,11 +170,6 @@ def latest_version():
 # Function to link website to main screen in a button #
 def open_webpage(url):
     webbrowser.open(url, new=2)  # new=2: open in a new tab, if possible
-
-# Function to send emails for feedback on app #
-def open_feedback_email():
-    subject = f"{app_name} Feedback"
-    webbrowser.open(f"mailto:{feedback_email}?subject={subject}")
 
 # Save location for all files downloaded #
 def choose_save_location():
