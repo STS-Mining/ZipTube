@@ -90,6 +90,7 @@ app_name = "ZipTube"
 current_version = "1.26" # Make sure to update this version here
 icon = resource_path("assets\\images\\icon.ico")
 logo = resource_path("assets\\images\\logo.png")
+custom_theme = resource_path("assets\\themes\\ziptube-custom.json")
 website_url = "https://www.ziptube.com.au/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
 github_url = "https://github.com/STS-Mining/ZipTube"
@@ -333,7 +334,7 @@ def check_disk_space():
     ''' Create a disks_app window '''
     disks_app = ctk.CTk()
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme("ziptube-custom")
+    ctk.set_default_color_theme(custom_theme)
 
     ''' Title of the window '''
     disks_app.title(disks_app_name)
@@ -386,7 +387,7 @@ def open_help_window():
     ''' Create a app window '''
     help_app = ctk.CTk()
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme("ziptube-custom")
+    ctk.set_default_color_theme(custom_theme)
 
     ''' Title of the window '''
     help_app.title(help_app_name)
@@ -478,7 +479,7 @@ def open_help_window():
 def open_donation_window():
     donation_window = ctk.CTk()
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme("ziptube-custom")
+    ctk.set_default_color_theme(custom_theme)
     donation_window.title("ZipTube - Please Donate ...")
     new_width = int(500)
     new_height = int(320)
@@ -566,7 +567,7 @@ def create_conversion_window(file_path, convert_from, convert_to):
     
     convert_app = ctk.CTk()
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme("ziptube-custom")
+    ctk.set_default_color_theme(custom_theme)
 
     convert_app.title(convert_app_name)
     convert_app.wm_iconbitmap(icon)
@@ -664,7 +665,7 @@ def convert_to_audio(video_file):
     
     convert_to_audio_app = ctk.CTk()
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme("ziptube-custom")
+    ctk.set_default_color_theme(custom_theme)
 
     convert_to_audio_app.title(convert_to_audio_app_name)
     convert_to_audio_app.wm_iconbitmap(icon)
@@ -886,7 +887,7 @@ def hide_footer_frame():
 # Create a app window #
 app = ctk.CTk()
 ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("ziptube-custom")
+ctk.set_default_color_theme(custom_theme)
 
 # Title of the window #
 app.title(app_name)
