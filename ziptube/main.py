@@ -84,14 +84,45 @@ def resource_path(relative_path):
 
 # Icon and logo location on system #
 app_name = "ZipTube"
-version = 1.26
+current_version = "1.26"
 icon = resource_path("assets\\images\\icon.ico")
 logo = resource_path("assets\\images\\logo.png")
-website_url = "https://sts-mining.github.io/website/"
+website_url = "https://www.ziptube.com.au/"
+latest_version_link = "https://www.ziptube.com.au/ZipTube_Windows_setup_1.26.zip"
 discord_link = "https://discord.gg/nVMgU9yQcw"
 github_url = "https://github.com/STS-Mining/ZipTube"
 feedback_email = "stsmining.ziptube@gmail.com"
 ffmpeg_path = resource_path("assets\\ffmpeg\\bin\\ffmpeg.exe")
+
+
+def latest_version():
+    global latest_version_frame
+
+    hide_all_buttons()
+    hide_footer_frame()
+    
+    # Destroy the frame if it already exists
+    if 'latest_version_frame' in globals():
+        latest_version_frame.destroy()
+    
+    # Create a new frame
+    latest_version_frame = ctk.CTkFrame(master=main_frame, width=400, height=200)
+    latest_version_frame.pack(padx=10, pady=90)
+    
+    latest_text = ""
+    if str(current_version) in latest_version_link:
+        latest_text += f"Latest Version: {current_version}\nYou are currently running the latest version of ZipTube."
+    else:
+        latest_text += f"You are running version {current_version}\nPlease download the latest version."
+    
+    latest_version_label = ctk.CTkLabel(latest_version_frame, font=("Calibri", 18, "normal"), text=latest_text)
+    latest_version_label.pack(padx=10, pady=10)
+    
+    if str(current_version) not in latest_version_link:
+        download_update_button = ctk.CTkButton(latest_version_frame, text="Download Now!", command=lambda: webbrowser.open(latest_version_link))
+        download_update_button.pack(padx=10, pady=10)
+    
+    to_main_menu()
 
 # Function to link website to main screen in a button #
 def open_webpage(url):
@@ -780,6 +811,9 @@ def show_youtube_downloader():
 def hide_all_buttons():
     start_menu_frame.pack_forget()
 
+def hide_footer_frame():
+    footer_frame.pack_forget()
+
 def back_to_main_menu():
     hide_all_buttons()
     hide_footer_frame()
@@ -796,6 +830,7 @@ def back_to_main_menu():
     want_to_download_button.pack_forget()
     # want_to_convert_to_audio_button.pack_forget()
     download_audio_button.pack_forget()
+    latest_version_frame.pack_forget()
     start_menu_frame.pack(padx=10, pady=130)
     footer_frame.pack(side="bottom", pady=10)
 
@@ -896,17 +931,17 @@ footer_frame.pack(side="bottom", pady=10)
 
 # Bottom of the main screen donation and website buttons #
 website_button = ctk.CTkButton(footer_frame, text="Website", command=lambda: open_webpage(website_url), **footer_button_config)
-feedback_button = ctk.CTkButton(footer_frame, text="Feedback", command=open_feedback_email, **footer_button_config)
 github_button = ctk.CTkButton(footer_frame, text="GitHub", command=lambda: open_webpage(github_url), **footer_button_config)
 discord_button = ctk.CTkButton(footer_frame, text="Discord", command=lambda: open_webpage(discord_link), **footer_button_config)
 donation_button = ctk.CTkButton(footer_frame, text="Donate", command=open_donation_window, **footer_button_config)
 help_button = ctk.CTkButton(footer_frame, text="Help", command=open_help_window, **footer_button_config)
+update_button = ctk.CTkButton(footer_frame, text="Update", command=latest_version, **footer_button_config)
 website_button.grid(row=0, column=0, padx=5, pady=5)
-feedback_button.grid(row=0, column=1, padx=5, pady=5)
-github_button.grid(row=0, column=2, padx=5, pady=5)
-discord_button.grid(row=0, column=3, padx=5, pady=5)
-donation_button.grid(row=0, column=4, padx=5, pady=5)
-help_button.grid(row=0, column=5, padx=5, pady=5)
+github_button.grid(row=0, column=1, padx=5, pady=5)
+discord_button.grid(row=0, column=2, padx=5, pady=5)
+donation_button.grid(row=0, column=3, padx=5, pady=5)
+help_button.grid(row=0, column=4, padx=5, pady=5)
+update_button.grid(row=0, column=5, padx=5, pady=5)
 
 # Youtube menu frame #
 youtube_menu_frame = ctk.CTkFrame(main_frame)
