@@ -113,7 +113,6 @@ def update_ziptube_version():
     global latest_version_link, latest_version_number
 
     # Setup the webdriver (Chrome in this case)
-    print("Setting up the Chrome WebDriver...")
     service = ChromeService(executable_path=chromedriver_path)
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')  # Uncomment to run headlessly
@@ -133,7 +132,6 @@ def update_ziptube_version():
         latest_version_number = None
 
     finally:
-        print("Closing the browser...")
         driver.quit()
 
 def check_for_updates():
@@ -146,7 +144,8 @@ def latest_version():
     hide_all_buttons()
     hide_footer_frame()
 
-    latest_version_frame.pack(padx=10, pady=90)
+    latest_version_label.pack(padx=10, pady=10)
+    latest_version_frame.pack(padx=10, pady=100)
     
     latest_text = ""
     if latest_version_number is None:
@@ -156,11 +155,9 @@ def latest_version():
     else:
         latest_text += f"You are running version {current_version}\nPlease download the latest version {latest_version_number}."
     
-    latest_version_label = ctk.CTkLabel(latest_version_frame, font=("Calibri", 18, "normal"), text=latest_text)
-    latest_version_label.pack(padx=10, pady=10)
+    latest_version_label.configure(text=latest_text)
     
     if latest_version_number and float(current_version) < float(latest_version_number):
-        download_update_button = ctk.CTkButton(latest_version_frame, text="Download Now!", command=lambda: webbrowser.open(latest_version_link))
         download_update_button.pack(padx=10, pady=10)
     
     to_main_menu()
@@ -868,6 +865,7 @@ def back_to_main_menu():
     download_audio_button.pack_forget()
     latest_version_frame.pack_forget()
     latest_version_label.pack_forget()
+    download_update_button.pack_forget()
     start_menu_frame.pack(padx=10, pady=130)
     footer_frame.pack(side="bottom", pady=10)
 
@@ -985,6 +983,8 @@ update_button.grid(row=0, column=5, padx=5, pady=5)
 
 # Create the latest version frame for the update screen
 latest_version_frame = ctk.CTkFrame(main_frame)
+latest_version_label = ctk.CTkLabel(latest_version_frame, font=("Calibri", 18, "normal"), text="")
+download_update_button = ctk.CTkButton(latest_version_frame, text="Download Now!", command=lambda: webbrowser.open(latest_version_link))
 
 # Youtube menu frame #
 youtube_menu_frame = ctk.CTkFrame(main_frame)
