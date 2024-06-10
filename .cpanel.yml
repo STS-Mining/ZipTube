@@ -2,4 +2,4 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home10/sawayatr/public_html/
     - /bin/cp ziptube/assets/www/html/index.html $DEPLOYPATH
-    - /bin/cp ziptube/assets/www/css/css.css $DEPLOYPATH
+    - /bin/cp ziptube/assets/www/css/css.css $DEPLOYPATH/css
