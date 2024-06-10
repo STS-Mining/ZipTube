@@ -1,0 +1,23 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main  # Trigger deployment on push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set deploy path
+        run: echo "DEPLOYPATH=/home10/sawayatr/public_html/" >> $GITHUB_ENV
+
+      - name: Copy index.html
+        run: cp index.html $DEPLOYPATH
+
+      - name: Copy css.css
+        run: cp css/css.css $DEPLOYPATH
