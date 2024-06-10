@@ -67,6 +67,7 @@ import cpuinfo
 import subprocess
 import re
 import webbrowser
+import threading
 from tkinter import filedialog
 import moviepy.editor as mp
 import assets.ffmpeg as ffmpeg
@@ -98,6 +99,9 @@ feedback_email = "stsmining.ziptube@gmail.com"
 ffmpeg_path = resource_path("assets\\ffmpeg\\bin\\ffmpeg.exe")
 chromedriver_path = resource_path("assets\\chromedriver\\chromedriver.exe")  # Ensure this path is correct
 
+latest_version_link = None
+latest_version_number = None
+
 def extract_version_from_link(link):
     """ Extracts the version number from the given link. """
     match = re.search(r'(\d+\.\d+)', link)
@@ -106,7 +110,7 @@ def extract_version_from_link(link):
     return None
 
 def update_ziptube_version():
-    global latest_version_link
+    global latest_version_link, latest_version_number
 
     # Setup the webdriver (Chrome in this case)
     print("Setting up the Chrome WebDriver...")
@@ -122,36 +126,29 @@ def update_ziptube_version():
         latest_version_link = latest_version_link_element.get_attribute('href')
 
         # Extract version number
-        version_number = extract_version_from_link(latest_version_link)
+        latest_version_number = extract_version_from_link(latest_version_link)
             
     except Exception as e:
         print(f"An error occurred: {e}")
-        version_number = None
+        latest_version_number = None
 
     finally:
         print("Closing the browser...")
         driver.quit()
-    
-    return version_number
+
+def check_for_updates():
+    update_thread = threading.Thread(target=update_ziptube_version)
+    update_thread.start()
 
 def latest_version():
-    global latest_version_frame
-    global latest_version_link
+    global latest_version_frame, latest_version_link, latest_version_label
 
     hide_all_buttons()
     hide_footer_frame()
-    
-    # Destroy the frame if it already exists
-    if 'latest_version_frame' in globals():
-        latest_version_frame.destroy()
-    
-    # Create a new frame
-    latest_version_frame = ctk.CTkFrame(main_frame, width=400, height=200)
+
     latest_version_frame.pack(padx=10, pady=90)
     
     latest_text = ""
-    latest_version_number = update_ziptube_version()
-
     if latest_version_number is None:
         latest_text += "Unable to check for updates at this time."
     elif float(current_version) >= float(latest_version_number):
@@ -870,6 +867,7 @@ def back_to_main_menu():
     # want_to_convert_to_audio_button.pack_forget()
     download_audio_button.pack_forget()
     latest_version_frame.pack_forget()
+    latest_version_label.pack_forget()
     start_menu_frame.pack(padx=10, pady=130)
     footer_frame.pack(side="bottom", pady=10)
 
@@ -883,6 +881,9 @@ def hide_footer_frame():
     footer_frame.pack_forget()
     website_button.pack_forget()
     donation_button.pack_forget()
+
+# Function to check for updates as soon as program is opened
+check_for_updates()
 
 # Create a app window #
 app = ctk.CTk()
@@ -981,6 +982,9 @@ discord_button.grid(row=0, column=2, padx=5, pady=5)
 donation_button.grid(row=0, column=3, padx=5, pady=5)
 help_button.grid(row=0, column=4, padx=5, pady=5)
 update_button.grid(row=0, column=5, padx=5, pady=5)
+
+# Create the latest version frame for the update screen
+latest_version_frame = ctk.CTkFrame(main_frame)
 
 # Youtube menu frame #
 youtube_menu_frame = ctk.CTkFrame(main_frame)
