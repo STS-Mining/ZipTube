@@ -15,6 +15,23 @@ Author: STS-Mining
 +------------------+-------------------------------------------------+
 | Version          | Description                                     |
 +==================+=================================================+
+| Version 1.27     | Download Youtube Videos, download only audio    |
+|                  | from videos on youtube also.                    |
+|                  | Convert audio files from mp4 (video) to mp3     |
+|                  | Convert audio files from mp3 to wav, flac & wma |
+|                  | Convert audio files from wav to flac, mp3 & wma |
+|                  | Convert audio files from flac to mp3, wav & wma |
+|                  | Convert audio files from wma to mp3, wav & flac |
+|                  | Create function for the main menu button,       |
+|                  | add custom theme from local assets directory    |
+|                  | Add website button at bottom of main screen     |
+|                  | Change button sizes and colors throughout app   |
+|                  | Check how much hard disk capacity your local    |
+|                  | machine has, to know which drive to choose      |
+|                  | Add update button on main screen, to allow      |
+|                  | user to know if new update is available, if     |
+|                  | update available, option to download present    |
++------------------+-------------------------------------------------+
 | Version 1.26     | Download Youtube Videos, download only audio    |
 |                  | from videos on youtube also.                    |
 |                  | Convert audio files from mp4 (video) to mp3     |
@@ -27,7 +44,7 @@ Author: STS-Mining
 |                  | Add website button at bottom of main screen     |
 |                  | Change button sizes and colors throughout app   |
 |                  | Check how much hard disk capacity your local    |
-|                  | machine has, to know which drive to chose       |
+|                  | machine has, to know which drive to choose      |
 +------------------+-------------------------------------------------+
 | Version 1.25     | Download Youtube Videos, download only audio    |
 |                  | from videos on youtube also.                    |
@@ -40,16 +57,6 @@ Author: STS-Mining
 |                  | add custom theme from local assets directory    |
 |                  | Add website button at bottom of main screen     |
 |                  | Change button sizes and colors throughout app   |
-+------------------+-------------------------------------------------+
-| Version 1.24     | Download Youtube Videos, download only audio    |
-|                  | from videos on youtube also.                    |
-|                  | Convert audio files from mp4 (video) to mp3     |
-|                  | Convert audio files from mp3 to wav, flac & wma |
-|                  | Convert audio files from wav to flac, mp3 & wma |
-|                  | Convert audio files from flac to mp3, wav & wma |
-|                  | Convert audio files from wma to mp3, wav & flac |
-|                  | Create function for the main menu button,       |
-|                  | add custom theme from local assets directory    |
 +------------------+-------------------------------------------------+
 '''
 
@@ -87,8 +94,8 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 # Icon and logo location on system #
+current_version = "1.27" # Make sure to update this version here
 app_name = "ZipTube"
-current_version = "1.26" # Make sure to update this version here
 icon = resource_path("assets\\images\\icon.ico")
 logo = resource_path("assets\\images\\logo.png")
 custom_theme = resource_path("assets\\themes\\ziptube-custom.json")
