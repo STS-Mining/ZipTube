@@ -5,7 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ZipTube</title>
     <link rel="shortcut icon" type="image/jpg" href="icon.ico" />
-    <link rel="stylesheet" href="css/css.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Arial", sans-serif;
+        background: #f4f4f4;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        background: #333;
+        padding: 10px 0;
+        text-align: center;
+      }
+      header img {
+        width: 200px;
+      }
+      .container {
+        flex: 1;
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+      }
+      .download-link {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .download-link a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .features-section {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .features-section h3 {
+        margin: 0 0 20px;
+      }
+      .features-section ul {
+        list-style: none;
+        padding: 0;
+      }
+      .features-section li {
+        background: url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/check.svg")
+          no-repeat left center;
+        background-size: 1em;
+        padding-left: 1.5em;
+        margin-bottom: 10px;
+      }
+      .image-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        margin-bottom: 20px;
+      }
+      .image-container img {
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin: 10px;
+      }
+      footer {
+        background: #333;
+        color: #fff;
+        text-align: center;
+        padding: 10px 0;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -13,7 +102,6 @@
         <img
           src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/logo.png"
           alt="ZipTube Logo"
-          width="550"
         />
       </div>
     </header>
@@ -24,57 +112,46 @@
           <a href="ZipTube_Windows_setup_1.27.rar">Windows_Setup_1.27</a>
         </p>
       </div>
-      <br />
       <div class="features-section">
-        <h3>
-          <ul>
-            <li>
-              Download almost any video from YouTube for free (mp4 format)
-            </li>
-            <li>Choose the resolution of the video you want to download</li>
-            <li>Choose where you want the files saved on your PC</li>
-            <li>Download audio only from video files on YouTube</li>
-            <li>Convert video to audio (mp3 format)</li>
-            <li>Convert MP3 to Flac, WAV / WMA</li>
-            <li>Convert Flac to MP3, WAV / WMA</li>
-            <li>Convert WAV to MP3, Flac / WMA</li>
-            <li>Convert WMA to MP3, Flac / WAV</li>
-            <li>Check available disk space on local machine</li>
-            <li>CPU information</li>
-          </ul>
-        </h3>
+        <h3>Features</h3>
+        <ul>
+          <li>Download almost any video from YouTube for free (mp4 format)</li>
+          <li>Choose the resolution of the video you want to download</li>
+          <li>Choose where you want the files saved on your PC</li>
+          <li>Download audio only from video files on YouTube</li>
+          <li>Convert video to audio (mp3 format)</li>
+          <li>Convert MP3 to Flac, WAV / WMA</li>
+          <li>Convert Flac to MP3, WAV / WMA</li>
+          <li>Convert WAV to MP3, Flac / WMA</li>
+          <li>Convert WMA to MP3, Flac / WAV</li>
+          <li>Check available disk space on local machine</li>
+          <li>CPU information</li>
+        </ul>
       </div>
-      <br />
-      <br />
       <div class="image-container">
         <img
           src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/main_menu.png"
           alt="ZipTube Main Menu"
-          width="550"
         />
         <img
           src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_menu.png"
           alt="ZipTube Download Menu"
-          width="550"
         />
       </div>
       <div class="image-container">
         <img
           src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_video.png"
           alt="ZipTube Download Video"
-          width="550"
         />
         <img
           src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_audio.png"
           alt="ZipTube Download Audio"
-          width="550"
         />
       </div>
       <div class="image-container">
         <img
           src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/conversion_menu.png"
           alt="ZipTube Conversion Menu"
-          width="550"
         />
       </div>
     </div>
