@@ -94,7 +94,7 @@ def delayed_update():
 # Function that runs the update button on the main screen
 def latest_version():
     global latest_version_frame, latest_version_link, latest_version_label
-    hide_all_buttons()
+    hide_start_menu_frame()
     hide_footer_frame()
     latest_version_label.pack(padx=10, pady=10)
     latest_version_frame.pack(padx=10, pady=100)
@@ -221,8 +221,8 @@ def on_progress(stream, chunk, bytes_remaining):
         bytes_downloaded_prev = bytes_downloaded
         progress_label.configure(
             text="{} / {} Download Speed: {:.2f} MB/sec".format(
-                bytes_to_nearest_measurement(int(bytes_downloaded)),
-                bytes_to_nearest_measurement(int(total_size)),
+                bytes_conversion(int(bytes_downloaded)),
+                bytes_conversion(int(total_size)),
                 download_speed,
             )
         )
@@ -264,23 +264,22 @@ def get_cpu_info():
 
 # Function to run both disk and cpu info at the same time and to open the window #
 def check_disk_space():
-    ''' Icon and logo location on system '''
     disks_app_name = "ZipTube - Disk Space"
-    ''' Create a disks_app window '''
     disks_app = ctk.CTk()
+
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme(custom_theme)
-    ''' Title of the window '''
+
     disks_app.title(disks_app_name)
-    ''' Check if the icon file exists '''
+
     if os.path.exists(icon):
         disks_app.iconbitmap(icon)
     else:
         print(f"Icon file not found: {icon}")
-    ''' Create a frame to hold the content '''
+
     disks_frame = ctk.CTkFrame(disks_app)
     disks_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
-    ''' Create the labels '''
+
     status_label = ctk.CTkLabel(disks_frame, font=("calibri", 18, "normal"), text="")
     status_label.pack(padx=20, pady=10)
     # Gather information to display
@@ -303,34 +302,41 @@ def check_disk_space():
     status_label.configure(text=info_text)
     disks_app.mainloop()
 
+def show_help_menu_buttons():
+    help_menu_frame.pack(padx=10, pady=130)
+    downloader_help_button.grid(row=0, column=0, padx=5, pady=5)
+    converters_help_button.grid(row=0, column=1, padx=5, pady=5)
+    disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
+
 # Function to go back to the help menu
-def reset_to_menu():
+def back_to_help_menu():
     info_label_frame.pack_forget()
     info_label.pack_forget()
     back_menu_frame.pack_forget()
     back_button.pack_forget()
-    help_menu_frame.pack(padx=10, pady=130)
-    downloader_help_button.grid(row=0, column=0, padx=5, pady=5)
-    converters_help_button.grid(row=0, column=1, padx=5, pady=5)
-    disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
+    show_help_menu_buttons()
     main_menu_button()
 
 # Function to open the help window #
 def open_help_window():
-    hide_all_buttons()
+    hide_start_menu_frame()
     hide_footer_frame()
-    help_menu_frame.pack(padx=10, pady=130)
-    downloader_help_button.grid(row=0, column=0, padx=5, pady=5)
-    converters_help_button.grid(row=0, column=1, padx=5, pady=5)
-    disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
+    show_help_menu_buttons()
     main_menu_button()
+
+def show_back_menu_button():
+    back_menu_frame.pack(side='bottom', pady=10)
+    back_button.pack(pady=5)
+
+def show_info_labels():
+    info_label_frame.pack(padx=20, pady=50)
+    info_label.pack(padx=20, pady=10)
 
 # Function to display YouTube downloader help
 def downloader_help():
     help_menu_frame.pack_forget()
     back_to_menu_frame.pack_forget()
-    info_label_frame.pack(padx=20, pady=50)
-    info_label.pack(padx=20, pady=10)
+    show_info_labels()
     info_text = (
         "How to use the download function:\n\n"
         "Here you can download almost any video from YouTube.\n"
@@ -342,15 +348,13 @@ def downloader_help():
         "This is useful when downloading music files that you like.\n"
     )
     info_label.configure(text=info_text)
-    back_menu_frame.pack(side='bottom', pady=10)
-    back_button.pack(pady=5)
+    show_back_menu_button()
 
 # Function to display converters help
 def converters_help():
     help_menu_frame.pack_forget()
     back_to_menu_frame.pack_forget()
-    info_label_frame.pack(padx=20, pady=50)
-    info_label.pack(padx=20, pady=10)
+    show_info_labels()
     info_text = (
         "\nHow to use the convertors:\n\n"
         "Here you can convert almost any audio file to almost any other audio file.\n"
@@ -358,15 +362,13 @@ def converters_help():
         "All files converted will be done in the best available bitrate.\n"
     )
     info_label.configure(text=info_text)
-    back_menu_frame.pack(side='bottom', pady=10)
-    back_button.pack(pady=5)
+    show_back_menu_button()
 
 # Function to display disk space help
 def disk_space_help():
     help_menu_frame.pack_forget()
     back_to_menu_frame.pack_forget()
-    info_label_frame.pack(padx=20, pady=50)
-    info_label.pack(padx=20, pady=10)
+    show_info_labels()
     info_text = (
         "\nHow to use the disk space utility:\n\n"
         "This option will give you basic information about your device.\n"
@@ -374,12 +376,11 @@ def disk_space_help():
         "and what cpu / processor is currently installed on your machine.\n"
     )
     info_label.configure(text=info_text)
-    back_menu_frame.pack(side='bottom', pady=10)
-    back_button.pack(pady=5)
+    show_back_menu_button()
 
 # Function for donation window #
 def open_donation_window():
-    hide_all_buttons()
+    hide_start_menu_frame()
     hide_footer_frame()
     donation_frame.pack(padx=20, pady=50)
     donation_label.pack(padx=20, pady=10)
@@ -559,7 +560,7 @@ def hide_labels():
     progress_label.pack_forget()
     resolutions_button.pack_forget()
     download_button.configure(state="normal")
-    download_button.configure(text="Download Another Video", command=start_app_again)
+    download_button.configure(text="Download Another Video", command=download_another_video)
     download_audio_button.configure(state="normal")
     download_audio_button.configure(text="Download Another Song", command=download_audio_only)
     resolutions_frame.pack_forget()
@@ -615,7 +616,7 @@ def load_resolutions():
         main_menu_button()
 
 # Function to start a new download #
-def start_app_again():
+def download_another_video():
     global resolutions_var
     resolutions_var.set("")
     download_button.pack_forget()
@@ -627,7 +628,7 @@ def start_app_again():
     main_menu_button()
 
 # Calculate the nearest measurement for bytes #
-def bytes_to_nearest_measurement(bytes):
+def bytes_conversion(bytes):
     for unit in ["Bytes", "KB", "MB", "GB", "TB", "PB"]:
         if bytes < 1024:
             return f"{bytes:.2f} {unit}"
@@ -669,7 +670,7 @@ def download_audio_only():
 
 # Function to show all the available convertors #
 def show_converters():
-    hide_all_buttons()
+    hide_start_menu_frame()
     hide_footer_frame()
     convertors_frame.pack(padx=10, pady=85)
     # want_to_convert_to_audio_button.grid(row=0, column=1, padx=5, pady=5)
@@ -689,27 +690,24 @@ def show_converters():
 
 # Function to show all the available convertors #
 def hide_converters():
-    hide_all_buttons()
+    hide_start_menu_frame()
     hide_footer_frame()
     convertors_frame.pack_forget()
 
 # Function to show the download buttons available #
 def show_youtube_downloader():
-    hide_all_buttons()
+    hide_start_menu_frame()
     hide_footer_frame()
     youtube_menu_frame.pack(padx=10, pady=130)
     want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
     want_to_download_audio_button.grid(row=0, column=1, padx=5, pady=5)
     main_menu_button()
 
-def hide_all_buttons():
+def hide_start_menu_frame():
     start_menu_frame.pack_forget()
 
-def hide_footer_frame():
-    footer_frame.pack_forget()
-
 def back_main_menu_button():
-    hide_all_buttons()
+    hide_start_menu_frame()
     hide_footer_frame()
     back_to_menu_frame.pack_forget()
     convertors_frame.pack_forget()
@@ -742,8 +740,6 @@ def main_menu_button():
 # Function to hide buttons at bottom of screen #
 def hide_footer_frame():
     footer_frame.pack_forget()
-    website_button.pack_forget()
-    donation_button.pack_forget()
 
 # Create a app window #
 app = ctk.CTk()
@@ -790,17 +786,17 @@ button_specifics = {
     }
 }
 
-def create_button_config(button_type):
+def button_configurations(button_type):
     if button_type not in button_specifics:
         raise ValueError("Invalid button type")
     config = base_config.copy()
     config.update(button_specifics[button_type])
     return config
 
-main_button_config = create_button_config('main')
-convertors_button_config = create_button_config('convertors')
-footer_button_config = create_button_config('footer')
-start_menu_button_config = create_button_config('start_menu')
+main_button_config = button_configurations('main')
+convertors_button_config = button_configurations('convertors')
+footer_button_config = button_configurations('footer')
+start_menu_button_config = button_configurations('start_menu')
 
 # Define global variables to track download progress #
 start_time = time.time()
@@ -852,7 +848,7 @@ help_menu_frame = ctk.CTkFrame(main_frame)
 back_menu_frame = ctk.CTkFrame(main_frame)
 info_label_frame = ctk.CTkFrame(main_frame)
 info_label = ctk.CTkLabel(info_label_frame, font=("calibri", 17, "normal"), text="")
-back_button = ctk.CTkButton(back_menu_frame, text="Back", command=reset_to_menu, **main_button_config)
+back_button = ctk.CTkButton(back_menu_frame, text="Back", command=back_to_help_menu, **main_button_config)
 downloader_help_button = ctk.CTkButton(help_menu_frame, text="Download Help", command=downloader_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
 converters_help_button = ctk.CTkButton(help_menu_frame, text="Convertor Help", command=converters_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
 disk_info_help_button = ctk.CTkButton(help_menu_frame, text="Disk Space Help", command=disk_space_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
