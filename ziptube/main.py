@@ -68,7 +68,7 @@ def update_ziptube_version():
         latest_version_link = latest_version_link_element.get_attribute('href')
         latest_version_number = extract_version_from_link(latest_version_link)
     except Exception as e:
-        print(f"An error occurred: {e}")
+        messagebox.showerror("ZipTube Update", f"An error occurred:\n{e}")
         latest_version_number = None
     finally:
         driver.quit()
@@ -78,16 +78,16 @@ def check_for_updates():
     update_thread = threading.Thread(target=update_ziptube_version)
     check_cpu_thread = threading.Thread(target=get_cpu_info)
     check_disks_thread = threading.Thread(target=get_disk_info)
+    update_thread.start()
+    update_thread.join()
     check_cpu_thread.start()
     check_cpu_thread.join()
     check_disks_thread.start()
     check_disks_thread.join()
-    update_thread.start()
-    update_thread.join()
 
 # Function to run the updates after the program is opened and show a loading screen
 def delayed_update():
-    print("App has started. Waiting for a few seconds before running updates...")
+    messagebox.showinfo("Loading", "App has started ...\nWaiting for a few seconds before running updates...")
     time.sleep(5)  # Sleep for 5 seconds or any other delay you want
     check_for_updates()
 
@@ -134,7 +134,6 @@ def download_audio():
         try:
             yt = YouTube(url, on_progress_callback=on_progress)
             audio_stream = yt.streams.filter(only_audio=True, abr="128kbps").first()
-            print(audio_stream.default_filename)
             save_dir = choose_save_location()
             output_path = save_dir
             filename = audio_stream.default_filename
@@ -250,7 +249,7 @@ def get_disk_info():
                 'percent_used': percent_used
             })
         except Exception as e:
-            print(f"Could not get usage for {partition.device}: {e}\n")
+            messagebox.showwarning("Disk Space", f"Could not get usage for {partition.device}:\n{e}")
     return disk_info
 
 # Function to get cpu info #
@@ -275,7 +274,7 @@ def check_disk_space():
     if os.path.exists(icon):
         disks_app.iconbitmap(icon)
     else:
-        print(f"Icon file not found: {icon}")
+        messagebox.showwarning("Disk Space", f"Icon file not found:\n{icon}")
 
     disks_frame = ctk.CTkFrame(disks_app)
     disks_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
@@ -434,7 +433,6 @@ def convert_start_countdown(seconds, convert_countdown_label, convert_app):
 
 def create_conversion_window(file_path, convert_from, convert_to):
     convert_app_name = f"ZipTube - {convert_from.upper()} to {convert_to.upper()}"
-    icon = resource_path("assets\\images\\icon.ico")
     convert_app = ctk.CTk()
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme(custom_theme)
@@ -524,7 +522,6 @@ def convert_video_to_audio():
 
 def convert_to_audio(video_file):
     convert_to_audio_app_name = "ZipTube - Video to Audio"
-    icon = resource_path("assets\\images\\icon.ico")
     convert_to_audio_app = ctk.CTk()
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme(custom_theme)
@@ -577,29 +574,33 @@ def print_available_resolutions(url):
             set([stream.resolution for stream in streams if stream.resolution]),
             key=lambda x: int(x[:-1]),
         )
+        filesizes = {}
+        for resolution in resolutions:
+            stream = yt.streams.filter(res=resolution).first()
+            if stream:
+                filesizes[resolution] = stream.filesize
+                
         resolutions_var = ctk.StringVar()
-        # Function to handle resolution selection #
         def select_resolution(resolution):
             resolutions_var.set(resolution)
-        # Create a frame to hold the resolution buttons #
-        selected_resolution = ctk.StringVar()
+
         resolutions_frame.pack(pady=10)
-        # Create a radio button for each available resolution #
+        selected_resolution = ctk.StringVar()
         for i, resolution in enumerate(resolutions):
             button = ctk.CTkRadioButton(
                 resolutions_frame,
-                text=resolution,
+                text=f"{resolution}\n{bytes_conversion(filesizes.get(resolution, 0))}",
                 variable=selected_resolution,
                 value=resolution,
                 command=lambda: select_resolution(selected_resolution.get()),
-                width=2,
+                width=30,
                 height=2,
             )
             button.grid(row=0, column=i, padx=5, pady=5)
             main_menu_button()
         return resolutions_var
     except Exception as e:
-        print(f"Error fetching resolutions for URL {url}: {e}")
+        messagebox.showerror("Resolutions", f"Error fetching resolutions for URL\n{url}:\n{e}")
 
 # Function to load the resolutions for a YouTube video #
 def load_resolutions():
@@ -752,7 +753,7 @@ app.wm_iconbitmap(icon)
 
 # Set min and max width and height #
 min_max_height = 550
-min_max_width = 650
+min_max_width = 750
 app.geometry(f"{min_max_width}x{min_max_height}")
 app.minsize(min_max_width, min_max_height)
 app.maxsize(min_max_width, min_max_height)
@@ -883,7 +884,7 @@ back_to_menu_frame = ctk.CTkFrame(main_frame)
 back_to_menu_button = ctk.CTkButton(back_to_menu_frame, text="Main Menu", command=back_main_menu_button, **main_button_config)
 
 # Create a label and the entry widget for the video url #
-entry_url = ctk.CTkEntry(main_frame, width=390, placeholder_text=("Paste URL here..."))
+entry_url = ctk.CTkEntry(main_frame, width=450, placeholder_text=("Paste URL here..."))
 
 # Create a resolutions frame to hold the resolutions #
 resolutions_frame = ctk.CTkFrame(main_frame)
