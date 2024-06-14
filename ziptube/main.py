@@ -9,16 +9,16 @@ import tkinter.messagebox as messagebox
 from PIL import Image
 import os
 import sys
-import psutil
+# import psutil
 import pyperclip
-import cpuinfo
+# import cpuinfo
 import subprocess
 import re
 import webbrowser
 import threading
 from tkinter import filedialog
-import moviepy.editor as mp
-import assets.ffmpeg as ffmpeg
+# import moviepy.editor as mp
+# import assets.ffmpeg as ffmpeg
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -76,19 +76,18 @@ def update_ziptube_version():
 # Function that runs at the start of the program being opened up
 def check_for_updates():
     update_thread = threading.Thread(target=update_ziptube_version)
-    check_cpu_thread = threading.Thread(target=get_cpu_info)
-    check_disks_thread = threading.Thread(target=get_disk_info)
+    # check_cpu_thread = threading.Thread(target=get_cpu_info)
+    # check_disks_thread = threading.Thread(target=get_disk_info)
     update_thread.start()
     update_thread.join()
-    check_cpu_thread.start()
-    check_cpu_thread.join()
-    check_disks_thread.start()
-    check_disks_thread.join()
+    # check_cpu_thread.start()
+    # check_cpu_thread.join()
+    # check_disks_thread.start()
+    # check_disks_thread.join()
 
 # Function to run the updates after the program is opened and show a loading screen
 def delayed_update():
-    messagebox.showinfo("Loading", "App has started ...\nWaiting for a few seconds before running updates...")
-    time.sleep(5)  # Sleep for 5 seconds or any other delay you want
+    time.sleep(1)
     check_for_updates()
 
 # Function that runs the update button on the main screen
@@ -103,8 +102,10 @@ def latest_version():
         latest_text += "Unable to check for updates at this time."
     elif float(current_version) >= float(latest_version_number):
         latest_text += f"Latest Version: {current_version}\nYou are currently running the latest version of ZipTube."
+        update_button.configure(text="Version")
     else:
         latest_text += f"You are running version {current_version}\nPlease download the latest version {latest_version_number}."
+        update_button.configure(text="Update")
     latest_version_label.configure(text=latest_text)
     if latest_version_number and float(current_version) < float(latest_version_number):
         download_update_button.pack(padx=10, pady=10)
@@ -229,83 +230,83 @@ def on_progress(stream, chunk, bytes_remaining):
         status_label.configure(text=f"Saving to local location ... {output_path}")
         main_menu_button()
 
-# Function to get disk info #
-def get_disk_info():
-    partitions = psutil.disk_partitions()
-    disk_info = []
-    for partition in partitions:
-        try:
-            usage = psutil.disk_usage(partition.mountpoint)
-            total_gb = usage.total / (1024**3)
-            used_gb = usage.used / (1024**3)
-            free_gb = usage.free / (1024**3)
-            percent_used = usage.percent
-            disk_info.append({
-                'device': partition.device,
-                'mountpoint': partition.mountpoint,
-                'total_gb': total_gb,
-                'used_gb': used_gb,
-                'free_gb': free_gb,
-                'percent_used': percent_used
-            })
-        except Exception as e:
-            messagebox.showwarning("Disk Space", f"Could not get usage for {partition.device}:\n{e}")
-    return disk_info
+# # Function to get disk info #
+# def get_disk_info():
+#     partitions = psutil.disk_partitions()
+#     disk_info = []
+#     for partition in partitions:
+#         try:
+#             usage = psutil.disk_usage(partition.mountpoint)
+#             total_gb = usage.total / (1024**3)
+#             used_gb = usage.used / (1024**3)
+#             free_gb = usage.free / (1024**3)
+#             percent_used = usage.percent
+#             disk_info.append({
+#                 'device': partition.device,
+#                 'mountpoint': partition.mountpoint,
+#                 'total_gb': total_gb,
+#                 'used_gb': used_gb,
+#                 'free_gb': free_gb,
+#                 'percent_used': percent_used
+#             })
+#         except Exception as e:
+#             messagebox.showwarning("Disk Space", f"Could not get usage for {partition.device}:\n{e}")
+#     return disk_info
 
-# Function to get cpu info #
-def get_cpu_info():
-    info = cpuinfo.get_cpu_info()
-    return {
-        'brand': info['brand_raw'],
-        'cores': psutil.cpu_count(logical=False),
-        'threads': psutil.cpu_count(logical=True)
-    }
+# # Function to get cpu info #
+# def get_cpu_info():
+#     info = cpuinfo.get_cpu_info()
+#     return {
+#         'brand': info['brand_raw'],
+#         'cores': psutil.cpu_count(logical=False),
+#         'threads': psutil.cpu_count(logical=True)
+#     }
 
-# Function to run both disk and cpu info at the same time and to open the window #
-def check_disk_space():
-    disks_app_name = "ZipTube - Disk Space"
-    disks_app = ctk.CTk()
+# # Function to run both disk and cpu info at the same time and to open the window #
+# def check_disk_space():
+#     disks_app_name = "ZipTube - Disk Space"
+#     disks_app = ctk.CTk()
 
-    ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme(custom_theme)
+#     ctk.set_appearance_mode("dark")
+#     ctk.set_default_color_theme(custom_theme)
 
-    disks_app.title(disks_app_name)
+#     disks_app.title(disks_app_name)
 
-    if os.path.exists(icon):
-        disks_app.iconbitmap(icon)
-    else:
-        messagebox.showwarning("Disk Space", f"Icon file not found:\n{icon}")
+#     if os.path.exists(icon):
+#         disks_app.iconbitmap(icon)
+#     else:
+#         messagebox.showwarning("Disk Space", f"Icon file not found:\n{icon}")
 
-    disks_frame = ctk.CTkFrame(disks_app)
-    disks_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
+#     disks_frame = ctk.CTkFrame(disks_app)
+#     disks_frame.pack(padx=10, pady=10)
 
-    status_label = ctk.CTkLabel(disks_frame, font=("calibri", 18, "normal"), text="")
-    status_label.pack(padx=20, pady=10)
-    # Gather information to display
-    info_text = ""
-    # CPU Information
-    info_text += "CPU Information:\n"
-    cpu = get_cpu_info()
-    info_text += f"Brand: {cpu['brand']}\n"
-    info_text += f"Cores: {cpu['cores']}\n"
-    info_text += f"Threads: {cpu['threads']}\n\n"
-    # Disk Information
-    info_text += "Disk Information:\n"
-    disks = get_disk_info()
-    for disk in disks:
-        info_text += f"Device: {disk['device']}\n"
-        info_text += f"Total Space: {disk['total_gb']:.2f} GB\n"
-        info_text += f"Used Space: {disk['used_gb']:.2f} GB ({disk['percent_used']}%)\n"
-        info_text += f"Free Space: {disk['free_gb']:.2f} GB\n\n"
-    # Set the gathered information to the status_label
-    status_label.configure(text=info_text)
-    disks_app.mainloop()
+#     status_label = ctk.CTkLabel(disks_frame, font=("calibri", 18, "normal"), text="")
+#     status_label.pack(padx=20, pady=10)
+#     # Gather information to display
+#     info_text = ""
+#     # CPU Information
+#     info_text += "CPU Information:\n"
+#     cpu = get_cpu_info()
+#     info_text += f"Brand: {cpu['brand']}\n"
+#     info_text += f"Cores: {cpu['cores']}\n"
+#     info_text += f"Threads: {cpu['threads']}\n\n"
+#     # Disk Information
+#     info_text += "Disk Information:\n"
+#     disks = get_disk_info()
+#     for disk in disks:
+#         info_text += f"Device: {disk['device']}\n"
+#         info_text += f"Total Space: {disk['total_gb']:.2f} GB\n"
+#         info_text += f"Used Space: {disk['used_gb']:.2f} GB ({disk['percent_used']}%)\n"
+#         info_text += f"Free Space: {disk['free_gb']:.2f} GB\n\n"
+#     # Set the gathered information to the status_label
+#     status_label.configure(text=info_text)
+#     disks_app.mainloop()
 
 def show_help_menu_buttons():
     help_menu_frame.pack(padx=10, pady=130)
     downloader_help_button.grid(row=0, column=0, padx=5, pady=5)
     converters_help_button.grid(row=0, column=1, padx=5, pady=5)
-    disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
+    # disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Function to go back to the help menu
 def back_to_help_menu():
@@ -363,19 +364,19 @@ def converters_help():
     info_label.configure(text=info_text)
     show_back_menu_button()
 
-# Function to display disk space help
-def disk_space_help():
-    help_menu_frame.pack_forget()
-    back_to_menu_frame.pack_forget()
-    show_info_labels()
-    info_text = (
-        "\nHow to use the disk space utility:\n\n"
-        "This option will give you basic information about your device.\n"
-        "This will include all available disk drives, space available,\n"
-        "and what cpu / processor is currently installed on your machine.\n"
-    )
-    info_label.configure(text=info_text)
-    show_back_menu_button()
+# # Function to display disk space help
+# def disk_space_help():
+#     help_menu_frame.pack_forget()
+#     back_to_menu_frame.pack_forget()
+#     show_info_labels()
+#     info_text = (
+#         "\nHow to use the disk space utility:\n\n"
+#         "This option will give you basic information about your device.\n"
+#         "This will include all available disk drives, space available,\n"
+#         "and what cpu / processor is currently installed on your machine.\n"
+#     )
+#     info_label.configure(text=info_text)
+#     show_back_menu_button()
 
 # Function for donation window #
 def open_donation_window():
@@ -510,44 +511,44 @@ def on_close():
     if messagebox.askokcancel("Confirmation", "Are you sure you want to close the application?"):
         app.destroy()
 
-# Function convert video to audio #
-def convert_video_to_audio():
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Video File",
-        filetypes=(("Video files", "*.mp4 *.avi *.mkv"), ("all files", "*.*")),
-    )
-    if filename:
-        convert_to_audio(filename)
+# # Function convert video to audio #
+# def convert_video_to_audio():
+#     filename = filedialog.askopenfilename(
+#         initialdir="/",
+#         title="Select Video File",
+#         filetypes=(("Video files", "*.mp4 *.avi *.mkv"), ("all files", "*.*")),
+#     )
+#     if filename:
+#         convert_to_audio(filename)
 
-def convert_to_audio(video_file):
-    convert_to_audio_app_name = "ZipTube - Video to Audio"
-    convert_to_audio_app = ctk.CTk()
-    ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme(custom_theme)
-    convert_to_audio_app.title(convert_to_audio_app_name)
-    convert_to_audio_app.wm_iconbitmap(icon)
-    convert_main_frame = ctk.CTkFrame(convert_to_audio_app)
-    convert_main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
-    # Create the labels
-    convert_status_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="Converting Video file to Audio file ...")
-    convert_status_label.pack(padx=20, pady=10)
-    convert_countdown_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="")
-    convert_countdown_label.pack(pady=10)
-    # Run the conversion after the UI is fully rendered
-    convert_to_audio_app.after(100, video_to_audio_conversion, video_file, convert_status_label, convert_countdown_label, convert_to_audio_app)
-    convert_to_audio_app.mainloop()
+# def convert_to_audio(video_file):
+#     convert_to_audio_app_name = "ZipTube - Video to Audio"
+#     convert_to_audio_app = ctk.CTk()
+#     ctk.set_appearance_mode("dark")
+#     ctk.set_default_color_theme(custom_theme)
+#     convert_to_audio_app.title(convert_to_audio_app_name)
+#     convert_to_audio_app.wm_iconbitmap(icon)
+#     convert_main_frame = ctk.CTkFrame(convert_to_audio_app)
+#     convert_main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
+#     # Create the labels
+#     convert_status_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="Converting Video file to Audio file ...")
+#     convert_status_label.pack(padx=20, pady=10)
+#     convert_countdown_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="")
+#     convert_countdown_label.pack(pady=10)
+#     # Run the conversion after the UI is fully rendered
+#     convert_to_audio_app.after(100, video_to_audio_conversion, video_file, convert_status_label, convert_countdown_label, convert_to_audio_app)
+#     convert_to_audio_app.mainloop()
 
-def video_to_audio_conversion(video_file, convert_status_label, convert_countdown_label, convert_to_audio_app):
-    try:
-        audio_file = video_file.replace(".mp4", ".mp3")
-        video = mp.VideoFileClip(video_file)
-        video.audio.write_audiofile(audio_file)
-        video.close()
-        convert_status_label.configure(text=f"Successfully Converted:\n\n{audio_file}")
-    except Exception as e:
-        convert_status_label.configure(text=f"Conversion failed: {str(e)}")
-    convert_start_countdown(5, convert_countdown_label, convert_to_audio_app)  # Start the countdown after the conversion is complete
+# def video_to_audio_conversion(video_file, convert_status_label, convert_countdown_label, convert_to_audio_app):
+#     try:
+#         audio_file = video_file.replace(".mp4", ".mp3")
+#         video = mp.VideoFileClip(video_file)
+#         video.audio.write_audiofile(audio_file)
+#         video.close()
+#         convert_status_label.configure(text=f"Successfully Converted:\n\n{audio_file}")
+#     except Exception as e:
+#         convert_status_label.configure(text=f"Conversion failed: {str(e)}")
+#     convert_start_countdown(5, convert_countdown_label, convert_to_audio_app)
 
 # Hide the labels after 3 seconds #
 def hide_labels():
@@ -562,7 +563,7 @@ def hide_labels():
     download_audio_button.configure(text="Download Another Song", command=download_audio_only)
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
-    convert_to_audio_button.pack(pady=10)
+    # convert_to_audio_button.pack(pady=10)
     main_menu_button()
 
 # Function to print all available resolutions for a YouTube video #
@@ -621,7 +622,7 @@ def download_another_video():
     global resolutions_var
     resolutions_var.set("")
     download_button.pack_forget()
-    convert_to_audio_button.pack_forget()
+    # convert_to_audio_button.pack_forget()
     resolutions_button.configure(state="normal")
     resolutions_button.configure(text="Load Resolutions", command=load_resolutions)
     resolutions_button.pack(pady=10)
@@ -637,13 +638,13 @@ def bytes_conversion(bytes):
 
 # Function to load entry widget for the video url and resolutions button #
 def load_entry_and_resolutions_button():
-    global entry_url, resolutions_button, resolutions_frame, download_button, convert_to_audio_button
+    global entry_url, resolutions_button, resolutions_frame, download_button#,convert_to_audio_button
     youtube_menu_frame.pack_forget()
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
     download_button.pack_forget()
-    convert_to_audio_button.pack_forget()
+    # convert_to_audio_button.pack_forget()
     want_to_download_audio_button.pack_forget()
     entry_url.pack(pady=10)
     resolutions_button.pack(pady="10p")
@@ -654,13 +655,13 @@ def load_entry_and_resolutions_button():
 
 # function to download audio file only #
 def download_audio_only():
-    global entry_url, resolutions_button, resolutions_frame, download_button, convert_to_audio_button
+    global entry_url, resolutions_button, resolutions_frame, download_button#,convert_to_audio_button
     youtube_menu_frame.pack_forget()
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
     download_button.pack_forget()
-    convert_to_audio_button.pack_forget()
+    # convert_to_audio_button.pack_forget()
     entry_url.pack(pady=10)
     download_audio_button.configure(text="Download", command=download_audio)
     download_audio_button.pack(pady=10)
@@ -718,7 +719,7 @@ def back_main_menu_button():
     entry_url.delete(0, ctk.END)
     entry_url.pack_forget()
     download_button.pack_forget()
-    convert_to_audio_button.pack_forget()
+    # convert_to_audio_button.pack_forget()
     want_to_download_audio_button.pack_forget()
     want_to_download_button.pack_forget()
     # want_to_convert_to_audio_button.pack_forget()
@@ -816,10 +817,10 @@ start_menu_frame.pack(padx=10, pady=130)
 # Buttons for opening the sub-menus #
 converters_button = ctk.CTkButton(start_menu_frame, text="Convert", command=show_converters, **start_menu_button_config)
 youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_menu_button_config)
-local_info_button = ctk.CTkButton(start_menu_frame, text="Disk Space", command=check_disk_space, **start_menu_button_config)
+# local_info_button = ctk.CTkButton(start_menu_frame, text="Disk Space", command=check_disk_space, **start_menu_button_config)
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
-local_info_button.grid(row=0, column=2, padx=5, pady=5)
+# local_info_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Initialize the main frame #
 footer_frame = ctk.CTkFrame(main_frame)
@@ -852,7 +853,7 @@ info_label = ctk.CTkLabel(info_label_frame, font=("calibri", 17, "normal"), text
 back_button = ctk.CTkButton(back_menu_frame, text="Back", command=back_to_help_menu, **main_button_config)
 downloader_help_button = ctk.CTkButton(help_menu_frame, text="Download Help", command=downloader_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
 converters_help_button = ctk.CTkButton(help_menu_frame, text="Convertor Help", command=converters_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
-disk_info_help_button = ctk.CTkButton(help_menu_frame, text="Disk Space Help", command=disk_space_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
+# disk_info_help_button = ctk.CTkButton(help_menu_frame, text="Disk Space Help", command=disk_space_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
 
 # Youtube menu frame #
 youtube_menu_frame = ctk.CTkFrame(main_frame)
@@ -907,7 +908,7 @@ donation_button_frame = ctk.CTkFrame(donation_frame)
 resolutions_var = None
 
 # Create and position GUI elements #
-convert_to_audio_button = ctk.CTkButton(main_frame, text="Convert Video to Audio", command=convert_video_to_audio)
+# convert_to_audio_button = ctk.CTkButton(main_frame, text="Convert Video to Audio", command=convert_video_to_audio)
 
 # Create a label and the progress bar to display the download progress #
 progress_label = ctk.CTkLabel(main_frame, text="")
