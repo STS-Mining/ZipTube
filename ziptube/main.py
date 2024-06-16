@@ -1,28 +1,27 @@
 # Author: STS-Mining
 # Python-Version 3.12.3
 
-import customtkinter as ctk
-from pytube import YouTube
-import time
 import tkinter.simpledialog as simpledialog
 import tkinter.messagebox as messagebox
+# import assets.ffmpeg as ffmpeg
+from tkinter import filedialog
+from bs4 import BeautifulSoup
+# import moviepy.editor as mp
+import customtkinter as ctk
+from pytube import YouTube
 from PIL import Image
-import os
-import sys
-# import psutil
-import pyperclip
-# import cpuinfo
 import subprocess
-import speedtest
-import re
 import webbrowser
 import threading
-from tkinter import filedialog
-# import moviepy.editor as mp
-# import assets.ffmpeg as ffmpeg
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service as ChromeService
+import pyperclip
+import speedtest
+# import cpuinfo
+import requests
+# import psutil
+import time
+import sys
+import os
+import re
 
 # https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
 def resource_path(relative_path):
@@ -35,45 +34,59 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
-# Icon and logo location on system #
-current_version = "1.27" # Make sure to update this version here
+# Define global variables here #
 app_name = "ZipTube"
-icon = resource_path("assets\\images\\icon.ico")
-logo = resource_path("assets\\images\\logo.png")
-custom_theme = resource_path("assets\\themes\\ziptube-custom.json")
+buttons_centered = 130
+current_version = "1.27" # Make sure to update this version here
+feedback_email = "info@ziptube.com.au"
 website_url = "https://www.ziptube.com.au/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
+icon = resource_path("assets\\images\\icon.ico")
+logo = resource_path("assets\\images\\logo.png")
 github_url = "https://github.com/STS-Mining/ZipTube"
-feedback_email = "stsmining.ziptube@gmail.com"
 ffmpeg_path = resource_path("assets\\ffmpeg\\bin\\ffmpeg.exe")
-chromedriver_path = resource_path("assets\\chromedriver\\chromedriver.exe")  # Ensure this path is correct
-buttons_centered = 130
+custom_theme = resource_path("assets\\themes\\ziptube-custom.json")
 
 latest_version_link = None
 latest_version_number = None
 def extract_version_from_link(link):
-    """ Extracts the version number from the given link. """
-    match = re.search(r'(\d+\.\d+)', link)
+    # Regular expression to extract the version number from the link
+    match = re.search(r'ziptube_windows_setup_(\d+\.\d+)\.exe', link)
     if match:
-        return match.group(1)
+        version_number = match.group(1)
+        return version_number
     return None
 
 def update_ziptube_version():
     global latest_version_link, latest_version_number
-    service = ChromeService(executable_path=chromedriver_path)
-    options = webdriver.ChromeOptions()
-    options.add_argument('--headless')
-    driver = webdriver.Chrome(service=service, options=options)
     try:
-        driver.get(website_url)
-        latest_version_link_element = driver.find_element(By.XPATH, "//div[@class='download-link']//a[contains(text(), 'Windows_Setup')]")
-        latest_version_link = latest_version_link_element.get_attribute('href')
-        latest_version_number = extract_version_from_link(latest_version_link)
+        response = requests.get(website_url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, "html.parser")
+        # Find all links on the page
+        links = soup.find_all("a", href=True)
+        if not links:
+            raise ValueError("No links found on the webpage.")
+        highest_version = None
+        highest_version_link = None
+        for link in links:
+            href = link['href']
+            if href.endswith(".exe") and "windows_setup" in href:
+                full_link = website_url + href if not href.startswith("https") else href
+                version_number = extract_version_from_link(full_link)
+                if version_number is not None:
+                    if highest_version is None or version_number > highest_version:
+                        highest_version = version_number
+                        highest_version_link = full_link
+
+        if highest_version_link:
+            latest_version_link = highest_version_link
+            latest_version_number = highest_version
+
+    except requests.exceptions.RequestException as e:
+        messagebox.showerror("ZipTube Update: Error during request -", e)
     except Exception as e:
-        messagebox.showerror("ZipTube Update", f"An error occurred:\n{e}")
-        latest_version_number = None
-    finally:
-        driver.quit()
+        messagebox.showerror("ZipTube Update: An error occurred -", e)
 
 # Function that runs at the start of the program being opened up
 def check_for_updates():
@@ -87,11 +100,6 @@ def check_for_updates():
     # check_disks_thread.start()
     # check_disks_thread.join()
 
-# Function to run the updates after the program is opened and show a loading screen
-def delayed_update():
-    time.sleep(1)
-    check_for_updates()
-
 # Function that runs the update button on the main screen
 def latest_version():
     global latest_version_frame, latest_version_link, latest_version_label
@@ -104,7 +112,7 @@ def latest_version():
         latest_text += "Unable to check for updates at this time."
     elif float(current_version) >= float(latest_version_number):
         latest_text += f"Latest Version: {current_version}\nYou are currently running the latest version of ZipTube."
-        update_button.configure(text="Version")
+        update_button.configure(text=f"Version {current_version}")
     else:
         latest_text += f"You are running version {current_version}\nPlease download the latest version {latest_version_number}."
         update_button.configure(text="Update")
@@ -116,6 +124,48 @@ def latest_version():
 # Function to link website to main screen in a button #
 def open_webpage(url):
     webbrowser.open(url, new=2)  # new=2: open in a new tab, if possible
+
+def share_to_twitter():
+    message = "Check out this awesome program!"
+    url = website_url
+    twitter_url = f"https://twitter.com/intent/tweet?text={message}&url={url}"
+    webbrowser.open(twitter_url)
+
+def share_to_facebook():
+    url = website_url
+    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={url}"
+    webbrowser.open(facebook_url)
+
+def share_to_instagram():
+    message = "Check out this awesome program!"
+    url = website_url
+    instagram_url = f"https://www.instagram.com/sharing?url={url}&text={message}"
+    webbrowser.open(instagram_url)
+
+def share_to_whatsapp():
+    message = "Check out this awesome program!"
+    url = website_url
+    whatsapp_url = f"https://api.whatsapp.com/send?text={message}%20{url}"
+    webbrowser.open(whatsapp_url)
+
+def show_social_media_window():
+    hide_start_menu_frame()
+    hide_footer_frame()
+    social_media_frame.pack(padx=10, pady=buttons_centered)
+    twitter_button.grid(row=0, column=0, padx=5, pady=5)
+    facebook_button.grid(row=0, column=1, padx=5, pady=5)
+    whatsapp_button.grid(row=0, column=2, padx=5, pady=5)
+    instagram_button.grid(row=0, column=3, padx=5, pady=5)
+    main_menu_button()
+
+def hide_social_media_window():
+    social_media_frame.pack_forget()
+    twitter_button.grid_forget()
+    facebook_button.grid_forget()
+    whatsapp_button.grid_forget()
+    instagram_button.grid_forget()
+    show_start_menu_frame()
+    show_footer_frame()
 
 # Save location for all files downloaded #
 def choose_save_location():
@@ -805,6 +855,7 @@ def back_main_menu_button():
     menu_from_speedtest()
     hide_speedtest_buttons()
     hide_speedtest_labels()
+    hide_social_media_window()
     show_start_menu_frame()
     show_footer_frame()
 
@@ -863,10 +914,10 @@ button_specifics = {
     },
     'start_menu': {'border_color': "orange"},
     'footer': {
-        'font': ctk.CTkFont(family="calibri", size=13, weight="normal"),
+        'font': ctk.CTkFont(family="calibri", size=11, weight="normal"),
         'border_color': "red",
         'height': 20,
-        'width': 60
+        'width': 75
     }
 }
 
@@ -916,13 +967,15 @@ github_button = ctk.CTkButton(footer_frame, text="GitHub", command=lambda: open_
 discord_button = ctk.CTkButton(footer_frame, text="Discord", command=lambda: open_webpage(discord_link), **footer_button_config)
 donation_button = ctk.CTkButton(footer_frame, text="Donate", command=open_donation_window, **footer_button_config)
 help_button = ctk.CTkButton(footer_frame, text="Help", command=open_help_window, **footer_button_config)
+social_media_button = ctk.CTkButton(footer_frame, text="Share", command=show_social_media_window, **footer_button_config)
 update_button = ctk.CTkButton(footer_frame, text="Update", command=latest_version, **footer_button_config)
 website_button.grid(row=0, column=0, padx=5, pady=5)
 github_button.grid(row=0, column=1, padx=5, pady=5)
 discord_button.grid(row=0, column=2, padx=5, pady=5)
 donation_button.grid(row=0, column=3, padx=5, pady=5)
 help_button.grid(row=0, column=4, padx=5, pady=5)
-update_button.grid(row=0, column=5, padx=5, pady=5)
+social_media_button.grid(row=0, column=6, padx=5, pady=5)
+update_button.grid(row=0, column=7, padx=5, pady=5)
 
 # Create the latest version frame for the update screen
 latest_version_frame = ctk.CTkFrame(main_frame)
@@ -1007,11 +1060,35 @@ speedtest_upload_button = ctk.CTkButton(speedtest_frame, text="Check Upload Spee
 speedtest_back_button = ctk.CTkButton(main_frame, text="Back", command=speedtest_back_function, **main_button_config)
 speedtest_label = ctk.CTkLabel(main_frame, font=("calibri", 17, "normal"), text="")
 
+# Add social media sharing options
+socials_image_sizes = size=(40, 40)
+twitter_image = Image.open(resource_path("assets\\images\\twitter.png"))
+twitter_image_pil = ctk.CTkImage(twitter_image, size=socials_image_sizes)
+facebook_image = Image.open(resource_path("assets\\images\\facebook.png"))
+facebook_image_pil = ctk.CTkImage(facebook_image, size=socials_image_sizes)
+whatsapp_image = Image.open(resource_path("assets\\images\\whatsapp.png"))
+whatsapp_image_pil = ctk.CTkImage(whatsapp_image, size=socials_image_sizes)
+instagram_image = Image.open(resource_path("assets\\images\\instagram.png"))
+instagram_image_pil = ctk.CTkImage(instagram_image, size=socials_image_sizes)
+
+social_media_frame = ctk.CTkFrame(main_frame)
+social_button_config = {
+    'border_width': 0,
+    'width': 0,
+    'hover_color': "gray17",
+    'border_spacing': 0,
+    'fg_color': "transparent",
+}
+twitter_button = ctk.CTkButton(social_media_frame, image=twitter_image_pil, text="", command=share_to_twitter, **social_button_config)
+facebook_button = ctk.CTkButton(social_media_frame, image=facebook_image_pil, text="", command=share_to_facebook, **social_button_config)
+instagram_button = ctk.CTkButton(social_media_frame, image=instagram_image_pil, text="", command=share_to_instagram, **social_button_config)
+whatsapp_button = ctk.CTkButton(social_media_frame, image=whatsapp_image_pil, text="", command=share_to_whatsapp, **social_button_config)
+
 # Add the on_close function to the close button #
 app.protocol("WM_DELETE_WINDOW", on_close)
 
 # Start the app #
 if __name__ == "__main__":
-    update_thread = threading.Thread(target=delayed_update)
+    update_thread = threading.Thread(target=check_for_updates)
     update_thread.start()
     app.mainloop()
