@@ -13,6 +13,7 @@ import sys
 import pyperclip
 # import cpuinfo
 import subprocess
+import speedtest
 import re
 import webbrowser
 import threading
@@ -46,6 +47,7 @@ github_url = "https://github.com/STS-Mining/ZipTube"
 feedback_email = "stsmining.ziptube@gmail.com"
 ffmpeg_path = resource_path("assets\\ffmpeg\\bin\\ffmpeg.exe")
 chromedriver_path = resource_path("assets\\chromedriver\\chromedriver.exe")  # Ensure this path is correct
+buttons_centered = 130
 
 latest_version_link = None
 latest_version_number = None
@@ -303,7 +305,7 @@ def on_progress(stream, chunk, bytes_remaining):
 #     disks_app.mainloop()
 
 def show_help_menu_buttons():
-    help_menu_frame.pack(padx=10, pady=130)
+    help_menu_frame.pack(padx=10, pady=buttons_centered)
     downloader_help_button.grid(row=0, column=0, padx=5, pady=5)
     converters_help_button.grid(row=0, column=1, padx=5, pady=5)
     # disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
@@ -317,6 +319,11 @@ def back_to_help_menu():
     show_help_menu_buttons()
     main_menu_button()
 
+# Function to go back to main menu from speedtest
+def menu_from_speedtest():
+    info_label_frame.pack_forget()
+    info_label.pack_forget()
+
 # Function to open the help window #
 def open_help_window():
     hide_start_menu_frame()
@@ -329,7 +336,7 @@ def show_back_menu_button():
     back_button.pack(pady=5)
 
 def show_info_labels():
-    info_label_frame.pack(padx=20, pady=50)
+    info_label_frame.pack(padx=20, pady=80)
     info_label.pack(padx=20, pady=10)
 
 # Function to display YouTube downloader help
@@ -338,7 +345,6 @@ def downloader_help():
     back_to_menu_frame.pack_forget()
     show_info_labels()
     info_text = (
-        "How to use the download function:\n\n"
         "Here you can download almost any video from YouTube.\n"
         "Choose the resolution of the video you want to download.\n"
         "Choose where you want the files saved on your pc.\n"
@@ -356,7 +362,6 @@ def converters_help():
     back_to_menu_frame.pack_forget()
     show_info_labels()
     info_text = (
-        "\nHow to use the convertors:\n\n"
         "Here you can convert almost any audio file to almost any other audio file.\n"
         "You can choose where you want the files saved on your pc.\n"
         "All files converted will be done in the best available bitrate.\n"
@@ -370,7 +375,6 @@ def converters_help():
 #     back_to_menu_frame.pack_forget()
 #     show_info_labels()
 #     info_text = (
-#         "\nHow to use the disk space utility:\n\n"
 #         "This option will give you basic information about your device.\n"
 #         "This will include all available disk drives, space available,\n"
 #         "and what cpu / processor is currently installed on your machine.\n"
@@ -636,6 +640,76 @@ def bytes_conversion(bytes):
             return f"{bytes:.2f} {unit}"
         bytes /= 1024
 
+def show_speedtest_buttons():
+    speedtest_frame.pack(pady=buttons_centered)
+    speedtest_download_button.grid(row=0, column=0, padx=5, pady=5)
+    speedtest_upload_button.grid(row=0, column=1, padx=5, pady=5)
+
+def hide_speedtest_buttons():
+    speedtest_frame.pack_forget()
+    speedtest_download_button.grid_forget()
+    speedtest_upload_button.grid_forget()
+
+def show_speedtest_labels():
+    speedtest_label.pack(pady=buttons_centered)
+
+def hide_speedtest_labels():
+    speedtest_label.pack_forget()
+
+def show_speedtest_back_button():
+    speedtest_back_button.pack(side="bottom", pady=10)
+
+def hide_speedtest_back_button():
+    speedtest_back_button.pack_forget()
+
+def speedtest_back_function():
+    hide_speedtest_labels()
+    hide_speedtest_back_button()
+    show_speedtest_buttons()
+    main_menu_button()
+
+# Function to check internet speed of client
+def check_internet_speed():
+    hide_speedtest_back_button()
+    hide_start_menu_frame()
+    hide_footer_frame()
+    show_speedtest_buttons()
+    main_menu_button()
+
+def check_download_speed():
+    back_to_menu_frame.pack_forget()
+    hide_speedtest_buttons()
+    show_speedtest_labels()
+    speedtest_label.configure(text="Running Download Speed Test Now ...")
+    speedtest_label.after(1000, run_download_speed_test)
+
+def run_download_speed_test():
+    st = speedtest.Speedtest()
+    download_speed = st.download()
+    info_text = (
+        "Download Speed Test Complete\n\n"
+        f"Avg. Download Speed: {bytes_conversion(download_speed)}/s\n"
+    )
+    speedtest_label.configure(text=info_text)
+    show_speedtest_back_button()
+
+def check_upload_speed():
+    back_to_menu_frame.pack_forget()
+    hide_speedtest_buttons()
+    show_speedtest_labels()
+    speedtest_label.configure(text="Running Upload Speed Test Now ...")
+    speedtest_label.after(1000, run_upload_speed_test)
+
+def run_upload_speed_test():
+    st = speedtest.Speedtest()
+    upload_speed = st.upload()
+    info_text = (
+        "Upload Speed Test Complete\n\n"
+        f"Avg. Upload Speed: {bytes_conversion(upload_speed)}/s\n"
+    )
+    speedtest_label.configure(text=info_text)
+    show_speedtest_back_button()
+
 # Function to load entry widget for the video url and resolutions button #
 def load_entry_and_resolutions_button():
     global entry_url, resolutions_button, resolutions_frame, download_button#,convert_to_audio_button
@@ -674,7 +748,7 @@ def download_audio_only():
 def show_converters():
     hide_start_menu_frame()
     hide_footer_frame()
-    convertors_frame.pack(padx=10, pady=85)
+    convertors_frame.pack(padx=10, pady=95)
     # want_to_convert_to_audio_button.grid(row=0, column=1, padx=5, pady=5)
     convert_mp3_to_flac_button.grid(row=1, column=0, padx=5, pady=5)
     convert_mp3_to_wav_button.grid(row=1, column=1, padx=5, pady=5)
@@ -700,13 +774,10 @@ def hide_converters():
 def show_youtube_downloader():
     hide_start_menu_frame()
     hide_footer_frame()
-    youtube_menu_frame.pack(padx=10, pady=130)
+    youtube_menu_frame.pack(padx=10, pady=buttons_centered)
     want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
     want_to_download_audio_button.grid(row=0, column=1, padx=5, pady=5)
     main_menu_button()
-
-def hide_start_menu_frame():
-    start_menu_frame.pack_forget()
 
 def back_main_menu_button():
     hide_start_menu_frame()
@@ -731,15 +802,26 @@ def back_main_menu_button():
     donation_frame.pack_forget()
     donation_label.pack_forget()
     donation_button_frame.pack_forget()
-    start_menu_frame.pack(padx=10, pady=130)
-    footer_frame.pack(side="bottom", pady=10)
+    menu_from_speedtest()
+    hide_speedtest_buttons()
+    hide_speedtest_labels()
+    show_start_menu_frame()
+    show_footer_frame()
 
 # Function to go back to the main menu screen #
 def main_menu_button():
     back_to_menu_frame.pack(side='bottom', pady=10)
     back_to_menu_button.pack(pady=5)
 
-# Function to hide buttons at bottom of screen #
+def show_start_menu_frame():
+    start_menu_frame.pack(padx=10, pady=buttons_centered)
+
+def hide_start_menu_frame():
+    start_menu_frame.pack_forget()
+
+def show_footer_frame():
+    footer_frame.pack(side="bottom", pady=10)
+
 def hide_footer_frame():
     footer_frame.pack_forget()
 
@@ -812,15 +894,17 @@ heading.pack(pady="10p")
 
 # Initialize the main menu frame #
 start_menu_frame = ctk.CTkFrame(main_frame)
-start_menu_frame.pack(padx=10, pady=130)
+start_menu_frame.pack(padx=10, pady=buttons_centered)
 
 # Buttons for opening the sub-menus #
 converters_button = ctk.CTkButton(start_menu_frame, text="Convert", command=show_converters, **start_menu_button_config)
 youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_menu_button_config)
+speedtest_button = ctk.CTkButton(start_menu_frame, text="Speedtest", command=check_internet_speed, **start_menu_button_config)
 # local_info_button = ctk.CTkButton(start_menu_frame, text="Disk Space", command=check_disk_space, **start_menu_button_config)
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
-# local_info_button.grid(row=0, column=2, padx=5, pady=5)
+speedtest_button.grid(row=0, column=2, padx=5, pady=5)
+# local_info_button.grid(row=0, column=3, padx=5, pady=5)
 
 # Initialize the main frame #
 footer_frame = ctk.CTkFrame(main_frame)
@@ -915,6 +999,13 @@ progress_label = ctk.CTkLabel(main_frame, text="")
 
 # Create the status label #
 status_label = ctk.CTkLabel(main_frame, text="")
+
+# Create the speedtest buttons #
+speedtest_frame = ctk.CTkFrame(main_frame)
+speedtest_download_button = ctk.CTkButton(speedtest_frame, text="Check Download Speed", command=check_download_speed, **convertors_button_config)
+speedtest_upload_button = ctk.CTkButton(speedtest_frame, text="Check Upload Speed", command=check_upload_speed, **convertors_button_config)
+speedtest_back_button = ctk.CTkButton(main_frame, text="Back", command=speedtest_back_function, **main_button_config)
+speedtest_label = ctk.CTkLabel(main_frame, font=("calibri", 17, "normal"), text="")
 
 # Add the on_close function to the close button #
 app.protocol("WM_DELETE_WINDOW", on_close)
