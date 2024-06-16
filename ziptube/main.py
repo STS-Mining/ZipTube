@@ -1075,7 +1075,7 @@ social_media_frame = ctk.CTkFrame(main_frame)
 social_button_config = {
     'border_width': 0,
     'width': 0,
-    'hover_color': "gray17",
+    'hover_color': ["gray86", "gray17"],
     'border_spacing': 0,
     'fg_color': "transparent",
 }

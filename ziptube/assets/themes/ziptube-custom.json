@@ -16,9 +16,9 @@
     "corner_radius": 33,
     "border_width": 2,
     "fg_color": "transparent",
-    "hover_color": ["#0C955A", "#423e3e"],
+    "hover_color": ["gray92", "#423e3e"],
     "border_color": ["#3E454A", "green"],
-    "text_color": ["gray98", "#DCE4EE"],
+    "text_color": ["#0e0f0f", "#DCE4EE"],
     "text_color_disabled": ["gray78", "gray68"]
   },
   "CTkLabel": {
