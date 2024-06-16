@@ -876,6 +876,18 @@ def show_footer_frame():
 def hide_footer_frame():
     footer_frame.pack_forget()
 
+# Function to toggle appearance mode
+def toggle_appearance_mode():
+    current_mode = ctk.get_appearance_mode()
+    if current_mode == "Dark":
+        time.sleep(1)
+        ctk.set_appearance_mode("light")
+        color_theme_button.configure(text="Light / Dark")
+    else:
+        time.sleep(1)
+        ctk.set_appearance_mode("dark")
+        color_theme_button.configure(text="Dark / Light")
+
 # Create a app window #
 app = ctk.CTk()
 ctk.set_appearance_mode("dark")
@@ -917,7 +929,7 @@ button_specifics = {
         'font': ctk.CTkFont(family="calibri", size=11, weight="normal"),
         'border_color': "red",
         'height': 20,
-        'width': 75
+        'width': 65
     }
 }
 
@@ -969,6 +981,7 @@ donation_button = ctk.CTkButton(footer_frame, text="Donate", command=open_donati
 help_button = ctk.CTkButton(footer_frame, text="Help", command=open_help_window, **footer_button_config)
 social_media_button = ctk.CTkButton(footer_frame, text="Share", command=show_social_media_window, **footer_button_config)
 update_button = ctk.CTkButton(footer_frame, text="Update", command=latest_version, **footer_button_config)
+color_theme_button = ctk.CTkButton(footer_frame, text="Dark / Light", command=toggle_appearance_mode, **footer_button_config)
 website_button.grid(row=0, column=0, padx=5, pady=5)
 github_button.grid(row=0, column=1, padx=5, pady=5)
 discord_button.grid(row=0, column=2, padx=5, pady=5)
@@ -976,6 +989,8 @@ donation_button.grid(row=0, column=3, padx=5, pady=5)
 help_button.grid(row=0, column=4, padx=5, pady=5)
 social_media_button.grid(row=0, column=6, padx=5, pady=5)
 update_button.grid(row=0, column=7, padx=5, pady=5)
+color_theme_button.grid(row=0, column=8, padx=5, pady=5)
+
 
 # Create the latest version frame for the update screen
 latest_version_frame = ctk.CTkFrame(main_frame)
