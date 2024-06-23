@@ -14,10 +14,10 @@ import subprocess
 import webbrowser
 import threading
 import pyperclip
-import speedtest
+# import speedtest
 import requests
-import cpuinfo
-import psutil
+# import cpuinfo
+# import psutil
 import time
 import sys
 import os
@@ -37,7 +37,7 @@ def resource_path(relative_path):
 # Define global variables here #
 app_name = "ZipTube"
 buttons_centered = 130
-current_version = "1.27" # Make sure to update this version here
+current_version = "1.28" # Make sure to update this version here
 feedback_email = "info@ziptube.com.au"
 website_url = "https://www.ziptube.com.au/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
@@ -91,14 +91,14 @@ def update_ziptube_version():
 # Function that runs at the start of the program being opened up
 def check_for_updates():
     update_thread = threading.Thread(target=update_ziptube_version)
-    check_cpu_thread = threading.Thread(target=get_cpu_information)
-    check_disks_thread = threading.Thread(target=get_disk_info)
+    # check_cpu_thread = threading.Thread(target=get_cpu_information)
+    # check_disks_thread = threading.Thread(target=get_disk_info)
     update_thread.start()
     update_thread.join()
-    check_cpu_thread.start()
-    check_cpu_thread.join()
-    check_disks_thread.start()
-    check_disks_thread.join()
+    # check_cpu_thread.start()
+    # check_cpu_thread.join()
+    # check_disks_thread.start()
+    # check_disks_thread.join()
 
 # Function that runs the update button on the main screen
 def latest_version():
@@ -282,58 +282,58 @@ def on_progress(stream, chunk, bytes_remaining):
         status_label.configure(text=f"Saving to local location ... {output_path}")
         main_menu_button()
 
-# Function to get disk info
-def get_disk_info():
-    partitions = psutil.disk_partitions()
-    disks_info_text = []
-    for partition in partitions:
-        try:
-            usage = psutil.disk_usage(partition.mountpoint)
-            total_gb = usage.total / (1024**3)
-            used_gb = usage.used / (1024**3)
-            free_gb = usage.free / (1024**3)
-            percent_used = usage.percent
-            device = partition.device
-            mountpoint = partition.mountpoint
-            disks_info_text.append(f"Device: {device}\nMountpoint: {mountpoint}\nTotal Space: {total_gb:.2f} GB\nUsed Space: {used_gb:.2f} GB ({percent_used}%)\nFree Space: {free_gb:.2f} GB\n")
-        except Exception:
-            device = partition.device
-            mountpoint = partition.mountpoint
-            disks_info_text.append(f"Device: {device}\nMountpoint: {mountpoint}\nTotal Space: Unavailable\nUsed Space: Unavailable\nFree Space: Unavailable\n")
-    return disks_info_text
+# # Function to get disk info
+# def get_disk_info():
+#     partitions = psutil.disk_partitions()
+#     disks_info_text = []
+#     for partition in partitions:
+#         try:
+#             usage = psutil.disk_usage(partition.mountpoint)
+#             total_gb = usage.total / (1024**3)
+#             used_gb = usage.used / (1024**3)
+#             free_gb = usage.free / (1024**3)
+#             percent_used = usage.percent
+#             device = partition.device
+#             mountpoint = partition.mountpoint
+#             disks_info_text.append(f"Device: {device}\nMountpoint: {mountpoint}\nTotal Space: {total_gb:.2f} GB\nUsed Space: {used_gb:.2f} GB ({percent_used}%)\nFree Space: {free_gb:.2f} GB\n")
+#         except Exception:
+#             device = partition.device
+#             mountpoint = partition.mountpoint
+#             disks_info_text.append(f"Device: {device}\nMountpoint: {mountpoint}\nTotal Space: Unavailable\nUsed Space: Unavailable\nFree Space: Unavailable\n")
+#     return disks_info_text
 
-# Function to get CPU info
-def get_cpu_information():
-    info = cpuinfo.get_cpu_info()
-    brand = info['brand_raw']
-    cores = psutil.cpu_count(logical=False)
-    threads = psutil.cpu_count(logical=True)
+# # Function to get CPU info
+# def get_cpu_information():
+#     info = cpuinfo.get_cpu_info()
+#     brand = info['brand_raw']
+#     cores = psutil.cpu_count(logical=False)
+#     threads = psutil.cpu_count(logical=True)
 
-    cpu_info_text = ""
-    cpu_info_text += "CPU Information:\n"
-    cpu_info_text += f"{brand}\n"
-    cpu_info_text += f"Cores: {cores}\n"
-    cpu_info_text += f"Threads: {threads}\n\n"
-    return cpu_info_text
+#     cpu_info_text = ""
+#     cpu_info_text += "CPU Information:\n"
+#     cpu_info_text += f"{brand}\n"
+#     cpu_info_text += f"Cores: {cores}\n"
+#     cpu_info_text += f"Threads: {threads}\n\n"
+#     return cpu_info_text
 
-# Function to run both disk and CPU info at the same time and to open the window
-def check_disk_space():
-    hide_start_menu_frame()
-    hide_footer_frame()
-    disks_frame.pack(pady=10)
+# # Function to run both disk and CPU info at the same time and to open the window
+# def check_disk_space():
+#     hide_start_menu_frame()
+#     hide_footer_frame()
+#     disks_frame.pack(pady=10)
 
-    cpu_info_text = get_cpu_information()
-    cpu_text_label.configure(text=cpu_info_text)
+#     cpu_info_text = get_cpu_information()
+#     cpu_text_label.configure(text=cpu_info_text)
 
-    disks_info_text = get_disk_info()
-    disks_label.configure(text="\n".join(disks_info_text))
-    main_menu_button()
+#     disks_info_text = get_disk_info()
+#     disks_label.configure(text="\n".join(disks_info_text))
+#     main_menu_button()
 
 def show_help_menu_buttons():
     help_menu_frame.pack(padx=10, pady=buttons_centered)
     downloader_help_button.grid(row=0, column=0, padx=5, pady=5)
     converters_help_button.grid(row=0, column=1, padx=5, pady=5)
-    disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
+    # disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Function to go back to the help menu
 def back_to_help_menu():
@@ -344,10 +344,10 @@ def back_to_help_menu():
     show_help_menu_buttons()
     main_menu_button()
 
-# Function to go back to main menu from speedtest
-def menu_from_speedtest():
-    info_label_frame.pack_forget()
-    info_label.pack_forget()
+# # Function to go back to main menu from speedtest
+# def menu_from_speedtest():
+#     info_label_frame.pack_forget()
+#     info_label.pack_forget()
 
 # Function to open the help window #
 def open_help_window():
@@ -436,7 +436,7 @@ def open_donation_window():
             text=f"{wallet['name']} Address",
             command=lambda name=wallet["name"], addr=wallet["address"]: copy_address(name, addr),
             font=("calibri", 15, "normal"),
-            height=40, width=120, corner_radius=33, border_color="green"
+            height=30, width=90, corner_radius=33, border_color="green"
         )
         copy_button.grid(row=0, column=i, padx=5, pady=5)
     # Label to display "Copied to Clipboard" message #
@@ -665,75 +665,75 @@ def bytes_conversion(bytes):
             return f"{bytes:.2f} {unit}"
         bytes /= 1024
 
-def show_speedtest_buttons():
-    speedtest_frame.pack(pady=buttons_centered)
-    speedtest_download_button.grid(row=0, column=0, padx=5, pady=5)
-    speedtest_upload_button.grid(row=0, column=1, padx=5, pady=5)
+# def show_speedtest_buttons():
+#     speedtest_frame.pack(pady=buttons_centered)
+#     speedtest_download_button.grid(row=0, column=0, padx=5, pady=5)
+#     speedtest_upload_button.grid(row=0, column=1, padx=5, pady=5)
 
-def hide_speedtest_buttons():
-    speedtest_frame.pack_forget()
-    speedtest_download_button.grid_forget()
-    speedtest_upload_button.grid_forget()
+# def hide_speedtest_buttons():
+#     speedtest_frame.pack_forget()
+#     speedtest_download_button.grid_forget()
+#     speedtest_upload_button.grid_forget()
 
-def show_speedtest_labels():
-    speedtest_label.pack(pady=buttons_centered)
+# def show_speedtest_labels():
+#     speedtest_label.pack(pady=buttons_centered)
 
-def hide_speedtest_labels():
-    speedtest_label.pack_forget()
+# def hide_speedtest_labels():
+#     speedtest_label.pack_forget()
 
-def show_speedtest_back_button():
-    speedtest_back_button.pack(side="bottom", pady=10)
+# def show_speedtest_back_button():
+#     speedtest_back_button.pack(side="bottom", pady=10)
 
-def hide_speedtest_back_button():
-    speedtest_back_button.pack_forget()
+# def hide_speedtest_back_button():
+#     speedtest_back_button.pack_forget()
 
-def speedtest_back_function():
-    hide_speedtest_labels()
-    hide_speedtest_back_button()
-    show_speedtest_buttons()
-    main_menu_button()
+# def speedtest_back_function():
+#     hide_speedtest_labels()
+#     hide_speedtest_back_button()
+#     show_speedtest_buttons()
+#     main_menu_button()
 
-# Function to check internet speed of client
-def check_internet_speed():
-    hide_speedtest_back_button()
-    hide_start_menu_frame()
-    hide_footer_frame()
-    show_speedtest_buttons()
-    main_menu_button()
+# # Function to check internet speed of client
+# def check_internet_speed():
+#     hide_speedtest_back_button()
+#     hide_start_menu_frame()
+#     hide_footer_frame()
+#     show_speedtest_buttons()
+#     main_menu_button()
 
-def check_download_speed():
-    back_to_menu_frame.pack_forget()
-    hide_speedtest_buttons()
-    show_speedtest_labels()
-    speedtest_label.configure(text="Running Download Speed Test Now ...")
-    speedtest_label.after(1000, run_download_speed_test)
+# def check_download_speed():
+#     back_to_menu_frame.pack_forget()
+#     hide_speedtest_buttons()
+#     show_speedtest_labels()
+#     speedtest_label.configure(text="Running Download Speed Test Now ...")
+#     speedtest_label.after(1000, run_download_speed_test)
 
-def run_download_speed_test():
-    st = speedtest.Speedtest()
-    download_speed = st.download()
-    info_text = (
-        "Download Speed Test Complete\n\n"
-        f"Avg. Download Speed: {bytes_conversion(download_speed)}/s\n"
-    )
-    speedtest_label.configure(text=info_text)
-    show_speedtest_back_button()
+# def run_download_speed_test():
+#     st = speedtest.Speedtest()
+#     download_speed = st.download()
+#     info_text = (
+#         "Download Speed Test Complete\n\n"
+#         f"Avg. Download Speed: {bytes_conversion(download_speed)}/s\n"
+#     )
+#     speedtest_label.configure(text=info_text)
+#     show_speedtest_back_button()
 
-def check_upload_speed():
-    back_to_menu_frame.pack_forget()
-    hide_speedtest_buttons()
-    show_speedtest_labels()
-    speedtest_label.configure(text="Running Upload Speed Test Now ...")
-    speedtest_label.after(1000, run_upload_speed_test)
+# def check_upload_speed():
+#     back_to_menu_frame.pack_forget()
+#     hide_speedtest_buttons()
+#     show_speedtest_labels()
+#     speedtest_label.configure(text="Running Upload Speed Test Now ...")
+#     speedtest_label.after(1000, run_upload_speed_test)
 
-def run_upload_speed_test():
-    st = speedtest.Speedtest()
-    upload_speed = st.upload()
-    info_text = (
-        "Upload Speed Test Complete\n\n"
-        f"Avg. Upload Speed: {bytes_conversion(upload_speed)}/s\n"
-    )
-    speedtest_label.configure(text=info_text)
-    show_speedtest_back_button()
+# def run_upload_speed_test():
+#     st = speedtest.Speedtest()
+#     upload_speed = st.upload()
+#     info_text = (
+#         "Upload Speed Test Complete\n\n"
+#         f"Avg. Upload Speed: {bytes_conversion(upload_speed)}/s\n"
+#     )
+#     speedtest_label.configure(text=info_text)
+#     show_speedtest_back_button()
 
 # Function to load entry widget for the video url and resolutions button #
 def load_entry_and_resolutions_button():
@@ -827,10 +827,10 @@ def back_main_menu_button():
     donation_frame.pack_forget()
     donation_label.pack_forget()
     donation_button_frame.pack_forget()
-    disks_frame.pack_forget()
-    menu_from_speedtest()
-    hide_speedtest_buttons()
-    hide_speedtest_labels()
+    # disks_frame.pack_forget()
+    # menu_from_speedtest()
+    # hide_speedtest_buttons()
+    # hide_speedtest_labels()
     hide_social_media_window()
     show_start_menu_frame()
     show_footer_frame()
@@ -938,19 +938,19 @@ start_menu_frame.pack(padx=10, pady=buttons_centered)
 # Buttons for opening the sub-menus #
 converters_button = ctk.CTkButton(start_menu_frame, text="Convert", command=show_converters, **start_menu_button_config)
 youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_menu_button_config)
-speedtest_button = ctk.CTkButton(start_menu_frame, text="Speedtest", command=check_internet_speed, **start_menu_button_config)
-local_info_button = ctk.CTkButton(start_menu_frame, text="Disk Space", command=check_disk_space, **start_menu_button_config)
+# speedtest_button = ctk.CTkButton(start_menu_frame, text="Speedtest", command=check_internet_speed, **start_menu_button_config)
+# local_info_button = ctk.CTkButton(start_menu_frame, text="Disk Space", command=check_disk_space, **start_menu_button_config)
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
 converters_button.grid(row=0, column=1, padx=5, pady=5)
-speedtest_button.grid(row=0, column=2, padx=5, pady=5)
-local_info_button.grid(row=0, column=3, padx=5, pady=5)
+# speedtest_button.grid(row=0, column=2, padx=5, pady=5)
+# local_info_button.grid(row=0, column=3, padx=5, pady=5)
 
-disks_frame = ctk.CTkFrame(main_frame)
-disks_label = ctk.CTkLabel(disks_frame, font=("calibri", 16, "normal"), text="", width=300, height=150)
-disks_label.pack(side="left", padx=10, pady=10, fill="both", expand=True)
+# disks_frame = ctk.CTkFrame(main_frame)
+# disks_label = ctk.CTkLabel(disks_frame, font=("calibri", 16, "normal"), text="", width=300, height=150)
+# disks_label.pack(side="left", padx=10, pady=10, fill="both", expand=True)
 
-cpu_text_label = ctk.CTkLabel(disks_frame, font=("calibri", 16, "normal"), text="", width=300, height=150)
-cpu_text_label.pack(side="left", padx=10, pady=10, fill="both", expand=True)
+# cpu_text_label = ctk.CTkLabel(disks_frame, font=("calibri", 16, "normal"), text="", width=300, height=150)
+# cpu_text_label.pack(side="left", padx=10, pady=10, fill="both", expand=True)
 
 # Initialize the main frame #
 footer_frame = ctk.CTkFrame(main_frame)
@@ -987,7 +987,7 @@ info_label = ctk.CTkLabel(info_label_frame, font=("calibri", 17, "normal"), text
 back_button = ctk.CTkButton(back_menu_frame, text="Back", command=back_to_help_menu, **main_button_config)
 downloader_help_button = ctk.CTkButton(help_menu_frame, text="Download Help", command=downloader_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
 converters_help_button = ctk.CTkButton(help_menu_frame, text="Convertor Help", command=converters_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
-disk_info_help_button = ctk.CTkButton(help_menu_frame, text="Disk Space Help", command=disk_space_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
+# disk_info_help_button = ctk.CTkButton(help_menu_frame, text="Disk Space Help", command=disk_space_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
 
 # Youtube menu frame #
 youtube_menu_frame = ctk.CTkFrame(main_frame)
@@ -1051,11 +1051,11 @@ progress_label = ctk.CTkLabel(main_frame, text="")
 status_label = ctk.CTkLabel(main_frame, text="")
 
 # Create the speedtest buttons #
-speedtest_frame = ctk.CTkFrame(main_frame)
-speedtest_download_button = ctk.CTkButton(speedtest_frame, text="Check Download Speed", command=check_download_speed, **convertors_button_config)
-speedtest_upload_button = ctk.CTkButton(speedtest_frame, text="Check Upload Speed", command=check_upload_speed, **convertors_button_config)
-speedtest_back_button = ctk.CTkButton(main_frame, text="Back", command=speedtest_back_function, **main_button_config)
-speedtest_label = ctk.CTkLabel(main_frame, font=("calibri", 17, "normal"), text="")
+# speedtest_frame = ctk.CTkFrame(main_frame)
+# speedtest_download_button = ctk.CTkButton(speedtest_frame, text="Check Download Speed", command=check_download_speed, **convertors_button_config)
+# speedtest_upload_button = ctk.CTkButton(speedtest_frame, text="Check Upload Speed", command=check_upload_speed, **convertors_button_config)
+# speedtest_back_button = ctk.CTkButton(main_frame, text="Back", command=speedtest_back_function, **main_button_config)
+# speedtest_label = ctk.CTkLabel(main_frame, font=("calibri", 17, "normal"), text="")
 
 # Add social media sharing options
 socials_image_sizes = size=(40, 40)
