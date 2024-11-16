@@ -8,7 +8,8 @@ from tkinter import filedialog
 from bs4 import BeautifulSoup
 # import moviepy.editor as mp
 import customtkinter as ctk
-from pytube import YouTube
+from pytubefix import YouTube
+# from pytube import YouTube
 from PIL import Image
 import subprocess
 import webbrowser
@@ -37,7 +38,7 @@ def resource_path(relative_path):
 # Define global variables here #
 app_name = "ZipTube"
 buttons_centered = 130
-current_version = "1.28" # Make sure to update this version here
+current_version = "1.29" # Make sure to update this version here
 feedback_email = "info@ziptube.com.au"
 website_url = "https://www.ziptube.com.au/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
