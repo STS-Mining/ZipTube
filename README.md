@@ -31,7 +31,7 @@
 - First you need to clone this repo by running the following command in your terminal
 
 ```console
-git clone https://github.com/STS-Mining/Python
+git clone https://github.com/STS-Mining/ZipTube
 ```
 
 - Install all the dependencies from the requirements.txt file, you can do this by running the following code in your terminal
