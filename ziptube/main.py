@@ -6,7 +6,8 @@ import tkinter.messagebox as messagebox
 from tkinter import filedialog
 from bs4 import BeautifulSoup
 import customtkinter as ctk
-from pytubefix import YouTube
+from yt_dlp import YoutubeDL
+from yt_dlp.utils import sanitize_filename
 from PIL import Image
 import subprocess
 import webbrowser
@@ -17,22 +18,22 @@ import time
 import sys
 import os
 import re
+import queue
+import shutil
+import tempfile
+from pathlib import Path
+from urllib.parse import urlparse, urljoin
+from packaging.version import Version
 
 # https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS2
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
+    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, relative_path.replace("\\", "/"))
 
 # Define global variables here #
 app_name = "ZipTube"
 buttons_centered = 130
-current_version = "1.29" # Make sure to update this version here
+current_version = "1.30" # Make sure to update this version here
 feedback_email = "info@ziptube.com.au"
 website_url = "https://ziptube.sts-media.org/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
@@ -45,49 +46,26 @@ custom_theme = resource_path("assets\\themes\\ziptube-custom.json")
 latest_version_link = None
 latest_version_number = None
 def extract_version_from_link(link):
-    # Regular expression to extract the version number from the link
-    match = re.search(r'ziptube_windows_setup_(\d+\.\d+)\.exe', link)
-    if match:
-        version_number = match.group(1)
-        return version_number
-    return None
+    match = re.search(r"ziptube_windows_setup_(\d+(?:\.\d+)+)\.exe", link)
+    return match.group(1) if match else None
 
 def update_ziptube_version():
-    global latest_version_link, latest_version_number
     try:
-        response = requests.get(website_url)
+        response = requests.get(website_url, timeout=15)
         response.raise_for_status()
-        soup = BeautifulSoup(response.content, "html.parser")
-        # Find all links on the page
-        links = soup.find_all("a", href=True)
-        if not links:
-            raise ValueError("No links found on the webpage.")
-        highest_version = None
-        highest_version_link = None
-        for link in links:
-            href = link['href']
-            if href.endswith(".exe") and "windows_setup" in href:
-                full_link = website_url + href if not href.startswith("https") else href
-                version_number = extract_version_from_link(full_link)
-                if version_number is not None:
-                    if highest_version is None or version_number > highest_version:
-                        highest_version = version_number
-                        highest_version_link = full_link
-
-        if highest_version_link:
-            latest_version_link = highest_version_link
-            latest_version_number = highest_version
-
-    except requests.exceptions.RequestException as e:
-        messagebox.showerror("ZipTube Update: Error during request -", e)
-    except Exception as e:
-        messagebox.showerror("ZipTube Update: An error occurred -", e)
+        links = BeautifulSoup(response.content, "html.parser").find_all("a", href=True)
+        versions = [(extract_version_from_link(a["href"]), urljoin(website_url, a["href"])) for a in links]
+        versions = [(version, link) for version, link in versions if version]
+        if versions:
+            version, link = max(versions, key=lambda item: Version(item[0]))
+            ui_events.put(("update", (version, link)))
+    except Exception as exc:
+        # An unavailable update website must not block downloads or startup.
+        print(f"Update check unavailable: {exc}", file=sys.stderr)
 
 # Function that runs at the start of the program being opened up
 def check_for_updates():
-    update_thread = threading.Thread(target=update_ziptube_version)
-    update_thread.start()
-    update_thread.join()
+    threading.Thread(target=update_ziptube_version, daemon=True).start()
 
 # Function that runs the update button on the main screen
 def latest_version():
@@ -99,14 +77,14 @@ def latest_version():
     latest_text = ""
     if latest_version_number is None:
         latest_text += "Unable to check for updates at this time."
-    elif float(current_version) >= float(latest_version_number):
+    elif Version(current_version) >= Version(latest_version_number):
         latest_text += f"Latest Version: {current_version}\nYou are currently running the latest version of ZipTube."
         update_button.configure(text=f"Version {current_version}")
     else:
         latest_text += f"You are running version {current_version}\nPlease download the latest version {latest_version_number}."
         update_button.configure(text="Update")
     latest_version_label.configure(text=latest_text)
-    if latest_version_number and float(current_version) < float(latest_version_number):
+    if latest_version_number and Version(current_version) < Version(latest_version_number):
         download_update_button.pack(padx=10, pady=10)
     main_menu_button()
 
@@ -163,113 +141,31 @@ def choose_save_location():
 
 # Function to download only audio files #
 def download_audio():
-    global download_audio_button, output_path
-    url = entry_url.get()
-    youtube_url_pattern = r"^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$"
-    if not url:
-        messagebox.showerror("Error", "Please enter a YouTube URL.")
-    elif not re.match(youtube_url_pattern, url):
-        messagebox.showerror("Error", "Please enter a valid YouTube URL.")
-    else:
-        progress_label.pack(pady="10p")
-        status_label.pack(pady="10p")
-        try:
-            yt = YouTube(url, on_progress_callback=on_progress)
-            audio_stream = yt.streams.filter(only_audio=True, abr="128kbps").first()
-            save_dir = choose_save_location()
-            output_path = save_dir
-            filename = audio_stream.default_filename
-            filename = filename.replace(".mp4", ".mp3")
-            file_path = os.path.join(save_dir, filename)
-            if os.path.exists(file_path):
-                new_filename = simpledialog.askstring(
-                    "Rename File",
-                    "A file with this name already exists. Please enter a new filename:",
-                    initialvalue=filename,
-                )
-                if new_filename is None:
-                    return
-            audio_stream.download(output_path=save_dir, filename=filename)
-            status_label.configure(text=f"File saved as: {filename}")
-        except Exception:
-            status_label.configure(
-                text=f"Error, Audio selected can't be downloaded ...",
-                text_color="red",
-            )
-            app.after(2000, hide_labels)
+    start_download(audio_only=True)
 
 # Function that downloads the video once the download button is pressed #
 def download_video(resolutions_var):
-    global download_button, output_path
-    url = entry_url.get()
-    resolution = resolutions_var.get()
-    # Check if the resolution has not been selected #
-    if not resolution:
-        messagebox.showerror("Error", "Please select a resolution.")
+    if resolutions_var is None or not resolutions_var.get():
+        messagebox.showerror("Download", "Load and select a resolution first.")
         return
-    progress_label.pack(pady="10p")
-    status_label.pack(pady="10p")
-    try:
-        yt = YouTube(url, on_progress_callback=on_progress)
-        stream = yt.streams.filter(res=resolution).first()
-        save_dir = choose_save_location()
-        output_path = save_dir
-        filename = stream.default_filename
-        filename_with_resolution = f"{os.path.splitext(filename)[0]}-{resolution}{os.path.splitext(filename)[1]}"
-        file_path = os.path.join(save_dir, filename_with_resolution)
-        if os.path.exists(file_path):
-            new_filename = simpledialog.askstring(
-                "Rename File",
-                "A file with this name already exists. Please enter a new filename:",
-                initialvalue=filename_with_resolution,
-            )
-            if new_filename is None:
-                return
-            filename_with_resolution = new_filename
-        stream.download(output_path=save_dir, filename=filename_with_resolution)
-        status_label.configure(text=f"File saved as: {filename_with_resolution}")
-        main_menu_button()
-    except Exception:
-        status_label.configure(
-            text=f"Error, resolution selected doesn't exist for video ...",
-            text_color="red",
-        )
-        app.after(2000, hide_labels)
+    start_download(audio_only=False, height=int(resolutions_var.get().rstrip("p")))
 
 # Function while the download is in progress #
-def on_progress(stream, chunk, bytes_remaining):
-    global start_time, bytes_downloaded_prev, download_button, output_path, download_audio_button
-    download_button.configure(state="disabled")
-    download_audio_button.configure(state="disabled")
-    resolutions_button.configure(state="disabled")
-    total_size = stream.filesize
-    bytes_downloaded = total_size - bytes_remaining
-    progress_percentage = (bytes_downloaded / total_size) * 100
-    download_finished = bytes_downloaded == total_size
-    main_menu_button()
-    if download_finished:
-        download_button.configure(text="Download Complete!", border_color="#00d11c")
-        download_audio_button.configure(text="Download Complete!", border_color="#00d11c")
-        app.after(3000, hide_labels)
-    else:
-        download_button.configure(text=f"Downloading ... {int(progress_percentage)}%", border_color="yellow")
-        download_audio_button.configure(text=f"Downloading ... {int(progress_percentage)}%", border_color="yellow")
-        current_time = time.time()
-        time_elapsed = current_time - start_time
-        bytes_downloaded_since_last = bytes_downloaded - bytes_downloaded_prev
-        download_speed = (bytes_downloaded_since_last / time_elapsed / 1_000_000)  
-        start_time = current_time
-        bytes_downloaded_prev = bytes_downloaded
-        progress_label.configure(
-            text="{} / {} Download Speed: {:.2f} MB/sec".format(
-                bytes_conversion(int(bytes_downloaded)),
-                bytes_conversion(int(total_size)),
-                download_speed,
-            )
-        )
-        progress_label.update()
-        status_label.configure(text=f"Saving to local location ... {output_path}")
-        main_menu_button()
+def on_progress(data):
+    # Worker threads only send messages; Tk widgets are updated by poll_events.
+    if data.get("status") == "downloading":
+        now = time.monotonic()
+        if now - getattr(on_progress, "last_update", 0) < 0.2:
+            return
+        on_progress.last_update = now
+        total = data.get("total_bytes") or data.get("total_bytes_estimate")
+        downloaded = data.get("downloaded_bytes", 0)
+        percent = f"{downloaded / total * 100:.1f}%" if total else bytes_conversion(downloaded)
+        speed = data.get("speed")
+        rate = f" — {bytes_conversion(speed)}/s" if speed else ""
+        ui_events.put(("progress", f"Downloading: {percent}{rate}"))
+    elif data.get("status") == "finished":
+        ui_events.put(("progress", "Download received. Merging / converting…"))
 
 def show_help_menu_buttons():
     help_menu_frame.pack(padx=10, pady=buttons_centered)
@@ -365,6 +261,11 @@ def open_donation_window():
         copied_label.pack()
         copied_label.after(2000, copied_label.pack_forget)
     # Create a frame for the buttons to align them properly #
+    for child in donation_button_frame.winfo_children():
+        child.destroy()
+    for child in donation_frame.winfo_children():
+        if child not in (donation_label, donation_button_frame):
+            child.destroy()
     donation_button_frame.pack(pady=10)
     # Create buttons to copy wallet addresses #
     for i, wallet in enumerate(wallets):
@@ -399,42 +300,37 @@ def convert_start_countdown(seconds, convert_countdown_label, convert_app):
         convert_app.destroy()
 
 def create_conversion_window(file_path, convert_from, convert_to):
-    convert_app_name = f"ZipTube - {convert_from.upper()} to {convert_to.upper()}"
-    convert_app = ctk.CTk()
-    ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme(custom_theme)
-    convert_app.title(convert_app_name)
-    convert_app.wm_iconbitmap(icon)
-    convert_main_frame = ctk.CTkFrame(convert_app)
-    convert_main_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
-    ''' Create the labels '''
-    convert_status_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text=f"Converting {convert_from} file to {convert_to} file ...")
-    convert_status_label.pack(padx=20, pady=10)
-    convert_countdown_label = ctk.CTkLabel(convert_main_frame, font=("calibri", 18, "normal"), text="")
-    convert_countdown_label.pack(pady=10)
-    convert_app.after(100, run_conversion, file_path, convert_from, convert_to, convert_status_label, convert_countdown_label, convert_app)  # Delay the conversion to ensure the UI is fully rendered
-    convert_app.mainloop()
+    if busy:
+        return
+    try:
+        ffmpeg, _ = find_ffmpeg()
+    except RuntimeError as exc:
+        messagebox.showerror("FFmpeg", str(exc))
+        return
+    destination = filedialog.asksaveasfilename(
+        title="Save converted audio", initialdir=os.path.dirname(file_path),
+        initialfile=Path(file_path).stem + "." + convert_to,
+        defaultextension="." + convert_to,
+        filetypes=[(convert_to.upper(), "*." + convert_to)])
+    if not destination:
+        return
+    if Path(destination).resolve() == Path(file_path).resolve():
+        messagebox.showerror("Conversion", "Choose a different file from the source.")
+        return
+    run_task(lambda: run_conversion(file_path, convert_from, convert_to, destination, ffmpeg),
+             lambda path: show_status(f"Conversion complete: {path}"), "Converting audio…")
 
-def run_conversion(file_path, convert_from, convert_to, convert_status_label, convert_countdown_label, convert_app):
-    root_path, filename = os.path.split(file_path)
-    new_filename = os.path.splitext(filename)[0] + "." + convert_to
-    new_path = os.path.join(root_path, new_filename)
-    completed = subprocess.run([ffmpeg_path,
-                                "-loglevel",
-                                "quiet",
-                                "-hide_banner",
-                                "-y",
-                                "-i",
-                                file_path,
-                                new_path],
-                                stderr=subprocess.DEVNULL,
-                                stdout=subprocess.DEVNULL,
-                                stdin=subprocess.PIPE)
-    if completed.returncode == 0:
-        convert_status_label.configure(text=f"Successfully Converted ... \n\n{new_filename}")
-    else:
-        convert_status_label.configure(text=f"Conversion failed ... \n\n{new_filename}")
-    convert_start_countdown(5, convert_countdown_label, convert_app)  # Start the countdown after the conversion is complete
+def run_conversion(file_path, convert_from, convert_to, destination, ffmpeg):
+    with tempfile.TemporaryDirectory(prefix="ziptube-", dir=str(Path(destination).parent)) as temp:
+        output = Path(temp) / ("converted." + convert_to)
+        result = subprocess.run(
+            [ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-y", "-i", file_path,
+             "-vn", str(output)], capture_output=True, text=True, errors="replace",
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        if result.returncode or not output.is_file():
+            raise RuntimeError(result.stderr.strip() or "FFmpeg did not create the converted file.")
+        os.replace(output, destination)
+    return destination
 
 def mp3_to_flac(file_path):
     create_conversion_window(file_path, "mp3", "flac")
@@ -474,88 +370,54 @@ def wma_to_wav(file_path):
 
 # Function to ask for confirmation before closing the window #
 def on_close():
-    if messagebox.askokcancel("Confirmation", "Are you sure you want to close the application?"):
+    if busy:
+        messagebox.showinfo("ZipTube", "Please wait for the current download or conversion to finish.")
+        return
+    if messagebox.askokcancel("Confirmation", "Close ZipTube?"):
         app.destroy()
 
 
 # Hide the labels after 3 seconds #
 def hide_labels():
-    global resolutions_var
-    # resolutions_var.set("")
     status_label.pack_forget()
     progress_label.pack_forget()
-    resolutions_button.pack_forget()
-    download_button.configure(state="normal")
-    download_button.configure(text="Download Another Video", command=download_another_video)
-    download_audio_button.configure(state="normal")
-    download_audio_button.configure(text="Download Another Song", command=download_audio_only)
-    resolutions_frame.pack_forget()
-    entry_url.delete(0, ctk.END)
-    # convert_to_audio_button.pack(pady=10)
-    main_menu_button()
 
 # Function to print all available resolutions for a YouTube video #
 def print_available_resolutions(url):
-    try:
-        yt = YouTube(url)
-        streams = yt.streams.filter()
-        resolutions = sorted(
-            set([stream.resolution for stream in streams if stream.resolution]),
-            key=lambda x: int(x[:-1]),
-        )
-        filesizes = {}
-        for resolution in resolutions:
-            stream = yt.streams.filter(res=resolution).first()
-            if stream:
-                filesizes[resolution] = stream.filesize
-                
-        resolutions_var = ctk.StringVar()
-        def select_resolution(resolution):
-            resolutions_var.set(resolution)
-
-        resolutions_frame.pack(pady=10)
-        selected_resolution = ctk.StringVar()
-        for i, resolution in enumerate(resolutions):
-            button = ctk.CTkRadioButton(
-                resolutions_frame,
-                text=f"{resolution}\n{bytes_conversion(filesizes.get(resolution, 0))}",
-                variable=selected_resolution,
-                value=resolution,
-                command=lambda: select_resolution(selected_resolution.get()),
-                width=30,
-                height=2,
-            )
-            button.grid(row=0, column=i, padx=5, pady=5)
-            main_menu_button()
-        return resolutions_var
-    except Exception as e:
-        messagebox.showerror("Resolutions", f"Error fetching resolutions for URL\n{url}:\n{e}")
+    with YoutubeDL(base_download_options()) as ydl:
+        info = ydl.extract_info(url, download=False)
+    if not info or info.get("_type") in ("playlist", "multi_video"):
+        raise ValueError("Please use a single video link, not a playlist.")
+    heights = sorted({int(f["height"]) for f in info.get("formats", [])
+                      if f.get("height") and f.get("vcodec") not in (None, "none")})
+    if not heights:
+        raise ValueError("No downloadable video resolutions were found.")
+    return {"url": url, "title": info.get("title", "Video"), "heights": heights}
 
 # Function to load the resolutions for a YouTube video #
 def load_resolutions():
-    global resolutions_var
-    url = entry_url.get().strip()
-    youtube_url_pattern = r"^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$"
-    if not url:
-        messagebox.showerror("Error", "Please enter a YouTube video URL.")
-    elif not re.match(youtube_url_pattern, url):
-        messagebox.showerror("Error", "Please enter a valid YouTube video URL.")
-    else:
-        resolutions_var = print_available_resolutions(url)
-        download_button.pack(pady=10)
-        main_menu_button()
+    global loaded_url
+    if busy:
+        return
+    try:
+        url = validated_url()
+    except ValueError as exc:
+        messagebox.showerror("URL", str(exc))
+        return
+    loaded_url = None
+    resolutions_var.set("")
+    for child in resolutions_frame.winfo_children():
+        child.destroy()
+    download_button.pack_forget()
+    run_task(lambda: print_available_resolutions(url), show_resolutions, "Loading resolutions…")
 
 # Function to start a new download #
 def download_another_video():
-    global resolutions_var
     resolutions_var.set("")
     download_button.pack_forget()
-    # convert_to_audio_button.pack_forget()
-    resolutions_button.configure(state="normal")
-    resolutions_button.configure(text="Load Resolutions", command=load_resolutions)
+    resolutions_button.configure(state="normal", text="Load Resolutions", command=load_resolutions)
     resolutions_button.pack(pady=10)
-    download_button.configure(text="Download", command=lambda: download_video(resolutions_var))
-    main_menu_button()
+    hide_labels()
 
 # Calculate the nearest measurement for bytes #
 def bytes_conversion(bytes):
@@ -571,6 +433,7 @@ def load_entry_and_resolutions_button():
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
+    resolutions_var.set("")
     download_button.pack_forget()
     # convert_to_audio_button.pack_forget()
     want_to_download_audio_button.pack_forget()
@@ -588,6 +451,7 @@ def download_audio_only():
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
+    resolutions_var.set("")
     download_button.pack_forget()
     # convert_to_audio_button.pack_forget()
     entry_url.pack(pady=10)
@@ -642,6 +506,7 @@ def back_main_menu_button():
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
+    resolutions_var.set("")
     entry_url.pack_forget()
     download_button.pack_forget()
     want_to_download_audio_button.pack_forget()
@@ -651,6 +516,9 @@ def back_main_menu_button():
     latest_version_label.pack_forget()
     download_update_button.pack_forget()
     help_menu_frame.pack_forget()
+    info_label_frame.pack_forget()
+    back_menu_frame.pack_forget()
+    hide_labels()
     donation_frame.pack_forget()
     donation_label.pack_forget()
     donation_button_frame.pack_forget()
@@ -677,24 +545,238 @@ def hide_footer_frame():
 
 # Function to toggle appearance mode
 def toggle_appearance_mode():
-    current_mode = ctk.get_appearance_mode()
-    if current_mode == "Dark":
-        time.sleep(1)
-        ctk.set_appearance_mode("light")
-        color_theme_button.configure(text="Light / Dark")
+    ctk.set_appearance_mode("light" if ctk.get_appearance_mode() == "Dark" else "dark")
+
+# Download workers never touch Tk. The main thread drains this queue.
+ui_events = queue.Queue()
+busy = False
+saved_widget_states = []
+loaded_url = None
+loaded_title = ""
+AUDIO_BITRATE = 192
+
+
+def show_status(text):
+    status_label.configure(text=text, text_color=("gray10", "gray90"), wraplength=680)
+    status_label.pack(pady=10)
+
+
+def set_busy(value):
+    global busy, saved_widget_states
+    busy = value
+    if value:
+        saved_widget_states = []
+        def disable(parent):
+            for widget in parent.winfo_children():
+                if isinstance(widget, (ctk.CTkButton, ctk.CTkEntry, ctk.CTkRadioButton)):
+                    saved_widget_states.append((widget, widget.cget("state")))
+                    widget.configure(state="disabled")
+                disable(widget)
+        disable(app)
     else:
-        time.sleep(1)
-        ctk.set_appearance_mode("dark")
-        color_theme_button.configure(text="Dark / Light")
+        for widget, state in saved_widget_states:
+            if widget.winfo_exists():
+                widget.configure(state=state)
+        saved_widget_states = []
+
+
+def run_task(work, success, label):
+    if busy:
+        return
+    set_busy(True)
+    show_status(label)
+    progress_label.configure(text="")
+    progress_label.pack(pady=5)
+    def worker():
+        try:
+            result = work()
+            ui_events.put(("success", (success, result)))
+        except Exception as exc:
+            import traceback
+            traceback.print_exc()
+            ui_events.put(("error", str(exc)))
+    threading.Thread(target=worker, daemon=True).start()
+
+
+def poll_events():
+    global latest_version_number, latest_version_link
+    try:
+        # Limit each pass so a busy queue cannot starve Tk events.
+        for _ in range(100):
+            kind, payload = ui_events.get_nowait()
+            if kind == "progress":
+                progress_label.configure(text=payload)
+            elif kind == "success":
+                set_busy(False)
+                progress_label.configure(text="")
+                callback, result = payload
+                callback(result)
+            elif kind == "error":
+                set_busy(False)
+                progress_label.configure(text="")
+                show_status("Operation failed. See the error details and try again.")
+                messagebox.showerror("ZipTube error", payload)
+            elif kind == "update":
+                latest_version_number, latest_version_link = payload
+    except queue.Empty:
+        pass
+    finally:
+        app.after(100, poll_events)
+
+
+def validated_url():
+    url = entry_url.get().strip()
+    if not url:
+        raise ValueError("Paste a YouTube video link first.")
+    if "://" not in url:
+        url = "https://" + url
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower()
+    if parsed.scheme not in ("http", "https") or not (
+            host in ("youtube.com", "youtu.be", "youtube-nocookie.com")
+            or host.endswith(".youtube.com") or host.endswith(".youtube-nocookie.com")):
+        raise ValueError("Enter a valid YouTube video link.")
+    return url
+
+
+def find_ffmpeg():
+    suffix = ".exe" if os.name == "nt" else ""
+    bundled = Path(resource_path("assets/ffmpeg/bin"))
+    if all((bundled / (name + suffix)).is_file() for name in ("ffmpeg", "ffprobe")):
+        return str(bundled / ("ffmpeg" + suffix)), str(bundled)
+    ffmpeg = shutil.which("ffmpeg")
+    ffprobe = shutil.which("ffprobe")
+    if ffmpeg and ffprobe:
+        return ffmpeg, None  # yt-dlp will find both using PATH.
+    raise RuntimeError(
+        "FFmpeg and ffprobe are required. Install both and add their bin folder to PATH, "
+        "or put both executables (and any required DLLs) in assets/ffmpeg/bin. "
+        "Restart ZipTube after installation.")
+
+
+def base_download_options():
+    options = {"noplaylist": True, "quiet": True, "no_warnings": False,
+               "socket_timeout": 30, "retries": 3, "fragment_retries": 3,
+               "js_runtimes": {"deno": {}}}
+    # Explicitly enable supported alternatives if Deno is absent.
+    if not shutil.which("deno") and shutil.which("node"):
+        options["js_runtimes"] = {"node": {}}
+    return options
+
+
+def show_resolutions(info):
+    global loaded_url, loaded_title
+    loaded_url = info["url"]
+    loaded_title = info["title"]
+    for child in resolutions_frame.winfo_children():
+        child.destroy()
+    resolutions_var.set("")
+    resolutions_frame.pack(pady=10)
+    for i, height in enumerate(info["heights"]):
+        value = f"{height}p"
+        ctk.CTkRadioButton(resolutions_frame, text=value, variable=resolutions_var,
+                          value=value, width=95).grid(row=i // 5, column=i % 5, padx=7, pady=6)
+    download_button.configure(text="Download", state="normal",
+                              command=lambda: download_video(resolutions_var))
+    download_button.pack(pady=10)
+    show_status(info["title"] + " — select a resolution.")
+
+
+def start_download(audio_only=False, height=None):
+    if busy:
+        return
+    try:
+        url = validated_url()
+        if not audio_only and url != loaded_url:
+            raise ValueError("The video link changed. Load its resolutions again.")
+        _, ffmpeg_location = find_ffmpeg()
+    except (ValueError, RuntimeError) as exc:
+        messagebox.showerror("Download", str(exc))
+        return
+    if url == loaded_url and loaded_title:
+        choose_download_filename(url, loaded_title, audio_only, height, ffmpeg_location)
+    else:
+        run_task(lambda: fetch_download_title(url),
+                 lambda title: choose_download_filename(url, title, audio_only, height, ffmpeg_location),
+                 "Reading YouTube title…")
+
+
+def fetch_download_title(url):
+    with YoutubeDL(base_download_options()) as ydl:
+        info = ydl.extract_info(url, download=False)
+    if not info or info.get("_type") in ("playlist", "multi_video"):
+        raise ValueError("Please use a single video link, not a playlist.")
+    return info.get("title") or info.get("id") or "YouTube"
+
+
+def download_filename(title, audio_only, height=None):
+    # Preserve spaces and Unicode; replace characters that Windows cannot save.
+    title = sanitize_filename(title, restricted=False)
+    title = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", title).strip(" .") or "YouTube"
+    # Leave room for the suffix and directory within typical Windows path limits.
+    title = title[:150].rstrip(" .")
+    if audio_only:
+        return f"{title}_audio_{AUDIO_BITRATE}kbps.mp3"
+    return f"{title}_video_{height}p.mp4"
+
+
+def choose_download_filename(url, title, audio_only, height, ffmpeg_location):
+    extension = ".mp3" if audio_only else ".mp4"
+    destination = filedialog.asksaveasfilename(
+        title="Save audio" if audio_only else "Save video",
+        initialfile=download_filename(title, audio_only, height),
+        defaultextension=extension, filetypes=[(extension[1:].upper(), "*" + extension)])
+    if not destination:
+        show_status("Download cancelled.")
+        return
+    if Path(destination).suffix.lower() != extension:
+        messagebox.showerror("Filename", f"Please choose a filename ending in {extension}.")
+        return
+    run_task(lambda: perform_download(url, destination, audio_only, height, ffmpeg_location),
+             lambda path: show_status(f"Download complete: {path}"), "Starting download…")
+
+
+def perform_download(url, destination, audio_only, height, ffmpeg_location):
+    # Separate temporary directory prevents clashes and protects an existing destination
+    # until the entire operation succeeds. The save dialog handles overwrite consent.
+    with tempfile.TemporaryDirectory(prefix="ziptube-", dir=str(Path(destination).parent)) as temp:
+        options = base_download_options()
+        options.update({"outtmpl": str(Path(temp) / "media.%(ext)s").replace("%", "%%").replace("%%(ext)s", "%(ext)s"),
+                        "progress_hooks": [on_progress],
+                        "postprocessor_hooks": [lambda data: ui_events.put(("progress", "Processing media…"))]})
+        if ffmpeg_location:
+            options["ffmpeg_location"] = ffmpeg_location
+        if audio_only:
+            options.update({"format": "bestaudio/best", "postprocessors": [
+                {"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": str(AUDIO_BITRATE)}]})
+            extension = "mp3"
+        else:
+            # Require the exact selected height and audio. Prefer MP4-compatible streams.
+            options.update({
+                "format": (f"bestvideo[height={height}][ext=mp4]+bestaudio[ext=m4a]/"
+                           f"best[height={height}][ext=mp4]/"
+                           f"bestvideo[height={height}]+bestaudio/best[height={height}]"),
+                "merge_output_format": "mp4",
+                "postprocessors": [{"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}]})
+            extension = "mp4"
+        with YoutubeDL(options) as ydl:
+            result = ydl.download([url])
+        output = Path(temp) / ("media." + extension)
+        if result or not output.is_file() or output.stat().st_size == 0:
+            raise RuntimeError("Download did not produce the requested file. See the terminal for details.")
+        os.replace(output, destination)
+    return destination
+
 
 # Create a app window #
 app = ctk.CTk()
 ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme(custom_theme)
+ctk.set_default_color_theme(custom_theme if os.path.isfile(custom_theme) else "blue")
 
 # Title of the window #
 app.title(app_name)
-app.wm_iconbitmap(icon)
+if os.name == "nt" and os.path.isfile(icon):
+    app.wm_iconbitmap(icon)
 
 # Set min and max width and height #
 min_max_height = 550
@@ -851,7 +933,7 @@ donation_label = ctk.CTkLabel(donation_frame, font=("calibri", 17, "normal"), te
 donation_button_frame = ctk.CTkFrame(donation_frame)
 
 # Define resolutions_var globally #
-resolutions_var = None
+resolutions_var = ctk.StringVar(value="")
 
 # Create a label and the progress bar to display the download progress #
 progress_label = ctk.CTkLabel(main_frame, text="")
@@ -888,6 +970,6 @@ app.protocol("WM_DELETE_WINDOW", on_close)
 
 # Start the app #
 if __name__ == "__main__":
-    update_thread = threading.Thread(target=check_for_updates)
-    update_thread.start()
+    app.after(100, poll_events)
+    check_for_updates()
     app.mainloop()
