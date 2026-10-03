@@ -9,7 +9,6 @@ import customtkinter as ctk
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import sanitize_filename
 from PIL import Image
-import subprocess
 import webbrowser
 import threading
 import pyperclip
@@ -170,8 +169,6 @@ def on_progress(data):
 def show_help_menu_buttons():
     help_menu_frame.pack(padx=10, pady=buttons_centered)
     downloader_help_button.grid(row=0, column=0, padx=5, pady=5)
-    converters_help_button.grid(row=0, column=1, padx=5, pady=5)
-    # disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Function to go back to the help menu
 def back_to_help_menu():
@@ -210,32 +207,6 @@ def downloader_help():
         "This option will strip the audio from the video, and save it in mp3 format only.\n"
         "You can also choose to only download the audio instead of the video.\n"
         "This is useful when downloading music files that you like.\n"
-    )
-    info_label.configure(text=info_text)
-    show_back_menu_button()
-
-# Function to display converters help
-def converters_help():
-    help_menu_frame.pack_forget()
-    back_to_menu_frame.pack_forget()
-    show_info_labels()
-    info_text = (
-        "Here you can convert almost any audio file to almost any other audio file.\n"
-        "You can choose where you want the files saved on your pc.\n"
-        "All files converted will be done in the best available bitrate.\n"
-    )
-    info_label.configure(text=info_text)
-    show_back_menu_button()
-
-# Function to display disk space help
-def disk_space_help():
-    help_menu_frame.pack_forget()
-    back_to_menu_frame.pack_forget()
-    show_info_labels()
-    info_text = (
-        "This option will give you basic information about your device.\n"
-        "This will include all available disk drives, space available,\n"
-        "and what cpu / processor is currently installed on your machine.\n"
     )
     info_label.configure(text=info_text)
     show_back_menu_button()
@@ -281,92 +252,6 @@ def open_donation_window():
     copied_label = ctk.CTkLabel(donation_frame, text="")
     copied_label.pack(pady=5)
     main_menu_button()
-
-# Generic Function that runs all the audio convertors with same information #
-def convert_audio_file(filetypes, conversion_function):
-    filename = filedialog.askopenfilename(
-        initialdir="/",
-        title="Select Audio File",
-        filetypes=filetypes
-    )
-    if filename:
-        conversion_function(filename)
-
-def convert_start_countdown(seconds, convert_countdown_label, convert_app):
-    if seconds > 0:
-        convert_countdown_label.configure(text=f"Closing window in {seconds} seconds...")
-        convert_app.after(1000, convert_start_countdown, seconds - 1, convert_countdown_label, convert_app)
-    else:
-        convert_app.destroy()
-
-def create_conversion_window(file_path, convert_from, convert_to):
-    if busy:
-        return
-    try:
-        ffmpeg, _ = find_ffmpeg()
-    except RuntimeError as exc:
-        messagebox.showerror("FFmpeg", str(exc))
-        return
-    destination = filedialog.asksaveasfilename(
-        title="Save converted audio", initialdir=os.path.dirname(file_path),
-        initialfile=Path(file_path).stem + "." + convert_to,
-        defaultextension="." + convert_to,
-        filetypes=[(convert_to.upper(), "*." + convert_to)])
-    if not destination:
-        return
-    if Path(destination).resolve() == Path(file_path).resolve():
-        messagebox.showerror("Conversion", "Choose a different file from the source.")
-        return
-    run_task(lambda: run_conversion(file_path, convert_from, convert_to, destination, ffmpeg),
-             lambda path: show_status(f"Conversion complete: {path}"), "Converting audio…")
-
-def run_conversion(file_path, convert_from, convert_to, destination, ffmpeg):
-    with tempfile.TemporaryDirectory(prefix="ziptube-", dir=str(Path(destination).parent)) as temp:
-        output = Path(temp) / ("converted." + convert_to)
-        result = subprocess.run(
-            [ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-y", "-i", file_path,
-             "-vn", str(output)], capture_output=True, text=True, errors="replace",
-            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
-        if result.returncode or not output.is_file():
-            raise RuntimeError(result.stderr.strip() or "FFmpeg did not create the converted file.")
-        os.replace(output, destination)
-    return destination
-
-def mp3_to_flac(file_path):
-    create_conversion_window(file_path, "mp3", "flac")
-
-def mp3_to_wav(file_path):
-    create_conversion_window(file_path, "mp3", "wav")
-
-def mp3_to_wma(file_path):
-    create_conversion_window(file_path, "mp3", "wma")
-
-def flac_to_mp3(file_path):
-    create_conversion_window(file_path, "flac", "mp3")
-
-def flac_to_wav(file_path):
-    create_conversion_window(file_path, "flac", "wav")
-
-def flac_to_wma(file_path):
-    create_conversion_window(file_path, "flac", "wma")
-
-def wav_to_flac(file_path):
-    create_conversion_window(file_path, "wav", "flac")
-
-def wav_to_mp3(file_path):
-    create_conversion_window(file_path, "wav", "mp3")
-
-def wav_to_wma(file_path):
-    create_conversion_window(file_path, "wav", "wma")
-
-def wma_to_flac(file_path):
-    create_conversion_window(file_path, "wma", "flac")
-
-def wma_to_mp3(file_path):
-    create_conversion_window(file_path, "wma", "mp3")
-
-def wma_to_wav(file_path):
-    create_conversion_window(file_path, "wma", "wav")
 
 # Function to ask for confirmation before closing the window #
 def on_close():
@@ -435,13 +320,9 @@ def load_entry_and_resolutions_button():
     entry_url.delete(0, ctk.END)
     resolutions_var.set("")
     download_button.pack_forget()
-    # convert_to_audio_button.pack_forget()
-    want_to_download_audio_button.pack_forget()
     entry_url.pack(pady=10)
     resolutions_button.pack(pady="10p")
     start_menu_frame.pack_forget()
-    want_to_download_button.pack_forget()
-    # want_to_convert_to_audio_button.pack_forget()
     main_menu_button()
 
 # function to download audio file only #
@@ -453,55 +334,34 @@ def download_audio_only():
     entry_url.delete(0, ctk.END)
     resolutions_var.set("")
     download_button.pack_forget()
-    # convert_to_audio_button.pack_forget()
     entry_url.pack(pady=10)
     download_audio_button.configure(text="Download", command=download_audio)
     download_audio_button.pack(pady=10)
     start_menu_frame.pack_forget()
-    want_to_download_button.pack_forget()
-    # want_to_convert_to_audio_button.pack_forget()
     main_menu_button()
 
 # Function to show all the available convertors #
 def show_converters():
     hide_start_menu_frame()
     hide_footer_frame()
-    convertors_frame.pack(padx=10, pady=95)
-    # want_to_convert_to_audio_button.grid(row=0, column=1, padx=5, pady=5)
-    convert_mp3_to_flac_button.grid(row=1, column=0, padx=5, pady=5)
-    convert_mp3_to_wav_button.grid(row=1, column=1, padx=5, pady=5)
-    convert_mp3_to_wma_button.grid(row=1, column=2, padx=5, pady=5)
-    convert_flac_to_mp3_button.grid(row=2, column=0, padx=5, pady=5)
-    convert_flac_to_wav_button.grid(row=2, column=1, padx=5, pady=5)
-    convert_flac_to_wma_button.grid(row=2, column=2, padx=5, pady=5)
-    convert_wav_to_mp3_button.grid(row=3, column=0, padx=5, pady=5)
-    convert_wav_to_flac_button.grid(row=3, column=1, padx=5, pady=5)
-    convert_wav_to_wma_button.grid(row=3, column=2, padx=5, pady=5)
-    convert_wma_to_mp3_button.grid(row=4, column=0, padx=5, pady=5)
-    convert_wma_to_flac_button.grid(row=4, column=1, padx=5, pady=5)
-    convert_wma_to_wav_button.grid(row=4, column=2, padx=5, pady=5)
     main_menu_button()
 
 # Function to show all the available convertors #
 def hide_converters():
     hide_start_menu_frame()
     hide_footer_frame()
-    convertors_frame.pack_forget()
 
 # Function to show the download buttons available #
 def show_youtube_downloader():
     hide_start_menu_frame()
     hide_footer_frame()
     youtube_menu_frame.pack(padx=10, pady=buttons_centered)
-    want_to_download_button.grid(row=0, column=0, padx=5, pady=5)
-    want_to_download_audio_button.grid(row=0, column=1, padx=5, pady=5)
     main_menu_button()
 
 def back_main_menu_button():
     hide_start_menu_frame()
     hide_footer_frame()
     back_to_menu_frame.pack_forget()
-    convertors_frame.pack_forget()
     youtube_menu_frame.pack_forget()
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
@@ -509,8 +369,6 @@ def back_main_menu_button():
     resolutions_var.set("")
     entry_url.pack_forget()
     download_button.pack_forget()
-    want_to_download_audio_button.pack_forget()
-    want_to_download_button.pack_forget()
     download_audio_button.pack_forget()
     latest_version_frame.pack_forget()
     latest_version_label.pack_forget()
@@ -822,7 +680,6 @@ def button_configurations(button_type):
     return config
 
 main_button_config = button_configurations('main')
-convertors_button_config = button_configurations('convertors')
 footer_button_config = button_configurations('footer')
 start_menu_button_config = button_configurations('start_menu')
 
@@ -841,10 +698,8 @@ start_menu_frame = ctk.CTkFrame(main_frame)
 start_menu_frame.pack(padx=10, pady=buttons_centered)
 
 # Buttons for opening the sub-menus #
-converters_button = ctk.CTkButton(start_menu_frame, text="Convert", command=show_converters, **start_menu_button_config)
 youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_menu_button_config)
 youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
-converters_button.grid(row=0, column=1, padx=5, pady=5)
 
 # Initialize the main frame #
 footer_frame = ctk.CTkFrame(main_frame)
@@ -880,33 +735,9 @@ info_label_frame = ctk.CTkFrame(main_frame)
 info_label = ctk.CTkLabel(info_label_frame, font=("calibri", 17, "normal"), text="")
 back_button = ctk.CTkButton(back_menu_frame, text="Back", command=back_to_help_menu, **main_button_config)
 downloader_help_button = ctk.CTkButton(help_menu_frame, text="Download Help", command=downloader_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
-converters_help_button = ctk.CTkButton(help_menu_frame, text="Convertor Help", command=converters_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
-# disk_info_help_button = ctk.CTkButton(help_menu_frame, text="Disk Space Help", command=disk_space_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
 
 # Youtube menu frame #
 youtube_menu_frame = ctk.CTkFrame(main_frame)
-
-# Define all the other buttons for YouTube menu #
-want_to_download_button = ctk.CTkButton(youtube_menu_frame, text="Download Video", command=load_entry_and_resolutions_button, **convertors_button_config)
-want_to_download_audio_button = ctk.CTkButton(youtube_menu_frame, text="Download Audio", command=download_audio_only, **convertors_button_config)
-
-# Convertor Frame #
-convertors_frame = ctk.CTkFrame(main_frame)
-
-# Define all the other buttons for Converter menu #
-# want_to_convert_to_audio_button = ctk.CTkButton(convertors_frame, text="Video to Audio", command=convert_video_to_audio, **convertors_button_config)
-convert_mp3_to_flac_button = ctk.CTkButton(convertors_frame, text="MP3 to FLAC", command=lambda: convert_audio_file([("MP3 files", "*.mp3")], mp3_to_flac), **convertors_button_config)
-convert_mp3_to_wav_button = ctk.CTkButton(convertors_frame, text="MP3 to WAV", command=lambda: convert_audio_file([("MP3 files", "*.mp3")], mp3_to_wav), **convertors_button_config)
-convert_mp3_to_wma_button = ctk.CTkButton(convertors_frame, text="MP3 to WMA", command=lambda: convert_audio_file([("MP3 files", "*.mp3")], mp3_to_wma), **convertors_button_config)
-convert_flac_to_mp3_button = ctk.CTkButton(convertors_frame, text="FLAC to MP3", command=lambda: convert_audio_file([("FLAC files", "*.flac")], flac_to_mp3), **convertors_button_config)
-convert_flac_to_wav_button = ctk.CTkButton(convertors_frame, text="FLAC to WAV", command=lambda: convert_audio_file([("FLAC files", "*.flac")], flac_to_wav), **convertors_button_config)
-convert_flac_to_wma_button = ctk.CTkButton(convertors_frame, text="FLAC to WMA", command=lambda: convert_audio_file([("FLAC files", "*.flac")], flac_to_wma), **convertors_button_config)
-convert_wav_to_mp3_button = ctk.CTkButton(convertors_frame, text="WAV to MP3", command=lambda: convert_audio_file([("WAV files", "*.wav")], wav_to_mp3), **convertors_button_config)
-convert_wav_to_flac_button = ctk.CTkButton(convertors_frame, text="WAV to FLAC", command=lambda: convert_audio_file([("WAV files", "*.wav")], wav_to_flac), **convertors_button_config)
-convert_wav_to_wma_button = ctk.CTkButton(convertors_frame, text="WAV to WMA", command=lambda: convert_audio_file([("WAV files", "*.wav")], wav_to_wma), **convertors_button_config)
-convert_wma_to_mp3_button = ctk.CTkButton(convertors_frame, text="WMA to MP3", command=lambda: convert_audio_file([("WMA files", "*.wma")], wma_to_mp3), **convertors_button_config)
-convert_wma_to_flac_button = ctk.CTkButton(convertors_frame, text="WMA to FLAC", command=lambda: convert_audio_file([("WMA files", "*.wma")], wma_to_flac), **convertors_button_config)
-convert_wma_to_wav_button = ctk.CTkButton(convertors_frame, text="WMA to WAV", command=lambda: convert_audio_file([("WMA files", "*.wma")], wma_to_wav), **convertors_button_config)
 
 # Create a button to always get the user back to the main menu #
 back_to_menu_frame = ctk.CTkFrame(main_frame)
