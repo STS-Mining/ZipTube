@@ -1,7 +1,6 @@
 # Author: STS-Mining
 # Python-Version 3.12.3
 
-import tkinter.simpledialog as simpledialog
 import tkinter.messagebox as messagebox
 from tkinter import filedialog
 from bs4 import BeautifulSoup
@@ -32,7 +31,7 @@ def resource_path(relative_path):
 # Define global variables here #
 app_name = "ZipTube"
 buttons_centered = 130
-current_version = "1.30" # Make sure to update this version here
+current_version = "1.31" # Make sure to update this version here
 feedback_email = "info@ziptube.com.au"
 website_url = "https://ziptube.sts-media.org/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
@@ -164,11 +163,12 @@ def on_progress(data):
         rate = f" — {bytes_conversion(speed)}/s" if speed else ""
         ui_events.put(("progress", f"Downloading: {percent}{rate}"))
     elif data.get("status") == "finished":
-        ui_events.put(("progress", "Download received. Merging / converting…"))
+        ui_events.put(("progress", "Download received. Processing media…"))
 
 def show_help_menu_buttons():
     help_menu_frame.pack(padx=10, pady=buttons_centered)
     downloader_help_button.grid(row=0, column=0, padx=5, pady=5)
+    # disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Function to go back to the help menu
 def back_to_help_menu():
@@ -200,13 +200,26 @@ def downloader_help():
     back_to_menu_frame.pack_forget()
     show_info_labels()
     info_text = (
-        "Here you can download almost any video from YouTube.\n"
-        "Choose the resolution of the video you want to download.\n"
-        "Choose where you want the files saved on your pc.\n"
-        "Once complete you can download another video, or convert video to audio.\n"
-        "This option will strip the audio from the video, and save it in mp3 format only.\n"
-        "You can also choose to only download the audio instead of the video.\n"
-        "This is useful when downloading music files that you like.\n"
+        "Choose Download Video or Download Audio on the main screen.\n\n"
+        "Video: paste a YouTube link, load resolutions, choose quality,\n"
+        "then click Download and select where to save the MP4.\n\n"
+        "Audio: paste a YouTube link, then click Download to save an MP3.\n"
+        "The suggested filename includes the YouTube title and quality.\n"
+        "Wait for Download complete before opening the saved file."
+    )
+    info_label.configure(text=info_text)
+    show_back_menu_button()
+
+
+# Function to display disk space help
+def disk_space_help():
+    help_menu_frame.pack_forget()
+    back_to_menu_frame.pack_forget()
+    show_info_labels()
+    info_text = (
+        "This option will give you basic information about your device.\n"
+        "This will include all available disk drives, space available,\n"
+        "and what cpu / processor is currently installed on your machine.\n"
     )
     info_label.configure(text=info_text)
     show_back_menu_button()
@@ -253,10 +266,11 @@ def open_donation_window():
     copied_label.pack(pady=5)
     main_menu_button()
 
+
 # Function to ask for confirmation before closing the window #
 def on_close():
     if busy:
-        messagebox.showinfo("ZipTube", "Please wait for the current download or conversion to finish.")
+        messagebox.showinfo("ZipTube", "Please wait for the current download to finish.")
         return
     if messagebox.askokcancel("Confirmation", "Close ZipTube?"):
         app.destroy()
@@ -313,8 +327,10 @@ def bytes_conversion(bytes):
 
 # Function to load entry widget for the video url and resolutions button #
 def load_entry_and_resolutions_button():
-    global entry_url, resolutions_button, resolutions_frame, download_button#,convert_to_audio_button
-    youtube_menu_frame.pack_forget()
+    global entry_url, resolutions_button, resolutions_frame, download_button
+    hide_footer_frame()
+    hide_labels()
+    download_audio_button.pack_forget()
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
@@ -327,8 +343,10 @@ def load_entry_and_resolutions_button():
 
 # function to download audio file only #
 def download_audio_only():
-    global entry_url, resolutions_button, resolutions_frame, download_button#,convert_to_audio_button
-    youtube_menu_frame.pack_forget()
+    global entry_url, resolutions_button, resolutions_frame, download_button
+    hide_footer_frame()
+    hide_labels()
+    download_audio_button.pack_forget()
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
@@ -340,29 +358,16 @@ def download_audio_only():
     start_menu_frame.pack_forget()
     main_menu_button()
 
-# Function to show all the available convertors #
-def show_converters():
-    hide_start_menu_frame()
-    hide_footer_frame()
-    main_menu_button()
-
-# Function to show all the available convertors #
-def hide_converters():
-    hide_start_menu_frame()
-    hide_footer_frame()
 
 # Function to show the download buttons available #
-def show_youtube_downloader():
-    hide_start_menu_frame()
-    hide_footer_frame()
-    youtube_menu_frame.pack(padx=10, pady=buttons_centered)
-    main_menu_button()
 
 def back_main_menu_button():
     hide_start_menu_frame()
     hide_footer_frame()
     back_to_menu_frame.pack_forget()
-    youtube_menu_frame.pack_forget()
+    hide_footer_frame()
+    hide_labels()
+    download_audio_button.pack_forget()
     resolutions_button.pack_forget()
     resolutions_frame.pack_forget()
     entry_url.delete(0, ctk.END)
@@ -632,7 +637,7 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme(custom_theme if os.path.isfile(custom_theme) else "blue")
 
 # Title of the window #
-app.title(app_name)
+app.title(f"{app_name} {current_version} — Downloads")
 if os.name == "nt" and os.path.isfile(icon):
     app.wm_iconbitmap(icon)
 
@@ -657,12 +662,6 @@ base_config = {
 
 button_specifics = {
     'main': {'border_color': "blue"},
-    'convertors': {
-        'font': ctk.CTkFont(family="calibri", size=13, weight="normal"),
-        'border_color': "green",
-        'height': 30,
-        'width': 90
-    },
     'start_menu': {'border_color': "orange"},
     'footer': {
         'font': ctk.CTkFont(family="calibri", size=11, weight="normal"),
@@ -698,8 +697,10 @@ start_menu_frame = ctk.CTkFrame(main_frame)
 start_menu_frame.pack(padx=10, pady=buttons_centered)
 
 # Buttons for opening the sub-menus #
-youtube_downloader_button = ctk.CTkButton(start_menu_frame, text="Download", command=show_youtube_downloader, **start_menu_button_config)
-youtube_downloader_button.grid(row=0, column=0, padx=5, pady=5)
+main_audio_button = ctk.CTkButton(start_menu_frame, text="Download Audio", command=download_audio_only, **start_menu_button_config)
+main_video_button = ctk.CTkButton(start_menu_frame, text="Download Video", command=load_entry_and_resolutions_button, **start_menu_button_config)
+main_video_button.grid(row=0, column=0, padx=5, pady=5)
+main_audio_button.grid(row=0, column=1, padx=5, pady=5)
 
 # Initialize the main frame #
 footer_frame = ctk.CTkFrame(main_frame)
@@ -735,9 +736,7 @@ info_label_frame = ctk.CTkFrame(main_frame)
 info_label = ctk.CTkLabel(info_label_frame, font=("calibri", 17, "normal"), text="")
 back_button = ctk.CTkButton(back_menu_frame, text="Back", command=back_to_help_menu, **main_button_config)
 downloader_help_button = ctk.CTkButton(help_menu_frame, text="Download Help", command=downloader_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
-
-# Youtube menu frame #
-youtube_menu_frame = ctk.CTkFrame(main_frame)
+# disk_info_help_button = ctk.CTkButton(help_menu_frame, text="Disk Space Help", command=disk_space_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
 
 # Create a button to always get the user back to the main menu #
 back_to_menu_frame = ctk.CTkFrame(main_frame)
@@ -801,6 +800,7 @@ app.protocol("WM_DELETE_WINDOW", on_close)
 
 # Start the app #
 if __name__ == "__main__":
+    print(f"Running ZipTube {current_version} Downloads: {os.path.abspath(__file__)}")
     app.after(100, poll_events)
     check_for_updates()
     app.mainloop()
