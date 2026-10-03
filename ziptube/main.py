@@ -30,7 +30,7 @@ def resource_path(relative_path):
 # Define global variables here #
 app_name = "ZipTube"
 buttons_centered = 130
-current_version = "1.31" # Make sure to update this version here
+current_version = "1.33" # Make sure to update this version here
 website_url = "https://ziptube.sts-media.org/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
 icon = resource_path("assets\\images\\icon.ico")
