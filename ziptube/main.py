@@ -23,7 +23,6 @@ from pathlib import Path
 from urllib.parse import urlparse, urljoin
 from packaging.version import Version
 
-# https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
 def resource_path(relative_path):
     base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base, relative_path.replace("\\", "/"))
@@ -32,17 +31,15 @@ def resource_path(relative_path):
 app_name = "ZipTube"
 buttons_centered = 130
 current_version = "1.31" # Make sure to update this version here
-feedback_email = "info@ziptube.com.au"
 website_url = "https://ziptube.sts-media.org/"
 discord_link = "https://discord.gg/nVMgU9yQcw"
 icon = resource_path("assets\\images\\icon.ico")
 logo = resource_path("assets\\images\\logo.png")
 github_url = "https://github.com/STS-Mining/ZipTube"
-ffmpeg_path = resource_path("assets\\ffmpeg\\bin\\ffmpeg.exe")
 custom_theme = resource_path("assets\\themes\\ziptube-custom.json")
 
-latest_version_link = None
-latest_version_number = None
+latest_version_link = "https://ziptube.sts-media.org/ZipTube_Windows_Setup_1.29.rar"
+latest_version_number = "1.31"
 def extract_version_from_link(link):
     match = re.search(r"ziptube_windows_setup_(\d+(?:\.\d+)+)\.exe", link)
     return match.group(1) if match else None
@@ -67,7 +64,6 @@ def check_for_updates():
 
 # Function that runs the update button on the main screen
 def latest_version():
-    global latest_version_frame, latest_version_link, latest_version_label
     hide_start_menu_frame()
     hide_footer_frame()
     latest_version_label.pack(padx=10, pady=10)
@@ -129,13 +125,7 @@ def hide_social_media_window():
     facebook_button.grid_forget()
     whatsapp_button.grid_forget()
     instagram_button.grid_forget()
-    show_start_menu_frame()
-    show_footer_frame()
 
-# Save location for all files downloaded #
-def choose_save_location():
-    save_location = filedialog.askdirectory()
-    return save_location
 
 # Function to download only audio files #
 def download_audio():
@@ -168,7 +158,6 @@ def on_progress(data):
 def show_help_menu_buttons():
     help_menu_frame.pack(padx=10, pady=buttons_centered)
     downloader_help_button.grid(row=0, column=0, padx=5, pady=5)
-    # disk_info_help_button.grid(row=0, column=2, padx=5, pady=5)
 
 # Function to go back to the help menu
 def back_to_help_menu():
@@ -210,19 +199,6 @@ def downloader_help():
     info_label.configure(text=info_text)
     show_back_menu_button()
 
-
-# Function to display disk space help
-def disk_space_help():
-    help_menu_frame.pack_forget()
-    back_to_menu_frame.pack_forget()
-    show_info_labels()
-    info_text = (
-        "This option will give you basic information about your device.\n"
-        "This will include all available disk drives, space available,\n"
-        "and what cpu / processor is currently installed on your machine.\n"
-    )
-    info_label.configure(text=info_text)
-    show_back_menu_button()
 
 # Function for donation window #
 def open_donation_window():
@@ -276,7 +252,6 @@ def on_close():
         app.destroy()
 
 
-# Hide the labels after 3 seconds #
 def hide_labels():
     status_label.pack_forget()
     progress_label.pack_forget()
@@ -310,13 +285,6 @@ def load_resolutions():
     download_button.pack_forget()
     run_task(lambda: print_available_resolutions(url), show_resolutions, "Loading resolutions…")
 
-# Function to start a new download #
-def download_another_video():
-    resolutions_var.set("")
-    download_button.pack_forget()
-    resolutions_button.configure(state="normal", text="Load Resolutions", command=load_resolutions)
-    resolutions_button.pack(pady=10)
-    hide_labels()
 
 # Calculate the nearest measurement for bytes #
 def bytes_conversion(bytes):
@@ -327,7 +295,6 @@ def bytes_conversion(bytes):
 
 # Function to load entry widget for the video url and resolutions button #
 def load_entry_and_resolutions_button():
-    global entry_url, resolutions_button, resolutions_frame, download_button
     hide_footer_frame()
     hide_labels()
     download_audio_button.pack_forget()
@@ -343,7 +310,6 @@ def load_entry_and_resolutions_button():
 
 # function to download audio file only #
 def download_audio_only():
-    global entry_url, resolutions_button, resolutions_frame, download_button
     hide_footer_frame()
     hide_labels()
     download_audio_button.pack_forget()
@@ -359,13 +325,10 @@ def download_audio_only():
     main_menu_button()
 
 
-# Function to show the download buttons available #
-
 def back_main_menu_button():
     hide_start_menu_frame()
     hide_footer_frame()
     back_to_menu_frame.pack_forget()
-    hide_footer_frame()
     hide_labels()
     download_audio_button.pack_forget()
     resolutions_button.pack_forget()
@@ -374,14 +337,12 @@ def back_main_menu_button():
     resolutions_var.set("")
     entry_url.pack_forget()
     download_button.pack_forget()
-    download_audio_button.pack_forget()
     latest_version_frame.pack_forget()
     latest_version_label.pack_forget()
     download_update_button.pack_forget()
     help_menu_frame.pack_forget()
     info_label_frame.pack_forget()
     back_menu_frame.pack_forget()
-    hide_labels()
     donation_frame.pack_forget()
     donation_label.pack_forget()
     donation_button_frame.pack_forget()
@@ -682,9 +643,6 @@ main_button_config = button_configurations('main')
 footer_button_config = button_configurations('footer')
 start_menu_button_config = button_configurations('start_menu')
 
-# Define global variables to track download progress #
-start_time = time.time()
-bytes_downloaded_prev = 0
 
 # Create a label and the entry widget for the video url #
 pil_image = Image.open(logo)
@@ -736,7 +694,6 @@ info_label_frame = ctk.CTkFrame(main_frame)
 info_label = ctk.CTkLabel(info_label_frame, font=("calibri", 17, "normal"), text="")
 back_button = ctk.CTkButton(back_menu_frame, text="Back", command=back_to_help_menu, **main_button_config)
 downloader_help_button = ctk.CTkButton(help_menu_frame, text="Download Help", command=downloader_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
-# disk_info_help_button = ctk.CTkButton(help_menu_frame, text="Disk Space Help", command=disk_space_help, font=("calibri", 15, "normal"), height=40, width=120, corner_radius=33, border_color="green")
 
 # Create a button to always get the user back to the main menu #
 back_to_menu_frame = ctk.CTkFrame(main_frame)
@@ -772,7 +729,7 @@ progress_label = ctk.CTkLabel(main_frame, text="")
 status_label = ctk.CTkLabel(main_frame, text="")
 
 # Add social media sharing options
-socials_image_sizes = size=(40, 40)
+socials_image_sizes = (40, 40)
 twitter_image = Image.open(resource_path("assets\\images\\twitter.png"))
 twitter_image_pil = ctk.CTkImage(twitter_image, size=socials_image_sizes)
 facebook_image = Image.open(resource_path("assets\\images\\facebook.png"))
