@@ -38,8 +38,8 @@ logo = resource_path("assets\\images\\logo.png")
 github_url = "https://github.com/STS-Mining/ZipTube"
 custom_theme = resource_path("assets\\themes\\ziptube-custom.json")
 
-latest_version_link = "https://ziptube.sts-media.org/ZipTube_Windows_Setup_1.29.rar"
-latest_version_number = "1.31"
+latest_version_link = None
+latest_version_number = None
 def extract_version_from_link(link):
     match = re.search(r"ziptube_windows_setup_(\d+(?:\.\d+)+)\.exe", link)
     return match.group(1) if match else None

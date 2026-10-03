@@ -6,20 +6,9 @@
 - Choose the resolution of the video you want to download
 - Choose where you want the files saved on your pc
 - Download audio only from video files on YouTube
-- Convert video to audio (mp3 format)
-- Convert MP3 to Flac, WAV & WMA
-- Convert Flac to MP3, WAV & WMA
-- Convert WAV to MP3, Flac & WMA
-- Convert WMA to MP3, Flac & WAV
-- Check available disk space on local machine
-- CPU information
 
 ![Main Menu](https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/main_menu.png)
 
-<div>
-    <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_menu.png" width="400"/>
-    <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/conversion_menu.png" width="400"/>
-</div>
 
 <div>
     <img src="https://github.com/STS-Mining/Python/raw/main/ziptube/assets/images/download_video.png" width="400"/>
