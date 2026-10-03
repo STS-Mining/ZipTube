@@ -38,24 +38,31 @@ logo = resource_path("assets\\images\\logo.png")
 github_url = "https://github.com/STS-Mining/ZipTube"
 custom_theme = resource_path("assets\\themes\\ziptube-custom.json")
 
-latest_version_link = None
-latest_version_number = None
-def extract_version_from_link(link):
-    match = re.search(r"ziptube_windows_setup_(\d+(?:\.\d+)+)\.exe", link)
-    return match.group(1) if match else None
+version_json_url = (
+    "https://raw.githubusercontent.com/STS-Mining/ZipTube/main/version.json"
+)
 
 def update_ziptube_version():
     try:
-        response = requests.get(website_url, timeout=15)
+        response = requests.get(
+            version_json_url,
+            timeout=15,
+            headers={"Cache-Control": "no-cache"}
+        )
         response.raise_for_status()
-        links = BeautifulSoup(response.content, "html.parser").find_all("a", href=True)
-        versions = [(extract_version_from_link(a["href"]), urljoin(website_url, a["href"])) for a in links]
-        versions = [(version, link) for version, link in versions if version]
-        if versions:
-            version, link = max(versions, key=lambda item: Version(item[0]))
-            ui_events.put(("update", (version, link)))
+        data = response.json()
+
+        version = str(data["version"]).strip()
+        installer_url = str(data["installer_url"]).strip()
+
+        # Validate before passing the information to the GUI.
+        Version(version)
+        if not installer_url.startswith("https://"):
+            raise ValueError("The installer URL must use HTTPS.")
+
+        ui_events.put(("update", (version, installer_url)))
+
     except Exception as exc:
-        # An unavailable update website must not block downloads or startup.
         print(f"Update check unavailable: {exc}", file=sys.stderr)
 
 # Function that runs at the start of the program being opened up
